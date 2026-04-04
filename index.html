@@ -54,7 +54,6 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 .container{max-width:820px;margin:0 auto;padding:16px 12px 40px}
 .week-block{margin-bottom:24px}
 .week-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:9px 14px;border-radius:10px;color:#fff;font-weight:600;font-size:13px}
-/* Accessibility Fix: Badge background changed to dark translucent to pass contrast ratio 100/100 */
 .wbadge{background:rgba(0,0,0,.25);padding:1px 9px;border-radius:16px;font-size:11px}
 .wcnt{margin-left:auto;font-size:11px;color:#f8fafc}
 .day-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#1e293b;border-radius:10px;margin-bottom:6px;border-left:4px solid #475569;box-shadow:0 2px 5px rgba(0,0,0,.15);cursor:pointer;transition:transform .15s,box-shadow .15s}
@@ -175,8 +174,6 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 <div class="mkt-section">
   <div class="mkt-inner">
     <div class="mkt-cols">
-
-      <!-- LEFT: boxes / links -->
       <div class="mkt-left">
         <div class="mkt-links">
           <a class="mkt-link mkt-link-green" href="https://www.rokomari.com/book/537607/qna-hsc-suggestion-with-solution-2-0" target="_blank" rel="noopener">
@@ -195,24 +192,38 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
           </a>
         </div>
       </div>
-
-      <!-- RIGHT: lines / text -->
       <div class="mkt-right">
         <div class="mkt-hook">⚠️ ৯০% স্টুডেন্ট যেই ভুলটা করে তুমিও কি তাই করছো?</div>
         <p class="mkt-body">লম্বা-লম্বা রিভিশন লাইভ ক্লাস আর অগোছালো পড়ার ভিড়ে স্মার্টলি গুছিয়ে প্রিপারেশন নিতে চাইলে ভিজিট করো—</p>
       </div>
-
     </div>
     <div class="mkt-brand">Powered by <strong>BrainArena</strong></div>
   </div>
 </div>
 
 <script>
-// Pomodoro Timer Logic
+// ==========================================
+// Pomodoro Timer Logic (With Custom Audio)
+// ==========================================
 let pomoTimeLeft = 25 * 60; 
 let pomoInterval = null;
 let pomoIsRunning = false;
 let pomoDefaultTime = 25 * 60;
+let pomoAlarmTimeout = null; // ২ মিনিটের জন্য ট্র্যাকিং ভ্যারিয়েবল
+
+// 🔴 অ্যালার্ম রিংটোন আপডেট করা হলো
+let pomoAudio = new Audio("https://cdn.pixabay.com/audio/2025/07/18/audio_da35bc65d2.mp3");
+pomoAudio.loop = true; // অডিও ছোট হলেও যেন ২ মিনিট পর্যন্ত রিপিট হয়
+
+// অডিও বন্ধ এবং ২ মিনিটের কাউন্টডাউন ক্লিয়ার করার ফাংশন
+function pomoStopAudio() {
+  pomoAudio.pause();
+  pomoAudio.currentTime = 0;
+  if (pomoAlarmTimeout) {
+    clearTimeout(pomoAlarmTimeout);
+    pomoAlarmTimeout = null;
+  }
+}
 
 function pomoUpdateDisplay() {
   const m = Math.floor(pomoTimeLeft / 60).toString().padStart(2, '0');
@@ -222,6 +233,7 @@ function pomoUpdateDisplay() {
 
 function pomoSetTimer(minutes) {
   pomoStop();
+  pomoStopAudio(); // নতুন করে টাইম সেট করলে অ্যালার্ম থেমে যাবে
   pomoDefaultTime = minutes * 60;
   pomoTimeLeft = pomoDefaultTime;
   pomoUpdateDisplay();
@@ -237,6 +249,13 @@ function pomoSetCustom() {
 
 function pomoToggle() {
   const btn = document.getElementById('pomoStartBtn');
+  
+  // ব্রাউজার যাতে অডিও ব্লক না করে তাই স্টার্ট করার সাথে সাথে অডিও লোড করে রাখা হচ্ছে
+  if (!pomoIsRunning) {
+    pomoStopAudio(); // অ্যালার্ম বাজতে থাকা অবস্থায় স্টার্ট করলে তা থেমে যাবে
+    pomoAudio.load(); 
+  }
+
   if (pomoIsRunning) {
     pomoStop();
   } else {
@@ -265,37 +284,28 @@ function pomoStop() {
 
 function pomoReset() {
   pomoStop();
+  pomoStopAudio(); // রিসেট করলেও অ্যালার্ম থেমে যাবে
   pomoTimeLeft = pomoDefaultTime;
   pomoUpdateDisplay();
 }
 
-// Offline Audio Beep (No external links required)
 function pomoPlayAlarm() {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    const ctx = new AudioContext();
-    function playBeep(timeOffset) {
-      const osc = ctx.createOscillator();
-      const gainNode = ctx.createGain();
-      osc.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(880, ctx.currentTime + timeOffset); // A5 note
-      gainNode.gain.setValueAtTime(1, ctx.currentTime + timeOffset);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + timeOffset + 0.5);
-      osc.start(ctx.currentTime + timeOffset);
-      osc.stop(ctx.currentTime + timeOffset + 0.5);
-    }
-    // Play 3 consecutive beeps
-    playBeep(0);
-    playBeep(0.3);
-    playBeep(0.6);
-  } catch(e) {
-    alert("Time is up! 🍅");
-  }
+  pomoStopAudio(); // আগের কোন স্টেট থাকলে তা ক্লিয়ার করবে
+  // অডিও প্লে করা হবে।
+  pomoAudio.play().then(() => {
+    // ঠিক ২ মিনিট (১২০,০০০ মিলি-সেকেন্ড) পর অ্যালার্ম অটোমেটিক বন্ধ হয়ে যাবে
+    pomoAlarmTimeout = setTimeout(() => {
+      pomoStopAudio();
+    }, 120000);
+  }).catch(e => {
+    alert("Time is up! 🍅 (Audio couldn't play)");
+  });
 }
 
-// Initializing Plan App Data
+
+// ==========================================
+// Initializing Plan App Data (No changes here)
+// ==========================================
 const weeks=[
   {id:1,label:"Week 1",title:"বাংলা ১ম + ২য় পত্র",color:"#9d174d",days:[1,7]},
   {id:2,label:"Week 2",title:"English 1st + 2nd Paper",color:"#5b21b6",days:[8,14]},
@@ -356,7 +366,7 @@ const plan=[
   {d:31,s:"গণিত ১ম",t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
   {d:32,s:"গণিত ১ম",t:"অধ্যায় ৩: জ্যামিতি (সরলরেখা) — সব ধরনের সমীকরণ, লম্ব দূরত্ব, সমদ্বিখণ্ডক, ছেদবিন্দু, ক্ষেত্রফল | অধ্যায় ৪: বৃত্ত — স্পর্শকের সমীকরণ, স্পর্শবিন্দু, শর্তসাপেক্ষ বৃত্ত, কেন্দ্র-ব্যাসার্ধ নির্ণয়"},
   {d:33,s:"গণিত ১ম",t:"অধ্যায় ৫: ফাংশন ও ফাংশনের লেখচিত্র — ডোমেইন, রেঞ্জ, বিপরীত ফাংশন, যৌগিক ফাংশন | অধ্যায় ৬: বিন্যাস ও সমাবেশ — শব্দ গঠন, সংখ্যা গঠন, দল গঠন | অধ্যায় ৭: ত্রিকোণমিতি — সংযুক্ত কোণ, সকল type প্রমাণ"},
-  {d:34,s:"গণিত ১ম",t:"অধ্যায় ৮: অন্তরীকরণ — মূল নিয়ম, পরোক্ষ ক্রম, গুরুমান-লঘুমান, সঞ্চারপথ, বক্ররেখার ঢাল, স্পর্শকের সমীকরণ, প্রমাণ | অধ্যায় ৯: যোগজীকরণ — সরাসরি সূত্র, ক্ষেত্রফল (সব type), পার্শীয় বক্রতলের ক্ষেত্রফল"},
+  {d:34,s:"গণিত ১ম",t:"অধ্যায় ۸: অন্তরীকরণ — মূল নিয়ম, পরোক্ষ ক্রম, গুরুমান-লঘুমান, সঞ্চারপথ, বক্ররেখার ঢাল, স্পর্শকের সমীকরণ, প্রমাণ | অধ্যায় ৯: যোগজীকরণ — সরাসরি সূত্র, ক্ষেত্রফল (সব type), পার্শীয় বক্রতলের ক্ষেত্রফল"},
   {d:35,s:"গণিত ২য়",t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ২: যোগাশ্রয়ী প্রোগ্রাম — লেখচিত্র অঙ্কন, সর্বোচ্চ/সর্বনিম্ন মান নির্ণয় | অধ্যায় ৩: জটিল সংখ্যা — মডুলাস, আর্গুমেন্ট, A+iB রূপ, বর্গমূল, ঘনমূল, সঞ্চারপথ"},
   {d:36,s:"গণিত ২য়",t:"অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয় | অধ্যায় ৫: দ্বিপদী বিস্তৃতি — nতম পদ, মধ্যপদ, শর্তসাপেক্ষ মান | অধ্যায় ৬: কনিক (পরাবৃত্ত, উপবৃত্ত, অধিবৃত্ত) — উপকেন্দ্র, উপকেন্দ্রিক লম্ব, স্পর্শকের সমীকরণ"},
   {d:37,s:"গণিত ২য়",t:"অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান | অধ্যায় ৮: স্থিতিবিদ্যা — ভেক্টর সমাধান, সুতার টান, লিভার | অধ্যায় ৯: গতিবিদ্যা — ঊলম্ব গতি, প্রাস, সমত্বরণ প্রমাণ | অধ্যায় ১০: পরিসংখ্যান — বিস্তার পরিমাপ, সম্ভাবনা (সব type)"},
