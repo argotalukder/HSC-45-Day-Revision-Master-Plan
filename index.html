@@ -56,24 +56,30 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 .link-bar strong{color:#818cf8;word-break:break-all}
 .copy-btn{padding:2px 10px;border-radius:12px;border:1px solid #6366f1;background:transparent;color:#a5b4fc;font-size:10px;cursor:pointer;transition:all .2s}
 
-/* Professional Footer Styling Updates */
-.mkt-section{background:#1e293b; border-top:1px solid #334155; padding:40px 20px; margin-top:20px}
-.mkt-inner{max-width:700px; margin:0 auto; text-align:center}
-.mkt-cols{display:flex; flex-direction:column; gap:24px; align-items:center}
-.mkt-left{width:100%}
-.mkt-hook{font-size:18px; font-weight:800; color:#facc15; margin-bottom:10px; line-height:1.4}
-.mkt-body{font-size:14px; color:#cbd5e1; line-height:1.6; margin-bottom:24px}
-.mkt-links{display:flex; flex-direction:column; gap:16px; width:100%}
-.mkt-link{display:flex; align-items:center; gap:16px; padding:18px 20px; border-radius:12px; text-decoration:none; transition:all .3s; text-align:left; background:#0f172a; border:1px solid #334155; box-shadow:0 4px 6px rgba(0,0,0,.1)}
-.mkt-link:hover{transform:translateY(-3px); box-shadow:0 10px 25px rgba(0,0,0,.3); border-color:#6366f1}
+/* Professional & Compact Footer Styling Update */
+.mkt-section{background:#1e293b; border-top:1px solid #334155; padding:24px 20px; margin-top:20px}
+.mkt-inner{max-width:820px; margin:0 auto}
+.mkt-cols{display:flex; flex-direction:row; gap:30px; align-items:center; justify-content:center}
+.mkt-left{flex:1; min-width:300px}
+.mkt-right{flex:1; text-align:left}
+.mkt-hook{font-size:16px; font-weight:800; color:#facc15; margin-bottom:8px; line-height:1.4}
+.mkt-body{font-size:13px; color:#cbd5e1; line-height:1.6; margin-bottom:0}
+.mkt-links{display:flex; flex-direction:column; gap:12px; width:100%}
+.mkt-link{display:flex; align-items:center; gap:12px; padding:12px 16px; border-radius:10px; text-decoration:none; transition:all .3s; background:#0f172a; border:1px solid #334155; box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.mkt-link:hover{transform:translateY(-2px); box-shadow:0 6px 15px rgba(0,0,0,.25); border-color:#6366f1}
 .mkt-link-green{border-left:4px solid #22c55e}
 .mkt-link-blue{border-left:4px solid #6366f1}
-.mkt-num{width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0}
-.mkt-ltext{display:flex; flex-direction:column; gap:4px}
-.mkt-ltitle{font-size:15px; font-weight:700; color:#f8fafc; line-height:1.3}
-.mkt-lsub{font-size:12px; color:#94a3b8}
-.mkt-brand{font-size:13px; color:#64748b; margin-top:35px; border-top:1px solid #334155; padding-top:20px}
+.mkt-num{width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.08); color:#fff; font-size:14px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+.mkt-ltext{display:flex; flex-direction:column; gap:2px}
+.mkt-ltitle{font-size:14px; font-weight:700; color:#f8fafc; line-height:1.2}
+.mkt-lsub{font-size:11px; color:#94a3b8}
+.mkt-brand{font-size:12px; color:#64748b; margin-top:20px; border-top:1px solid #334155; padding-top:15px; text-align:center}
 .mkt-brand strong{color:#94a3b8}
+
+@media(max-width:620px){
+  .mkt-cols{flex-direction:column-reverse; gap:20px; text-align:center}
+  .mkt-right{text-align:center}
+}
 </style>
 </head>
 <body>
@@ -125,13 +131,13 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 </div>
 
 <div class="legend">
-  <div class="li"><div class="ld" style="background:#dbeafe"></div>বাংলা</div>
-  <div class="li"><div class="ld" style="background:#fef9c3"></div>English</div>
-  <div class="li"><div class="ld" style="background:#e0f2fe"></div>ICT</div>
-  <div class="li"><div class="ld" style="background:#dcfce7"></div>পদার্থ</div>
-  <div class="li"><div class="ld" style="background:#fce7f3"></div>রসায়ন</div>
-  <div class="li"><div class="ld" style="background:#fef3c7"></div>গণিত</div>
-  <div class="li"><div class="ld" style="background:#f0fdf4"></div>জীববিজ্ঞান</div>
+  <div class="li"><div class="ld" style="background:#93c5fd"></div>বাংলা</div>
+  <div class="li"><div class="ld" style="background:#fde047"></div>English</div>
+  <div class="li"><div class="ld" style="background:#7dd3fc"></div>ICT</div>
+  <div class="li"><div class="ld" style="background:#86efac"></div>পদার্থ</div>
+  <div class="li"><div class="ld" style="background:#f9a8d4"></div>রসায়ন</div>
+  <div class="li"><div class="ld" style="background:#fbbf24"></div>গণিত</div>
+  <div class="li"><div class="ld" style="background:#6ee7b7"></div>জীববিজ্ঞান</div>
 </div>
 
 <div class="container" id="planC"></div>
@@ -140,10 +146,8 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
   <div class="mkt-inner">
     <div class="mkt-cols">
 
-      <!-- LEFT: text + links -->
+      <!-- LEFT: boxes / links -->
       <div class="mkt-left">
-        <div class="mkt-hook">⚠️ ৯০% স্টুডেন্ট যেই ভুলটা করে তুমিও কি তাই করছো?</div>
-        <p class="mkt-body">লম্বা-লম্বা রিভিশন লাইভ ক্লাস আর অগোছালো পড়ার ভিড়ে স্মার্টলি গুছিয়ে প্রিপারেশন নিতে চাইলে ভিজিট করো—</p>
         <div class="mkt-links">
           <a class="mkt-link mkt-link-green" href="https://www.rokomari.com/book/537607/qna-hsc-suggestion-with-solution-2-0" target="_blank" rel="noopener">
             <span class="mkt-num">১</span>
@@ -160,6 +164,12 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
             </span>
           </a>
         </div>
+      </div>
+
+      <!-- RIGHT: lines / text -->
+      <div class="mkt-right">
+        <div class="mkt-hook">⚠️ ৯০% স্টুডেন্ট যেই ভুলটা করে তুমিও কি তাই করছো?</div>
+        <p class="mkt-body">লম্বা-লম্বা রিভিশন লাইভ ক্লাস আর অগোছালো পড়ার ভিড়ে স্মার্টলি গুছিয়ে প্রিপারেশন নিতে চাইলে ভিজিট করো—</p>
       </div>
 
     </div>
@@ -282,7 +292,7 @@ const plan=[
   // DAY 38 — জীব ১ম: অধ্যায় ১–৩
   {d:38,s:"জীব ১ম",t:"অধ্যায় ১: কোষ ও এর গঠন — কোষের গঠন (প্রকৃত/অপ্রকৃত), সকল অঙ্গাণু, Fluid mosaic model, DNA/RNA গঠন, ট্রান্সক্রিপশন, ট্রান্সলেশন, অনুলিপন | অধ্যায় ২: কোষ বিভাজন — Mitosis/Meiosis সব ধাপ (চিত্রসহ), গুরুত্ব, Crossing over | অধ্যায় ৩: কোষ রসায়ন — কার্বোহাইড্রেট, প্রোটিন, লিপিড, এনজাইম গঠন ও কাজ"},
   // DAY 39 — জীব ১ম: অধ্যায় ৪–৭
-  {d:39,s:"জীব ১ম",t:"অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Erythrocytic cycle), ডেঙ্গু | অধ্যায় ৫: শৈবাল ও ছত্রাক — Ulothrix, Agaricus | অধ্যায় ۶: ব্রায়োফাইটা ও টেরিডোফাইটা — Riccia, Pteris | অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব)"},
+  {d:39,s:"জীব ১ম",t:"অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Erythrocytic cycle), ডেঙ্গু | অধ্যায় ৫: শৈবাল ও ছত্রাক — Ulothrix, Agaricus | অধ্যায় ৬: ব্রায়োফাইটা ও টেরিডোফাইটা — Riccia, Pteris | অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব)"},
   // DAY 40 — জীব ১ম: অধ্যায় ৮–১০
   {d:40,s:"জীব ১ম",t:"অধ্যায় ৮: উদ্ভিদ টিস্যু — ভাজক টিস্যু, স্থায়ী টিস্যু, ভাস্কুলার বান্ডেল (প্রকারভেদ), মূল-কাণ্ডের অন্তর্গঠন | অধ্যায় ৯: উদ্ভিদ শরীরতত্ত্ব — পত্ররন্ধ্র (আধুনিক মতবাদ), সালোকসংশ্লেষণ (C3/C4/CAM চক্র, আলোক বিক্রিয়া), শ্বসন (Glycolysis, Krebs cycle), প্রস্বেদন | অধ্যায় ১০: উদ্ভিদের প্রজনন — গ্যামিটোফাইট পরিস্ফুটন, নিষেক, কৃত্রিম সংকরায়ন, টিস্যু কালচার, Recombinant DNA"},
 
