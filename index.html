@@ -27,6 +27,21 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#e2e8f0;mi
 .stat{text-align:center;min-width:60px}
 .stat-n{font-size:20px;font-weight:700;color:#4ade80}
 .stat-l{font-size:10px;color:#e2e8f0}
+
+/* Pomodoro Timer Styles */
+.pomodoro-container{background:#0f172a;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:15px;border-bottom:1px solid #334155;}
+.pomo-title{font-size:14px;font-weight:700;color:#facc15;display:flex;align-items:center;gap:5px;}
+.pomo-display{font-size:26px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:1px;background:#1e293b;padding:4px 12px;border-radius:8px;border:1px solid #475569;}
+.pomo-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.pomo-btn{padding:6px 12px;border-radius:8px;border:1.5px solid #475569;background:#1e293b;color:#e2e8f0;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;}
+.pomo-btn:hover{background:#334155;}
+.pomo-input{width:70px;padding:6px;border-radius:8px;border:1.5px solid #475569;background:#1e293b;color:#e2e8f0;font-size:12px;text-align:center;outline:none;}
+.pomo-input::placeholder{color:#94a3b8;}
+.pomo-btn-start{background:#15803d;color:#fff;border-color:#15803d;}
+.pomo-btn-start:hover{background:#166534;}
+.pomo-btn-start.running{background:#b91c1c;border-color:#b91c1c;}
+.pomo-btn-start.running:hover{background:#991b1b;}
+
 .controls{background:#1e293b;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:2px solid #0f172a;position:sticky;top:0;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.15)}
 .controls label{font-size:12px;font-weight:600;color:#e2e8f0}
 select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:12px;background:#0f172a;color:#f8fafc;cursor:pointer}
@@ -80,6 +95,7 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 @media(max-width:620px){
   .mkt-cols{flex-direction:column-reverse; gap:20px; text-align:center}
   .mkt-right{text-align:center}
+  .pomodoro-container{flex-direction:column; gap:10px;}
 }
 </style>
 </head>
@@ -101,6 +117,20 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
   <div class="stat"><div class="stat-n">7</div><div class="stat-l">Weeks</div></div>
   <div class="stat"><div class="stat-n" id="doneN">0</div><div class="stat-l">Done</div></div>
   <div class="stat"><div class="stat-n" id="leftN">45</div><div class="stat-l">Left</div></div>
+</div>
+
+<!-- Pomodoro Timer Section -->
+<div class="pomodoro-container">
+  <div class="pomo-title">⏱️ Study Timer</div>
+  <div class="pomo-display" id="pomoDisplay">25:00</div>
+  <div class="pomo-controls">
+    <button class="pomo-btn" onclick="pomoSetTimer(25)">25m</button>
+    <button class="pomo-btn" onclick="pomoSetTimer(5)">5m</button>
+    <input type="number" id="pomoCustom" class="pomo-input" placeholder="Custom(m)" min="1" max="120">
+    <button class="pomo-btn" onclick="pomoSetCustom()">Set</button>
+    <button class="pomo-btn pomo-btn-start" id="pomoStartBtn" onclick="pomoToggle()">Start</button>
+    <button class="pomo-btn" onclick="pomoReset()">Reset</button>
+  </div>
 </div>
 
 <div class="link-bar" id="linkBar">
@@ -178,7 +208,94 @@ select{padding:6px 10px;border-radius:8px;border:1.5px solid #475569;font-size:1
 </div>
 
 <script>
-// Accessibility Fix: Darkened the week header background colors slightly to ensure text passes strict contrast checks.
+// Pomodoro Timer Logic
+let pomoTimeLeft = 25 * 60; 
+let pomoInterval = null;
+let pomoIsRunning = false;
+let pomoDefaultTime = 25 * 60;
+
+function pomoUpdateDisplay() {
+  const m = Math.floor(pomoTimeLeft / 60).toString().padStart(2, '0');
+  const s = (pomoTimeLeft % 60).toString().padStart(2, '0');
+  document.getElementById('pomoDisplay').textContent = `${m}:${s}`;
+}
+
+function pomoSetTimer(minutes) {
+  pomoStop();
+  pomoDefaultTime = minutes * 60;
+  pomoTimeLeft = pomoDefaultTime;
+  pomoUpdateDisplay();
+}
+
+function pomoSetCustom() {
+  const val = document.getElementById('pomoCustom').value;
+  if(val && val > 0) {
+    pomoSetTimer(parseInt(val));
+    document.getElementById('pomoCustom').value = '';
+  }
+}
+
+function pomoToggle() {
+  const btn = document.getElementById('pomoStartBtn');
+  if (pomoIsRunning) {
+    pomoStop();
+  } else {
+    pomoIsRunning = true;
+    btn.textContent = 'Pause';
+    btn.classList.add('running');
+    pomoInterval = setInterval(() => {
+      if (pomoTimeLeft > 0) {
+        pomoTimeLeft--;
+        pomoUpdateDisplay();
+      } else {
+        pomoStop();
+        pomoPlayAlarm();
+      }
+    }, 1000);
+  }
+}
+
+function pomoStop() {
+  pomoIsRunning = false;
+  clearInterval(pomoInterval);
+  const btn = document.getElementById('pomoStartBtn');
+  btn.textContent = 'Start';
+  btn.classList.remove('running');
+}
+
+function pomoReset() {
+  pomoStop();
+  pomoTimeLeft = pomoDefaultTime;
+  pomoUpdateDisplay();
+}
+
+// Offline Audio Beep (No external links required)
+function pomoPlayAlarm() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContext();
+    function playBeep(timeOffset) {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, ctx.currentTime + timeOffset); // A5 note
+      gainNode.gain.setValueAtTime(1, ctx.currentTime + timeOffset);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + timeOffset + 0.5);
+      osc.start(ctx.currentTime + timeOffset);
+      osc.stop(ctx.currentTime + timeOffset + 0.5);
+    }
+    // Play 3 consecutive beeps
+    playBeep(0);
+    playBeep(0.3);
+    playBeep(0.6);
+  } catch(e) {
+    alert("Time is up! 🍅");
+  }
+}
+
+// Initializing Plan App Data
 const weeks=[
   {id:1,label:"Week 1",title:"বাংলা ১ম + ২য় পত্র",color:"#9d174d",days:[1,7]},
   {id:2,label:"Week 2",title:"English 1st + 2nd Paper",color:"#5b21b6",days:[8,14]},
@@ -261,6 +378,8 @@ let checked = {};
 let activeWk = null;
 
 function initApp() {
+  pomoUpdateDisplay(); // Initialize Pomodoro Timer Screen
+  
   const params = new URLSearchParams(window.location.search);
   UID = params.get('uid');
   
