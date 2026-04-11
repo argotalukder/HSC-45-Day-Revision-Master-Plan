@@ -73,11 +73,6 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#e2e8f0;mi
 .prog-fill{height:100%;background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:20px;transition:width .5s}
 .prog-txt{font-size:12px;color:#e2e8f0}
 
-/* ── Phase Badges ── */
-.phase-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;margin-left:6px;letter-spacing:.04em}
-.phase-study{background:#1d4ed8;color:#bfdbfe}
-.phase-revision{background:#7c2d12;color:#fed7aa}
-
 /* ── Sync Status ── */
 .sync-bar{background:#0f172a;padding:6px 16px;text-align:center;font-size:11px;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:center;gap:7px}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
@@ -143,7 +138,7 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
 .ctopic{font-size:12px;color:#cbd5e1;line-height:1.55}
 
 /* ── Guest notice ── */
-.guest-notice{background:#1e293b;border:1px solid #334155;border-left:4px solid #facc15;border-radius:10px;padding:12px 16px;margin:14px auto;display:flex;align-items:center;gap:12px;max-width:840px;padding-left:16px;padding-right:16px}
+.guest-notice{background:#1e293b;border:1px solid #334155;border-left:4px solid #facc15;border-radius:10px;padding:12px 16px;margin:14px auto;display:flex;align-items:center;gap:12px;max-width:840px}
 .guest-notice.hidden{display:none}
 .guest-notice-text{flex:1;font-size:12px;color:#e2e8f0;line-height:1.6}
 .guest-notice-text strong{color:#facc15}
@@ -253,9 +248,8 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
   <p style="color:#fed7aa;font-size:13px;font-weight:600;margin-bottom:6px">⚠️ Connection Error — Supabase CORS সমস্যা</p>
   <p style="color:#fdba74;font-size:12px;line-height:1.7">
     HTML file সরাসরি browser এ open করলে এই error আসে।<br>
-    <strong style="color:#fb923c">সমাধান ১:</strong> Supabase Dashboard → Authentication → URL Configuration → <em>Add Site URL:</em> <code style="background:#0f172a;padding:2px 6px;border-radius:4px;color:#a5b4fc">http://localhost:5500</code><br>
-    তারপর VS Code এ <strong>Live Server</strong> দিয়ে open করো।<br>
-    <strong style="color:#fb923c">সমাধান ২:</strong> Supabase Dashboard → Authentication → URL Configuration → Additional Redirect URLs এ <code style="background:#0f172a;padding:2px 6px;border-radius:4px;color:#a5b4fc">*</code> যোগ করো (যেকোনো URL allow করবে)।
+    <strong style="color:#fb923c">সমাধান:</strong> Supabase Dashboard → Authentication → URL Configuration → Site URL:
+    <code style="background:#0f172a;padding:2px 6px;border-radius:4px;color:#a5b4fc">http://localhost:5500</code> — তারপর VS Code এ Live Server দিয়ে open করো।
   </p>
 </div>
 <div class="sync-bar" id="syncBar">
@@ -355,7 +349,6 @@ let currentUser = null;
 let checked     = {};
 let isGuest     = false;
 let saveTimer   = null;
-let initialSessionHandled = false; // ✅ double-fire guard
 const GUEST_KEY = 'hsc55_guest_progress';
 
 // ════════════════════════════════════════════
@@ -379,124 +372,212 @@ const sc = {
 };
 
 // ════════════════════════════════════════════
-//  WEEKS DEFINITION
+//  WEEKS  ✅ document অনুযায়ী আপডেট করা হয়েছে
 // ════════════════════════════════════════════
 const weeks = [
-  {id:1, label:"Week 1", title:"বাংলা ১ম + ২য় পত্র", color:"#9d174d", days:[1,7],   phase:"study"},
-  {id:2, label:"Week 2", title:"English 1st + ICT",   color:"#5b21b6", days:[8,14],  phase:"study"},
-  {id:3, label:"Week 3", title:"পদার্থ ১ম + ২য় পত্র",color:"#155e75", days:[15,21], phase:"study"},
-  {id:4, label:"Week 4", title:"রসায়ন ১ম + ২য় পত্র",color:"#064e3b", days:[22,28], phase:"study"},
-  {id:5, label:"Week 5", title:"জীব ১ম + ২য় পত্র",   color:"#78350f", days:[29,35], phase:"study"},
-  {id:6, label:"Week 6", title:"গণিত ১ম + ২য় পত্র",  color:"#1e3a8a", days:[36,43], phase:"study"},
+  {id:1, label:"Week 1", title:"বাংলা ১ম + ২য় + English 1st + 2nd",   color:"#9d174d", days:[1,7],   phase:"study"},
+  {id:2, label:"Week 2", title:"English 2nd + ICT + পদার্থ ১ম",        color:"#5b21b6", days:[8,14],  phase:"study"},
+  {id:3, label:"Week 3", title:"পদার্থ ১ম + ২য় + রসায়ন ১ম",          color:"#155e75", days:[15,21], phase:"study"},
+  {id:4, label:"Week 4", title:"রসায়ন ১ম + ২য় + জীব ১ম",             color:"#064e3b", days:[22,28], phase:"study"},
+  {id:5, label:"Week 5", title:"জীব ১ম + ২য় পত্র",                    color:"#78350f", days:[29,35], phase:"study"},
+  {id:6, label:"Week 6", title:"গণিত ১ম + ২য় পত্র",                   color:"#1e3a8a", days:[36,43], phase:"study"},
   {id:7, label:"Grand Revision Week 1", title:"সব বিষয়ের প্রথম রাউন্ড Revision", color:"#7c2d12", days:[44,49], phase:"revision"},
   {id:8, label:"Grand Revision Week 2", title:"Mock Test + Final Practice",         color:"#9a3412", days:[50,55], phase:"revision"},
 ];
 
 // ════════════════════════════════════════════
-//  FULL 55-DAY PLAN DATA
+//  PLAN DATA ✅ document-এর সাথে মিলিয়ে সম্পূর্ণ সংশোধন
 // ════════════════════════════════════════════
 const plan = [
-  // ── Week 1: বাংলা ──
-  {d:1,  s:"বাংলা ১ম পত্র", phase:"study",
+
+  // ══ Week 1: বাংলা + English 1st + English 2nd (Day 1–7) ══
+
+  // Day 1 — বাংলা ১ম পত্র
+  {d:1, s:"বাংলা ১ম পত্র", phase:"study",
    t:"গদ্য অধ্যায় ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি · অপরিচিতা · সাহিত্যে খেলা · বিলাসী · অধ্যাঙ্গিনী · যৌবনের গান | গদ্য অধ্যায় ৭–১২: জীবন ও বৃক্ষ · গন্তব্য কাবুল · মাসি-পিসি · কপিলদাস মুমুর্ষু শেষ কাজ · রেইনকোট · নেকলেস | উপন্যাস: লালসালু | পদ্য অধ্যায় ১–১২: ঋতুবর্ণন · বিভীষণের প্রতি মেঘনাদ · সোনার তরী · বিদ্রোহী · সুচেতনা · প্রতিদান · তাহারেই পড়ে মনে · পদ্মা · ফেব্রুয়ারি ১৯৬৯ · আঠার বছর বয়স · আমি কিংবদন্তির কথা বলছি · প্রত্যাবর্তনের লজ্জা | নাটক: সিরাজউদ্দৌলা"},
-  {d:2,  s:"বাংলা ২য় পত্র", phase:"study",
+
+  // Day 2 — বাংলা ২য় পত্র (Ch 1–4)
+  {d:2, s:"বাংলা ২য় পত্র", phase:"study",
    t:"অধ্যায় ১–৪: বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম (ণ-ত্ব, য-ত্ব, ই-কার) | ব্যাকরণিক শব্দশ্রেণি (বিশেষ্য, সর্বনাম, ক্রিয়া, অব্যয়, যোজক) | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
-  {d:3,  s:"বাংলা ২য় পত্র", phase:"study",
+
+  // Day 3 — বাংলা ২য় পত্র (Ch 5 + রচনামূলক)
+  {d:3, s:"বাংলা ২য় পত্র", phase:"study",
    t:"অধ্যায় ৫: বাক্যতত্ত্ব (বাক্যের শ্রেণি, পদক্রম, রূপান্তর) | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল/বৈদ্যুতিক চিঠি | আবেদনপত্র | সারাংশ/সারমর্ম | ভাব-সম্প্রসারণ | কবিতাংশ | সংলাপ | খুদে গল্প | প্রবন্ধ রচনা"},
-  {d:4,  s:"English 1st", phase:"study",
-   t:"Seen Comprehension (MCQ + questions) — top 8 passages | Summarizing (seen + unseen)"},
-  {d:5,  s:"English 1st", phase:"study",
-   t:"Unseen Comprehension — top 10 passages | Cloze test with clues (top 15) | Cloze test without clues (top 15)"},
-  {d:6,  s:"English 1st", phase:"study",
-   t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics)"},
-  {d:7,  s:"English 1st", phase:"study",
-   t:"Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
 
-  // ── Week 2: English 2nd + ICT ──
-  {d:8,  s:"English 2nd", phase:"study",
+  // Day 4 — English 1st Paper (Comprehension + Cloze)
+  {d:4, s:"English 1st", phase:"study",
+   t:"Seen Comprehension (MCQ + questions) — top 8 passages | Summarizing (seen + unseen) | Unseen Comprehension — top 10 passages | Cloze test with clues (top 15) | Cloze test without clues (top 15)"},
+
+  // Day 5 — English 1st Paper (Writing skills)
+  {d:5, s:"English 1st", phase:"study",
+   t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics) | Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
+
+  // Day 6 — English 2nd Paper (Grammar Part 1)
+  {d:6, s:"English 2nd", phase:"study",
    t:"Article | Preposition | Special words/phrases (modal verbs) | Completing sentence — all clause types (all board questions)"},
-  {d:9,  s:"English 2nd", phase:"study",
-   t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
-  {d:10, s:"English 2nd", phase:"study",
-   t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
-  {d:11, s:"ICT", phase:"study",
-   t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
-  {d:12, s:"ICT", phase:"study",
-   t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
-  {d:13, s:"ICT", phase:"study",
-   t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
-  {d:14, s:"পদার্থ ১ম", phase:"study",
-   t:"অধ্যায় ৩: গতিবিদ্যা — প্রাস (পাল্লা, উচ্চতা, বিচরণকাল, বেগ, অধ্যায়), লেখচিত্র থেকে ত্বরণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার, ক্ষেত্রফল নির্ণয়, Gradient/Divergence/Curl"},
 
-  // ── Week 3: পদার্থ ──
-  {d:15, s:"পদার্থ ১ম", phase:"study",
+  // Day 7 — English 2nd Paper (Grammar Part 2)
+  {d:7, s:"English 2nd", phase:"study",
+   t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
+
+  // ══ Week 2: English 2nd + ICT + পদার্থ ১ম (Day 8–14) ══
+
+  // Day 8 — English 2nd Paper (Writing Part)
+  {d:8, s:"English 2nd", phase:"study",
+   t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
+
+  // Day 9 — ICT (সংখ্যা পদ্ধতি + Database)
+  {d:9, s:"ICT", phase:"study",
+   t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
+
+  // Day 10 — ICT (Programming + HTML)
+  {d:10, s:"ICT", phase:"study",
+   t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
+
+  // Day 11 — ICT (Networking)
+  {d:11, s:"ICT", phase:"study",
+   t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
+
+  // Day 12 — পদার্থ ১ম (গতিবিদ্যা + ভেক্টর)
+  {d:12, s:"পদার্থ ১ম", phase:"study",
+   t:"অধ্যায় ৩: গতিবিদ্যা — প্রাস (পাল্লা, উচ্চতা, বিচরণকাল, বেগ), লেখচিত্র থেকে ত্বরণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার, ক্ষেত্রফল নির্ণয়, Gradient/Divergence/Curl"},
+
+  // Day 13 — পদার্থ ১ম (কাজ-শক্তি + মহাকর্ষ)
+  {d:13, s:"পদার্থ ১ম", phase:"study",
    t:"অধ্যায় ৫: কাজ শক্তি ও ক্ষমতা — কাজ-শক্তি উপপাদ্য, পাম্পের ক্ষমতা, গতিশক্তি, বিভবশক্তি, স্প্রিং শক্তি | অধ্যায় ৬: মহাকর্ষ ও অভিকর্ষ — কেপলারের সূত্র, g নির্ণয়, মুক্তিবেগ, কৃত্রিম উপগ্রহ, ভূস্থির উপগ্রহ"},
-  {d:16, s:"পদার্থ ১ম", phase:"study",
+
+  // Day 14 — পদার্থ ১ম (পর্যাবৃত্ত গতি + তরঙ্গ)
+  {d:14, s:"পদার্থ ১ম", phase:"study",
    t:"অধ্যায় ৮: পর্যাবৃত্ত গতি — সরল দোলক, স্প্রিং, কৌণিক বেগ | অধ্যায় ৯: তরঙ্গ"},
-  {d:17, s:"পদার্থ ১ম", phase:"study",
+
+  // ══ Week 3: পদার্থ ১ম + ২য় + রসায়ন ১ম (Day 15–21) ══
+
+  // Day 15 — পদার্থ ১ম (আদর্শ গ্যাস + পদার্থের গাঠনিক ধর্ম)
+  {d:15, s:"পদার্থ ১ম", phase:"study",
    t:"অধ্যায় ১০: আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | অধ্যায় ৭: পদার্থের গাঠনিক ধর্ম — ইয়ং গুণাঙ্ক, পয়সনের অনুপাত, পৃষ্ঠটান, সান্দ্রতা"},
-  {d:18, s:"পদার্থ ২য়", phase:"study",
+
+  // Day 16 — পদার্থ ২য় (তাপগতিবিদ্যা + স্থির তড়িৎ)
+  {d:16, s:"পদার্থ ২য়", phase:"study",
    t:"অধ্যায় ১: তাপগতিবিদ্যা — Carnot engine, দক্ষতা, এন্ট্রপি, গৃহীত/বর্জিত তাপ, গৃহীত কাজ | অধ্যায় ২: স্থির তড়িৎ — বিভব, তড়িৎ প্রাবল্য, ধারকত্ব, সঞ্চিত শক্তি"},
-  {d:19, s:"পদার্থ ২য়", phase:"study",
+
+  // Day 17 — পদার্থ ২য় (চলতড়িৎ + আলোকবিজ্ঞান)
+  {d:17, s:"পদার্থ ২য়", phase:"study",
    t:"অধ্যায় ৩: চলতড়িৎ — Kirchhoff, Wheatstone bridge, Joule's law, ধারার ক্ষমতা | অধ্যায় ৭: ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন, তরঙ্গদৈর্ঘ্য নির্ণয়, ডোরার প্রস্থ"},
-  {d:20, s:"পদার্থ ২য়", phase:"study",
+
+  // Day 18 — পদার্থ ২য় (আধুনিক পদার্থবিজ্ঞান + নিউক্লিয়ার)
+  {d:18, s:"পদার্থ ২য়", phase:"study",
    t:"অধ্যায় ৮: আধুনিক পদার্থবিজ্ঞানের সূচনা — আলোক তড়িৎ ক্রিয়া, de Broglie তরঙ্গদৈর্ঘ্য, X-ray, আপেক্ষিকতা (ভর, দৈর্ঘ্য, কাল) | অধ্যায় ৯: পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান — অর্ধায়ু, গড় আয়ু, ভরত্রুটি, ফিশন, ফিউশন"},
-  {d:21, s:"পদার্থ ২য়", phase:"study",
+
+  // Day 19 — পদার্থ ২য় (সেমিকন্ডাক্টর)
+  {d:19, s:"পদার্থ ২য়", phase:"study",
    t:"অধ্যায় ১০: সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate, Amplifier, Rectifier"},
 
-  // ── Week 4: রসায়ন ──
-  {d:22, s:"রসায়ন ১ম", phase:"study",
+  // Day 20 — রসায়ন ১ম (গুণগত রসায়ন)
+  {d:20, s:"রসায়ন ১ম", phase:"study",
    t:"অধ্যায় ২: গুণগত রসায়ন — পরমাণুর গঠন, Orbital, কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, দ্রাব্যতা গুণফল"},
-  {d:23, s:"রসায়ন ১ম", phase:"study",
+
+  // Day 21 — রসায়ন ১ম (পর্যায়বৃত্ত ধর্ম)
+  {d:21, s:"রসায়ন ১ম", phase:"study",
    t:"অধ্যায় ৩: মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
-  {d:24, s:"রসায়ন ১ম", phase:"study",
+
+  // ══ Week 4: রসায়ন ১ম + ২য় + জীব ১ম (Day 22–28) ══
+
+  // Day 22 — রসায়ন ১ম (রাসায়নিক পরিবর্তন)
+  {d:22, s:"রসায়ন ১ম", phase:"study",
    t:"অধ্যায় ৪: রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer, সক্রিয়ণ শক্তি"},
-  {d:25, s:"রসায়ন ১ম", phase:"study",
+
+  // Day 23 — রসায়ন ১ম (Lab Safety + Technology)
+  {d:23, s:"রসায়ন ১ম", phase:"study",
    t:"অধ্যায় ১: ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা — Hazard symbol, কাচ যন্ত্রপাতি ব্যবহার | অধ্যায় ৭: রসায়ন এবং প্রযুক্তি — নমনীয় খাদ্যসংরক্ষণ, Recycling"},
-  {d:26, s:"রসায়ন ২য়", phase:"study",
+
+  // Day 24 — রসায়ন ২য় (পরিবেশ রসায়ন / গ্যাস)
+  {d:24, s:"রসায়ন ২য়", phase:"study",
    t:"অধ্যায় ১: পরিবেশ রসায়ন — PV=nRT গাণিতিক সমস্যা, Dalton's partial pressure, Van der Waals, ব্যাপন হার, RMS বেগ, গড় মুক্তপথ"},
-  {d:27, s:"রসায়ন ২য়", phase:"study",
+
+  // Day 25 — রসায়ন ২য় (পরিমাণগত রসায়ন)
+  {d:25, s:"রসায়ন ২য়", phase:"study",
    t:"অধ্যায় ২: পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন (KMnO₄, K₂Cr₂O₇), ঘনমাত্রা (ppm, ppb), pH নির্ণয়"},
-  {d:28, s:"রসায়ন ২য়", phase:"study",
+
+  // Day 26 — রসায়ন ২য় (তড়িৎ রসায়ন)
+  {d:26, s:"রসায়ন ২য়", phase:"study",
    t:"অধ্যায় ৪: তড়িৎ রসায়ন — Nernst equation, EMF, কোষে সংগৃহীত পদার্থ, ক্যাথোডে বিদ্যুৎ বিশ্লেষণ"},
 
-  // ── Week 5: জীববিজ্ঞান ──
-  {d:29, s:"রসায়ন ২য়", phase:"study",
+  // Day 27 — রসায়ন ২য় (অর্থনৈতিক রসায়ন)
+  {d:27, s:"রসায়ন ২য়", phase:"study",
    t:"অধ্যায় ৫: অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, সাবান, পলিমার"},
-  {d:30, s:"জীব ১ম", phase:"study",
+
+  // Day 28 — জীব ১ম (কোষ গঠন + কোষ বিভাজন)
+  {d:28, s:"জীব ১ম", phase:"study",
    t:"অধ্যায় ১: কোষ ও এর গঠন — কোষের গঠন (প্রকৃত/অপ্রকৃত), সকল অঙ্গাণু, Fluid mosaic model, DNA/RNA গঠন, ট্রান্সক্রিপশন, ট্রান্সলেশন, অনুলিপন | অধ্যায় ২: কোষ বিভাজন — Mitosis/Meiosis সব ধাপ (চিত্রসহ), গুরুত্ব, Crossing over"},
-  {d:31, s:"জীব ১ম", phase:"study",
+
+  // ══ Week 5: জীব ১ম + ২য় (Day 29–35) ══
+
+  // Day 29 — জীব ১ম (কোষ রসায়ন + অণুজীব)
+  {d:29, s:"জীব ১ম", phase:"study",
    t:"অধ্যায় ৩: কোষ রসায়ন — কার্বোহাইড্রেট, প্রোটিন, লিপিড, এনজাইম গঠন ও কাজ | অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Erythrocytic cycle), ডেঙ্গু"},
-  {d:32, s:"জীব ১ম", phase:"study",
+
+  // Day 30 — জীব ১ম (উদ্ভিদ + উদ্ভিদ শরীরতত্ত্ব)
+  {d:30, s:"জীব ১ম", phase:"study",
    t:"অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব) | অধ্যায় ৯: উদ্ভিদ শরীরতত্ত্ব — পত্ররন্ধ্র (আধুনিক মতবাদ), সালোকসংশ্লেষণ (C3/C4/CAM চক্র, আলোক বিক্রিয়া), শ্বসন (Glycolysis, Krebs cycle), প্রস্বেদন"},
-  {d:33, s:"জীব ১ম", phase:"study",
+
+  // Day 31 — জীব ১ম (জীবপ্রযুক্তি)
+  {d:31, s:"জীব ১ম", phase:"study",
    t:"অধ্যায় ১৩: জীবপ্রযুক্তি — GMO, DNA fingerprinting, Genome sequencing"},
-  {d:34, s:"জীব ২য়", phase:"study",
+
+  // Day 32 — জীব ২য় (শ্রেণিবিন্যাস + হাইড্রা)
+  {d:32, s:"জীব ২য়", phase:"study",
    t:"অধ্যায় ১: প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস — সকল পর্বের বৈশিষ্ট্য ও উদাহরণ, Chordata/Non-Chordata পার্থক্য | অধ্যায় ২: প্রাণীর পরিচিতি — হাইড্রা (গঠন, নিডোসাইট, চলন, প্রজনন)"},
-  {d:35, s:"জীব ২য়", phase:"study",
+
+  // Day 33 — জীব ২য় (পরিপাক + রক্ত সংবহন)
+  {d:33, s:"জীব ২য়", phase:"study",
    t:"অধ্যায় ৩: মানব শারীরবিদ্যা: পরিপাক ও শোষণ — পরিপাকতন্ত্র সব অঙ্গ, যকৃৎ, অগ্নাশয়, ক্ষুদ্রান্ত্রে শোষণ, BMI | অধ্যায় ৪: মানব শারীরবিদ্যা: রক্ত সংবহন — হৃদপিণ্ডের গঠন (চিত্র), কার্ডিয়াক চক্র, রক্তচাপ, হার্ট অ্যাটাক, Heart failure, রক্ততঞ্চন"},
 
-  // ── Week 6: গণিত ──
-  {d:36, s:"জীব ২য়", phase:"study",
+  // Day 34 — জীব ২য় (শ্বসন + বর্জ্য নিষ্কাশন)
+  {d:34, s:"জীব ২য়", phase:"study",
    t:"অধ্যায় ৫: মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য — ফুসফুসের গঠন, অ্যালভিওলাস, হিমোগ্লোবিন, ক্লোরাইড শিফট, সাইনোসাইটিস | অধ্যায় ৬: মানব শারীরবিদ্যা: বর্জ্য ও নিষ্কাশন"},
-  {d:37, s:"জীব ২য়", phase:"study",
-   t:"অধ্যায় ৮: মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | অধ্যায় ১১: জীনতত্ত্ব ও বিবর্তন"},
-  {d:38, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
-  {d:39, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৩: সরলরেখা | অধ্যায় ৪: বৃত্ত"},
-  {d:40, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৭: সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | অধ্যায় ১০: যোগজীকরণ"},
-  {d:41, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৯: অন্তরীকরণ"},
-  {d:42, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয়"},
-  {d:43, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ৫: দ্বিপদী বিস্তৃতি | অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান | অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা | অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
 
-  // ════════════════════════════════════════════
-  //  GRAND REVISION — 12 DAYS (44–55)
-  // ════════════════════════════════════════════
+  // Day 35 — জীব ২য় (সমন্বয় + জীনতত্ত্ব)
+  {d:35, s:"জীব ২য়", phase:"study",
+   t:"অধ্যায় ৮: মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | অধ্যায় ১১: জীনতত্ত্ব ও বিবর্তন"},
+
+  // ══ Week 6: গণিত ১ম + ২য় (Day 36–43) ══
+
+  // Day 36 — গণিত ১ম (ম্যাট্রিক্স + ভেক্টর)
+  {d:36, s:"গণিত ১ম", phase:"study",
+   t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
+
+  // Day 37 — গণিত ১ম (সরলরেখা + বৃত্ত)
+  {d:37, s:"গণিত ১ম", phase:"study",
+   t:"অধ্যায় ৩: সরলরেখা | অধ্যায় ৪: বৃত্ত"},
+
+  // Day 38 — গণিত ১ম (ত্রিকোণমিতি + যোগজীকরণ)
+  {d:38, s:"গণিত ১ম", phase:"study",
+   t:"অধ্যায় ৭: সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | অধ্যায় ১০: যোগজীকরণ"},
+
+  // Day 39 — গণিত ১ম (অন্তরীকরণ)
+  {d:39, s:"গণিত ১ম", phase:"study",
+   t:"অধ্যায় ৯: অন্তরীকরণ"},
+
+  // Day 40 — গণিত ২য় (বাস্তব সংখ্যা + বহুপদী)
+  {d:40, s:"গণিত ২য়", phase:"study",
+   t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয়"},
+
+  // Day 41 — গণিত ২য় (দ্বিপদী + বিপরীত ত্রিকোণমিতি)
+  {d:41, s:"গণিত ২য়", phase:"study",
+   t:"অধ্যায় ৫: দ্বিপদী বিস্তৃতি | অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান"},
+
+  // Day 42 — গণিত ২য় (কনিক + গতিবিদ্যা)
+  {d:42, s:"গণিত ২য়", phase:"study",
+   t:"অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা"},
+
+  // Day 43 — গণিত ২য় (বিস্তার পরিমাপ + সম্ভাবনা)
+  {d:43, s:"গণিত ২য়", phase:"study",
+   t:"অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
+
+  // ══════════════════════════════════════════════
+  //  GRAND REVISION — 12 Days (44–55) — অপরিবর্তিত
+  // ══════════════════════════════════════════════
+
   {d:44, s:"Grand Revision", phase:"revision",
    t:"🔵 বাংলা Grand Revision | বাংলা ১ম পত্র: সব গদ্য, পদ্য, উপন্যাস ও নাটক থেকে গুরুত্বপূর্ণ MCQ + সৃজনশীল প্রশ্নের উত্তর অনুশীলন | বাংলা ২য় পত্র: ব্যাকরণ সব নিয়ম, রচনা, পত্র, প্রতিবেদন — দ্রুত সংক্ষিপ্ত নোট review"},
   {d:45, s:"Grand Revision", phase:"revision",
@@ -584,7 +665,6 @@ async function doLogin(){
   btn.disabled=false; btn.textContent='Login করো';
   if(error){ showMsg(msg,'error', error.message==='Invalid login credentials'?'Email বা password ভুল':error.message); }
   else { hideAuthModal(); }
-  // onAuthStateChange SIGNED_IN event বাকি কাজ করবে
 }
 
 async function doSignup(){
@@ -604,12 +684,10 @@ async function doSignup(){
   btn.disabled=false; btn.textContent='Account তৈরি করো';
   if(error){ showMsg(msg,'error',error.message); }
   else if(data.user && !data.session){ showMsg(msg,'success','✅ Confirmation email গেছে! Email confirm করে login করো।'); }
-  // session থাকলে onAuthStateChange SIGNED_IN handle করবে
 }
 
 async function doLogout(){
   await sb.auth.signOut();
-  // onAuthStateChange SIGNED_OUT handle করবে
 }
 
 function continueAsGuest(){
@@ -672,14 +750,12 @@ async function onUserLoggedIn(user){
   render(); updateProgress();
   setSyncStatus('ok','✅ Synced — '+user.email);
 }
-
 async function loadProgress(){
   if(isGuest||!currentUser) return;
   const {data,error}=await sb.from('user_progress').select('checked_days').eq('user_id',currentUser.id).single();
   if(error && error.code!=='PGRST116'){ setSyncStatus('offline','Load error: '+error.message); return; }
   checked=(data && data.checked_days) ? data.checked_days : {};
 }
-
 async function saveProgress(){
   if(isGuest){ localStorage.setItem(GUEST_KEY,JSON.stringify(checked)); return; }
   if(!currentUser) return;
@@ -739,7 +815,6 @@ function render(){
     const block=document.createElement('div');
     block.className='week-block';
 
-    // Grand Revision banner
     if(wk.phase==='revision' && wkDays.length && !cont.querySelector('.grand-banner')){
       const banner=document.createElement('div');
       banner.className='grand-banner';
@@ -811,9 +886,7 @@ function updateProgress(){
 }
 
 // ════════════════════════════════════════════
-//  INIT — ✅ Session persistence fix
-//  INITIAL_SESSION event ব্যবহার করা হয়েছে
-//  যাতে refresh করলেও auto login থাকে
+//  INIT — ✅ INITIAL_SESSION দিয়ে session persistence
 // ════════════════════════════════════════════
 async function initApp(){
   pomoUpdateDisplay();
@@ -822,14 +895,10 @@ async function initApp(){
 
   sb.auth.onAuthStateChange(async (event, session) => {
 
-    // ── INITIAL_SESSION: page load/refresh এ প্রথমবার fire হয়
     if (event === 'INITIAL_SESSION') {
-      initialSessionHandled = true;
       if (session && session.user) {
-        // ✅ Logged in — modal দেখাবে না, সরাসরি app load হবে
         await onUserLoggedIn(session.user);
       } else {
-        // কোনো session নেই — login modal দেখাও
         hideLoadingScreen();
         setSyncStatus('offline', 'Login করো progress save করতে');
         showAuthModal();
@@ -838,14 +907,12 @@ async function initApp(){
       }
     }
 
-    // ── SIGNED_IN: নতুন login হলে
     else if (event === 'SIGNED_IN' && session) {
       if (!currentUser || currentUser.id !== session.user.id) {
         await onUserLoggedIn(session.user);
       }
     }
 
-    // ── SIGNED_OUT: logout হলে
     else if (event === 'SIGNED_OUT') {
       currentUser = null;
       checked     = {};
@@ -856,7 +923,6 @@ async function initApp(){
       showAuthModal();
     }
 
-    // ── TOKEN_REFRESHED: token auto-renew হলে
     else if (event === 'TOKEN_REFRESHED' && session) {
       currentUser = session.user;
       setSyncStatus('ok', '✅ Synced — ' + session.user.email);
