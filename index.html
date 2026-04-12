@@ -18,151 +18,172 @@ alter table user_progress enable row level security;
 create policy "read own"   on user_progress for select using (auth.uid() = user_id);
 create policy "insert own" on user_progress for insert with check (auth.uid() = user_id);
 create policy "update own" on user_progress for update using (auth.uid() = user_id);
-
 ===============================================================
 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="HSC 55-Day Revision Plan for Science students — BrainArena">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233730a3'%3E%3Cpath d='M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z'/%3E%3C/svg%3E" type="image/svg+xml">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z'/%3E%3C/svg%3E" type="image/svg+xml">
 <title>HSC 55-Day Revision Plan — BrainArena</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh}
+/* ── CSS Variables ── */
+:root {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-hover: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-body: #cbd5e1;
+  --primary: #4f46e5;
+  --primary-hover: #6366f1;
+  --success: #15803d;
+  --success-light: #4ade80;
+  --warning: #facc15;
+  --danger: #ef4444;
+  --danger-dark: #b91c1c;
+  --border: #334155;
+  --font-base: 'Segoe UI', Arial, sans-serif;
+}
+
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-base); background: var(--bg-main); color: var(--text-body); min-height: 100vh; line-height: 1.5; }
+
+/* ── Custom Toast Notification ── */
+#toastContainer { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: var(--bg-card); border-left: 4px solid var(--primary); color: var(--text-main); padding: 14px 20px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: flex; align-items: center; gap: 12px; transform: translateX(120%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-size: 13px; font-weight: 600; max-width: 350px; }
+.toast.show { transform: translateX(0); }
+.toast.success { border-color: var(--success-light); }
+.toast.warning { border-color: var(--warning); }
+.toast.error { border-color: var(--danger); }
+.toast-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 16px; margin-left: auto; }
 
 /* ── Auth Modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
-.modal-overlay.hidden{display:none}
-.modal-box{background:#1e293b;border:1px solid #334155;border-radius:18px;padding:30px 26px;width:100%;max-width:390px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
-.modal-logo{text-align:center;margin-bottom:20px}
-.modal-logo-icon{width:56px;height:56px;background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px}
-.modal-logo h2{font-size:19px;font-weight:700;color:#f8fafc}
-.modal-logo p{font-size:12px;color:#94a3b8;margin-top:3px}
-.auth-tabs{display:flex;background:#0f172a;border-radius:10px;padding:3px;margin-bottom:20px}
-.auth-tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;color:#94a3b8;transition:all .2s;border:none;background:transparent}
-.auth-tab.active{background:#4f46e5;color:#fff}
-.auth-form{display:flex;flex-direction:column;gap:13px}
-.auth-form.hidden{display:none}
-.form-group{display:flex;flex-direction:column;gap:5px}
-.form-group label{font-size:12px;font-weight:600;color:#94a3b8}
-.form-input{padding:10px 13px;border-radius:9px;border:1.5px solid #334155;background:#0f172a;color:#f8fafc;font-size:13px;outline:none;transition:border-color .2s}
-.form-input:focus{border-color:#4f46e5}
-.form-input::placeholder{color:#475569}
-.auth-submit{padding:12px;border-radius:9px;border:none;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .2s;margin-top:4px}
-.auth-submit:hover{opacity:.88}
-.auth-submit:disabled{opacity:.45;cursor:not-allowed}
-.auth-msg{font-size:12px;text-align:center;padding:9px;border-radius:8px;display:none}
-.auth-msg.error{background:#450a0a;color:#fca5a5;display:block}
-.auth-msg.success{background:#052e16;color:#86efac;display:block}
-.auth-divider{text-align:center;font-size:11px;color:#475569;margin:2px 0}
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 1000; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(6px); transition: opacity 0.3s; }
+.modal-overlay.hidden { opacity: 0; pointer-events: none; }
+.modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 18px; padding: 30px 26px; width: 90%; max-width: 390px; box-shadow: 0 24px 64px rgba(0,0,0,.6); transform: translateY(0); transition: transform 0.3s; }
+.modal-overlay.hidden .modal-box { transform: translateY(20px); }
+.modal-logo { text-align: center; margin-bottom: 20px; }
+.modal-logo-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), #7c3aed); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 10px; }
+.modal-logo h2 { font-size: 19px; font-weight: 700; color: var(--text-main); }
+.modal-logo p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+.auth-tabs { display: flex; background: var(--bg-main); border-radius: 10px; padding: 3px; margin-bottom: 20px; }
+.auth-tab { flex: 1; padding: 9px; text-align: center; font-size: 13px; font-weight: 600; border-radius: 8px; cursor: pointer; color: var(--text-muted); transition: all .2s; border: none; background: transparent; }
+.auth-tab.active { background: var(--primary); color: #fff; }
+.auth-form { display: flex; flex-direction: column; gap: 13px; }
+.auth-form.hidden { display: none; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+.form-input { padding: 10px 13px; border-radius: 9px; border: 1.5px solid var(--border); background: var(--bg-main); color: var(--text-main); font-size: 13px; outline: none; transition: border-color .2s; }
+.form-input:focus { border-color: var(--primary); }
+.auth-submit { padding: 12px; border-radius: 9px; border: none; background: linear-gradient(135deg, var(--primary), #7c3aed); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity .2s; margin-top: 4px; }
+.auth-submit:hover { opacity: .88; }
+.auth-submit:disabled { opacity: .45; cursor: not-allowed; }
+.auth-divider { text-align: center; font-size: 11px; color: #475569; margin: 2px 0; }
 
 /* ── Header ── */
-.header{background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);color:#fff;padding:20px 20px 24px;text-align:center;position:relative}
-.user-bar{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
-.user-email{font-size:11px;color:#a5b4fc;background:rgba(79,70,229,.15);padding:4px 11px;border-radius:20px;border:1px solid rgba(99,102,241,.3);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.logout-btn{padding:4px 11px;border-radius:20px;border:1px solid #475569;background:transparent;color:#94a3b8;font-size:11px;cursor:pointer;transition:all .2s}
-.logout-btn:hover{background:#ef4444;color:#fff;border-color:#ef4444}
-.login-btn-hdr{padding:5px 15px;border-radius:20px;border:1px solid #4f46e5;background:rgba(79,70,229,.18);color:#a5b4fc;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-.login-btn-hdr:hover{background:#4f46e5;color:#fff}
-.header-brand{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4ade80;margin-bottom:6px;opacity:.9}
-.header h1{font-size:22px;font-weight:700;margin-bottom:4px}
-.header p{font-size:13px;color:#cbd5e1;margin-bottom:16px}
-.prog-wrap{max-width:480px;margin:0 auto}
-.prog-bg{background:rgba(255,255,255,.15);border-radius:20px;height:11px;overflow:hidden;margin-bottom:6px}
-.prog-fill{height:100%;background:linear-gradient(90deg,#4ade80,#22c55e);border-radius:20px;transition:width .5s}
-.prog-txt{font-size:12px;color:#e2e8f0}
+.header { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); color: #fff; padding: 24px 20px; text-align: center; position: relative; }
+.user-bar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.user-email { font-size: 11px; color: #a5b4fc; background: rgba(79,70,229,.15); padding: 4px 11px; border-radius: 20px; border: 1px solid rgba(99,102,241,.3); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logout-btn { padding: 4px 11px; border-radius: 20px; border: 1px solid #475569; background: transparent; color: #94a3b8; font-size: 11px; cursor: pointer; transition: all .2s; }
+.logout-btn:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+.login-btn-hdr { padding: 5px 15px; border-radius: 20px; border: 1px solid var(--primary); background: rgba(79,70,229,.18); color: #a5b4fc; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.login-btn-hdr:hover { background: var(--primary); color: #fff; }
+.header-brand { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--success-light); margin-bottom: 6px; opacity: .9; }
+.header h1 { font-size: clamp(20px, 4vw, 26px); font-weight: 700; margin-bottom: 4px; }
+.header p { font-size: 13px; color: #cbd5e1; margin-bottom: 16px; }
+.prog-wrap { max-width: 480px; margin: 0 auto; }
+.prog-bg { background: rgba(255,255,255,.15); border-radius: 20px; height: 11px; overflow: hidden; margin-bottom: 6px; }
+.prog-fill { height: 100%; background: linear-gradient(90deg, var(--success-light), #22c55e); border-radius: 20px; transition: width .5s ease-out; }
+.prog-txt { font-size: 12px; color: #e2e8f0; font-weight: 600; }
 
 /* ── Sync Status ── */
-.sync-bar{background:#0f172a;padding:6px 16px;text-align:center;font-size:11px;border-bottom:1px solid #1e293b;display:flex;align-items:center;justify-content:center;gap:7px}
-.sync-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;flex-shrink:0}
-.sync-dot.syncing{background:#facc15;animation:pulse 1s infinite}
-.sync-dot.offline{background:#f87171}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-/* ── Stats ── */
-.stats{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px 16px;background:#1e293b;color:#fff;border-bottom:1px solid #334155}
-.stat{text-align:center;min-width:58px}
-.stat-n{font-size:20px;font-weight:700;color:#4ade80}
-.stat-l{font-size:10px;color:#cbd5e1}
+.sync-bar { background: var(--bg-main); padding: 6px 16px; text-align: center; font-size: 11px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: center; gap: 7px; color: var(--text-muted); }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success-light); flex-shrink: 0; }
+.sync-dot.syncing { background: var(--warning); animation: pulse 1s infinite; }
+.sync-dot.offline { background: var(--danger); }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
 
 /* ── Pomodoro ── */
-.pomodoro-container{background:#0f172a;padding:12px 16px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;border-bottom:1px solid #334155}
-.pomo-title{font-size:14px;font-weight:700;color:#facc15;display:flex;align-items:center;gap:5px}
-.pomo-display{font-size:28px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:1px;background:#1e293b;padding:4px 14px;border-radius:8px;border:1px solid #475569}
-.pomo-controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center}
-.pomo-btn{padding:7px 13px;border-radius:8px;border:1.5px solid #475569;background:#1e293b;color:#e2e8f0;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
-.pomo-btn:hover{background:#334155}
-.pomo-input{width:84px;padding:7px;border-radius:8px;border:1.5px solid #475569;background:#1e293b;color:#e2e8f0;font-size:12px;text-align:center;outline:none}
-.pomo-btn-start{background:#15803d;color:#fff;border-color:#15803d}
-.pomo-btn-start:hover{background:#166534}
-.pomo-btn-start.running{background:#b91c1c;border-color:#b91c1c}
-.pomo-btn-start.running:hover{background:#991b1b}
+.pomodoro-container { background: var(--bg-main); padding: 14px 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px; border-bottom: 1px solid var(--border); }
+.pomo-title { font-size: 14px; font-weight: 700; color: var(--warning); display: flex; align-items: center; gap: 5px; }
+.pomo-display { font-size: 28px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; letter-spacing: 1px; background: var(--bg-card); padding: 4px 14px; border-radius: 8px; border: 1px solid #475569; }
+.pomo-controls { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.pomo-btn { padding: 7px 13px; border-radius: 8px; border: 1.5px solid #475569; background: var(--bg-card); color: #e2e8f0; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.pomo-btn:hover { background: var(--bg-hover); }
+.pomo-input { width: 84px; padding: 7px; border-radius: 8px; border: 1.5px solid #475569; background: var(--bg-card); color: #e2e8f0; font-size: 12px; text-align: center; outline: none; }
+.pomo-btn-start { background: var(--success); color: #fff; border-color: var(--success); }
+.pomo-btn-start:hover { background: #166534; }
+.pomo-btn-start.running { background: var(--danger-dark); border-color: var(--danger-dark); }
+.pomo-btn-start.running:hover { background: #991b1b; }
 
 /* ── Controls ── */
-.controls{background:#1e293b;padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;border-bottom:2px solid #0f172a;position:sticky;top:0;z-index:10;box-shadow:0 4px 14px rgba(0,0,0,.2)}
-.controls label{font-size:12px;font-weight:600;color:#e2e8f0}
-select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:12px;background:#0f172a;color:#f8fafc;cursor:pointer}
-.fbtns{display:flex;flex-wrap:wrap;gap:5px}
-.fbtn{padding:4px 10px;border-radius:16px;border:1.5px solid #475569;background:#0f172a;font-size:11px;cursor:pointer;color:#e2e8f0;transition:all .2s}
-.fbtn.active{background:#4f46e5;color:#fff;border-color:#4f46e5}
-.fbtn.revision-week{border-color:#ea580c}
-.fbtn.revision-week.active{background:#ea580c;border-color:#ea580c}
+.controls { background: var(--bg-card); padding: 12px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-bottom: 2px solid var(--bg-main); position: sticky; top: 0; z-index: 10; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+.controls label { font-size: 12px; font-weight: 600; color: #e2e8f0; }
+select { padding: 7px 11px; border-radius: 8px; border: 1.5px solid #475569; font-size: 12px; background: var(--bg-main); color: var(--text-main); cursor: pointer; outline: none; }
+select:focus { border-color: var(--primary); }
+.fbtns { display: flex; flex-wrap: wrap; gap: 5px; }
+.fbtn { padding: 5px 12px; border-radius: 16px; border: 1.5px solid #475569; background: var(--bg-main); font-size: 11px; cursor: pointer; color: #e2e8f0; transition: all .2s; font-weight: 600; }
+.fbtn:hover { border-color: var(--primary); }
+.fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.fbtn.revision-week { border-color: #ea580c; }
+.fbtn.revision-week:hover { background: rgba(234,88,12,0.1); }
+.fbtn.revision-week.active { background: #ea580c; border-color: #ea580c; color: #fff; }
 
-/* ── Legend ── */
-.legend{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;background:#1e293b;border-bottom:1px solid #0f172a}
-.li{display:flex;align-items:center;gap:4px;font-size:11px;color:#e2e8f0}
-.ld{width:11px;height:11px;border-radius:3px;flex-shrink:0}
+/* ── Cards & Layout ── */
+.container { max-width: 860px; margin: 0 auto; padding: 20px 12px 50px; }
+.week-block { margin-bottom: 26px; }
+.week-hdr { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px 15px; border-radius: 10px; color: #fff; font-weight: 600; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.wbadge { background: rgba(0,0,0,.25); padding: 3px 10px; border-radius: 16px; font-size: 11px; letter-spacing: 0.5px; }
+.wcnt { margin-left: auto; font-size: 11px; color: #f8fafc; font-weight: 700; }
+.day-card { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; background: var(--bg-card); border-radius: 12px; margin-bottom: 8px; border-left: 5px solid #475569; box-shadow: 0 2px 6px rgba(0,0,0,.15); cursor: pointer; transition: transform .15s, box-shadow .15s, opacity .2s; }
+.day-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,.3); }
+.day-card.done { opacity: 0.5; background: rgba(30, 41, 59, 0.7); }
+.day-card.done .ctopic { text-decoration: line-through; color: #64748b; }
+.day-card.grand-rev { background: #1a0e05; border-left-color: #ea580c; }
+.cb { width: 22px; height: 22px; border-radius: 6px; border: 2px solid #64748b; background: var(--bg-main); flex-shrink: 0; margin-top: 2px; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.cb.checked { background: var(--success); border-color: var(--success); }
+.cb.checked::after { content: '✓'; color: #fff; font-size: 14px; font-weight: 700; }
+.dnum-container { display: flex; flex-direction: column; align-items: center; width: 40px; flex-shrink: 0; }
+.dnum { font-size: 12px; font-weight: 800; color: var(--text-main); text-align: center; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; }
+.dnum.rev { color: #fb923c; background: rgba(251, 146, 60, 0.15); }
+.cbody { flex: 1; min-width: 0; }
+.cmeta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+.csubj { font-size: 13px; font-weight: 700; color: #f8fafc; }
+.date-badge { font-size: 11px; color: var(--text-muted); background: var(--bg-main); padding: 2px 8px; border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 4px; }
+.tbadge { padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
+.rev-badge { background: #7c2d12; color: #fed7aa; padding: 2px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; border: 1px solid #ea580c; }
+.ctopic { font-size: 13px; color: var(--text-body); line-height: 1.6; }
 
-/* ── Cards ── */
-.container{max-width:840px;margin:0 auto;padding:16px 12px 50px}
-.week-block{margin-bottom:26px}
-.week-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 15px;border-radius:10px;color:#fff;font-weight:600;font-size:13px}
-.wbadge{background:rgba(0,0,0,.25);padding:2px 10px;border-radius:16px;font-size:11px}
-.wcnt{margin-left:auto;font-size:11px;color:#f8fafc}
-.day-card{display:flex;align-items:flex-start;gap:10px;padding:10px 13px;background:#1e293b;border-radius:10px;margin-bottom:6px;border-left:4px solid #475569;box-shadow:0 2px 6px rgba(0,0,0,.15);cursor:pointer;transition:transform .15s,box-shadow .15s,opacity .2s}
-.day-card:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(0,0,0,.28)}
-.day-card.done{opacity:.38}
-.day-card.done .ctopic{text-decoration:line-through}
-.day-card.grand-rev{background:#1a0e05;border-left-color:#ea580c}
-.cb{width:20px;height:20px;border-radius:5px;border:2px solid #475569;background:#0f172a;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.cb.checked{background:#15803d;border-color:#15803d}
-.cb.checked::after{content:'✓';color:#fff;font-size:12px;font-weight:700}
-.dnum{font-size:10px;font-weight:700;color:#e2e8f0;width:28px;flex-shrink:0;padding-top:2px;text-align:center;line-height:1.3}
-.dnum.rev{color:#fb923c}
-.cbody{flex:1;min-width:0}
-.cmeta{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-bottom:3px}
-.csubj{font-size:12px;font-weight:600;color:#f8fafc}
-.tbadge{padding:1px 7px;border-radius:4px;font-size:10px;font-weight:600}
-.rev-badge{background:#7c2d12;color:#fed7aa;padding:1px 7px;border-radius:4px;font-size:10px;font-weight:700}
-.ctopic{font-size:12px;color:#cbd5e1;line-height:1.55}
-
-/* ── Guest notice ── */
-.guest-notice{background:#1e293b;border:1px solid #334155;border-left:4px solid #facc15;border-radius:10px;padding:12px 16px;margin:14px auto;display:flex;align-items:center;gap:12px;max-width:840px}
-.guest-notice.hidden{display:none}
-.guest-notice-text{flex:1;font-size:12px;color:#e2e8f0;line-height:1.6}
-.guest-notice-text strong{color:#facc15}
-.guest-login-btn{padding:7px 16px;border-radius:8px;border:none;background:#4f46e5;color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
-
-/* ── Grand Revision Banner ── */
-.grand-banner{margin:8px 0 14px;background:linear-gradient(135deg,#431407,#7c2d12);border-radius:12px;padding:14px 18px;border:1px solid #ea580c44;display:flex;align-items:center;gap:12px}
-.grand-banner-text h3{font-size:15px;font-weight:700;color:#fed7aa;margin-bottom:2px}
-.grand-banner-text p{font-size:12px;color:#fdba74;line-height:1.5}
+/* ── Guest Notice & Grand Banner ── */
+.guest-notice { background: var(--bg-card); border: 1px solid var(--border); border-left: 4px solid var(--warning); border-radius: 10px; padding: 12px 16px; margin: 14px auto; display: flex; align-items: center; gap: 12px; max-width: 860px; }
+.guest-notice.hidden { display: none; }
+.guest-notice-text { flex: 1; font-size: 12px; color: #e2e8f0; line-height: 1.6; }
+.guest-login-btn { padding: 7px 16px; border-radius: 8px; border: none; background: var(--primary); color: #fff; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.2s; }
+.guest-login-btn:hover { background: var(--primary-hover); }
+.grand-banner { margin: 10px 0 20px; background: linear-gradient(135deg, #431407, #7c2d12); border-radius: 12px; padding: 16px 20px; border: 1px solid #ea580c66; display: flex; align-items: center; gap: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+.grand-banner-text h3 { font-size: 16px; font-weight: 700; color: #fed7aa; margin-bottom: 4px; }
+.grand-banner-text p { font-size: 13px; color: #fdba74; line-height: 1.5; }
 
 /* ── Loading screen ── */
-#loadingScreen{position:fixed;inset:0;background:#0f172a;z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-#loadingScreen.hidden{display:none}
-.loading-spinner{width:40px;height:40px;border:3px solid #334155;border-top-color:#4f46e5;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-text{font-size:13px;color:#94a3b8}
+#loadingScreen { position: fixed; inset: 0; background: var(--bg-main); z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; transition: opacity 0.3s; }
+#loadingScreen.hidden { opacity: 0; pointer-events: none; }
+.loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13px; color: var(--text-muted); font-weight: 600; }
 
-@media(max-width:620px){
-  .pomodoro-container{flex-direction:column;gap:10px}
-  .user-bar{margin-bottom:8px}
+@media(max-width: 620px){
+  .pomodoro-container { flex-direction: column; gap: 12px; }
+  .user-bar { margin-bottom: 8px; }
+  .controls { justify-content: center; }
+  .day-card { padding: 12px; }
 }
 </style>
 </head>
 <body>
+
+<!-- ══════════════ TOAST NOTIFICATIONS ══════════════ -->
+<div id="toastContainer"></div>
 
 <!-- ══════════════ LOADING SCREEN ══════════════ -->
 <div id="loadingScreen">
@@ -172,7 +193,7 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
 </div>
 
 <!-- ══════════════ AUTH MODAL ══════════════ -->
-<div class="modal-overlay hidden" id="authModal">
+<div class="modal-overlay hidden" id="authModal" aria-hidden="true">
   <div class="modal-box">
     <div class="modal-logo">
       <div class="modal-logo-icon">📚</div>
@@ -180,46 +201,46 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
       <p>Login করো — যেকোনো device থেকে progress দেখো</p>
     </div>
     <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
-      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')">Sign Up</button>
+      <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')" aria-label="Login Tab">Login</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchTab('signup')" aria-label="Sign Up Tab">Sign Up</button>
     </div>
+    
     <div class="auth-form" id="loginForm">
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="loginEmail" class="form-input" placeholder="tomar@email.com">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" class="form-input" placeholder="tomar@email.com" aria-label="Email Address">
       </div>
       <div class="form-group">
-        <label>Password</label>
+        <label for="loginPass">Password</label>
         <div style="position:relative">
-          <input type="password" id="loginPass" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px">
-          <button type="button" onclick="togglePass('loginPass','eyeL')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeL">👁</button>
+          <input type="password" id="loginPass" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px" aria-label="Password">
+          <button type="button" onclick="togglePass('loginPass','eyeL')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeL" aria-label="Toggle Password Visibility">👁</button>
         </div>
       </div>
-      <div class="auth-msg" id="loginMsg"></div>
       <button class="auth-submit" id="loginBtn" onclick="doLogin()">Login করো</button>
       <div class="auth-divider">— অথবা —</div>
       <button class="auth-submit" style="background:linear-gradient(135deg,#0f172a,#1e293b);border:1px solid #334155" onclick="continueAsGuest()">Guest হিসেবে চালিয়ে যাও</button>
     </div>
+
     <div class="auth-form hidden" id="signupForm">
       <div class="form-group">
-        <label>Email</label>
-        <input type="email" id="signupEmail" class="form-input" placeholder="tomar@email.com">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" class="form-input" placeholder="tomar@email.com" aria-label="Email Address for Sign Up">
       </div>
       <div class="form-group">
-        <label>Password (কমপক্ষে ৬ অক্ষর)</label>
+        <label for="signupPass">Password (কমপক্ষে ৬ অক্ষর)</label>
         <div style="position:relative">
-          <input type="password" id="signupPass" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px">
-          <button type="button" onclick="togglePass('signupPass','eyeS1')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeS1">👁</button>
+          <input type="password" id="signupPass" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px" aria-label="Password for Sign Up">
+          <button type="button" onclick="togglePass('signupPass','eyeS1')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeS1" aria-label="Toggle Password Visibility">👁</button>
         </div>
       </div>
       <div class="form-group">
-        <label>Password আবার লেখো</label>
+        <label for="signupPass2">Password আবার লেখো</label>
         <div style="position:relative">
-          <input type="password" id="signupPass2" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px">
-          <button type="button" onclick="togglePass('signupPass2','eyeS2')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeS2">👁</button>
+          <input type="password" id="signupPass2" class="form-input" placeholder="••••••••" style="width:100%;padding-right:44px" aria-label="Confirm Password">
+          <button type="button" onclick="togglePass('signupPass2','eyeS2')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:4px" id="eyeS2" aria-label="Toggle Password Visibility">👁</button>
         </div>
       </div>
-      <div class="auth-msg" id="signupMsg"></div>
       <button class="auth-submit" id="signupBtn" onclick="doSignup()">Account তৈরি করো</button>
     </div>
   </div>
@@ -233,37 +254,17 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
     <button class="logout-btn" id="logoutBtn" onclick="doLogout()" style="display:none">Logout</button>
   </div>
   <div class="header-brand">BrainArena</div>
-  <h1>📚 HSC 55-Day Revision Master Plan</h1>
-  <p>তোমার নিজের Roadmap · বিজ্ঞান বিভাগ · HSC 2026<br>
-    <span style="font-size:11px;color:#94a3b8">৪৩ দিন পড়াশোনা + ১২ দিন Grand Revision</span>
-  </p>
+  <h1>📚 HSC 2026 Study Roadmap</h1>
+  <p>বিজ্ঞান বিভাগ · ৪৩ দিন পড়াশোনা + ১২ দিন Grand Revision</p>
   <div class="prog-wrap">
     <div class="prog-bg"><div class="prog-fill" id="pgBar" style="width:0%"></div></div>
     <div class="prog-txt" id="pgTxt">0 / 55 days completed (0%)</div>
   </div>
 </div>
 
-<!-- ══════════════ CORS WARNING ══════════════ -->
-<div id="corsWarn" style="display:none;background:#1c1007;border:1px solid #ea580c;border-left:4px solid #ea580c;padding:14px 18px;text-align:center">
-  <p style="color:#fed7aa;font-size:13px;font-weight:600;margin-bottom:6px">⚠️ Connection Error — Supabase CORS সমস্যা</p>
-  <p style="color:#fdba74;font-size:12px;line-height:1.7">
-    HTML file সরাসরি browser এ open করলে এই error আসে।<br>
-    <strong style="color:#fb923c">সমাধান:</strong> Supabase Dashboard → Authentication → URL Configuration → Site URL:
-    <code style="background:#0f172a;padding:2px 6px;border-radius:4px;color:#a5b4fc">http://localhost:5500</code> — তারপর VS Code এ Live Server দিয়ে open করো।
-  </p>
-</div>
 <div class="sync-bar" id="syncBar">
   <div class="sync-dot" id="syncDot"></div>
   <span id="syncTxt">লোড হচ্ছে...</span>
-</div>
-
-<!-- ══════════════ STATS ══════════════ -->
-<div class="stats">
-  <div class="stat"><div class="stat-n">55</div><div class="stat-l">মোট দিন</div></div>
-  <div class="stat"><div class="stat-n">43</div><div class="stat-l">পড়াশোনা</div></div>
-  <div class="stat"><div class="stat-n">12</div><div class="stat-l">Revision</div></div>
-  <div class="stat"><div class="stat-n" id="doneN">0</div><div class="stat-l">Completed</div></div>
-  <div class="stat"><div class="stat-n" id="leftN">55</div><div class="stat-l">Remaining</div></div>
 </div>
 
 <!-- ══════════════ POMODORO ══════════════ -->
@@ -271,10 +272,10 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
   <div class="pomo-title">⏱️ Study Timer</div>
   <div class="pomo-display" id="pomoDisplay">25:00</div>
   <div class="pomo-controls">
-    <button class="pomo-btn" onclick="pomoSetTimer(25)">25m</button>
-    <button class="pomo-btn" onclick="pomoSetTimer(5)">5m</button>
-    <button class="pomo-btn" onclick="pomoSetTimer(45)">45m</button>
-    <input type="number" id="pomoCustom" class="pomo-input" placeholder="Custom min" min="1" max="180">
+    <button class="pomo-btn" onclick="pomoSetTimer(25)" aria-label="Set timer to 25 minutes">25m</button>
+    <button class="pomo-btn" onclick="pomoSetTimer(5)" aria-label="Set timer to 5 minutes">5m</button>
+    <button class="pomo-btn" onclick="pomoSetTimer(45)" aria-label="Set timer to 45 minutes">45m</button>
+    <input type="number" id="pomoCustom" class="pomo-input" placeholder="Min" min="1" max="180" aria-label="Custom Minutes">
     <button class="pomo-btn" onclick="pomoSetCustom()">Set</button>
     <button class="pomo-btn pomo-btn-start" id="pomoStartBtn" onclick="pomoToggle()">Start</button>
     <button class="pomo-btn" onclick="pomoReset()">Reset</button>
@@ -283,9 +284,9 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
 
 <!-- ══════════════ GUEST NOTICE ══════════════ -->
 <div class="guest-notice hidden" id="guestNotice">
-  <div>⚠️</div>
+  <div style="font-size:20px">⚠️</div>
   <div class="guest-notice-text">
-    <strong>Guest Mode:</strong> Progress শুধু এই browser এ save হচ্ছে। অন্য device থেকে দেখতে চাইলে <strong>Login</strong> করো।
+    <strong>Guest Mode:</strong> Progress শুধু এই ব্রাউজারে সেভ হচ্ছে। অন্য ডিভাইস থেকে দেখতে চাইলে <strong>Login</strong> করো।
   </div>
   <button class="guest-login-btn" onclick="showAuthModal()">Login করো</button>
 </div>
@@ -293,7 +294,7 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
 <!-- ══════════════ CONTROLS ══════════════ -->
 <div class="controls">
   <label for="subF">Subject:</label>
-  <select id="subF" onchange="render()">
+  <select id="subF" onchange="render()" aria-label="Filter by Subject">
     <option value="all">সকল বিষয়</option>
     <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
     <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
@@ -310,24 +311,15 @@ select{padding:7px 11px;border-radius:8px;border:1.5px solid #475569;font-size:1
     <option value="গণিত ২য়">গণিত ২য়</option>
     <option value="Grand Revision">🔥 Grand Revision</option>
   </select>
-  <select id="phaseF" onchange="render()">
+  
+  <label for="phaseF" style="margin-left:8px">Phase:</label>
+  <select id="phaseF" onchange="render()" aria-label="Filter by Phase">
     <option value="all">সব Phase</option>
     <option value="study">Study Phase (1–43)</option>
     <option value="revision">Grand Revision (44–55)</option>
   </select>
-  <div class="fbtns" id="wkBtns"></div>
-</div>
-
-<!-- ══════════════ LEGEND ══════════════ -->
-<div class="legend">
-  <div class="li"><div class="ld" style="background:#93c5fd"></div>বাংলা</div>
-  <div class="li"><div class="ld" style="background:#fde047"></div>English</div>
-  <div class="li"><div class="ld" style="background:#7dd3fc"></div>ICT</div>
-  <div class="li"><div class="ld" style="background:#86efac"></div>পদার্থ</div>
-  <div class="li"><div class="ld" style="background:#f9a8d4"></div>রসায়ন</div>
-  <div class="li"><div class="ld" style="background:#6ee7b7"></div>জীববিজ্ঞান</div>
-  <div class="li"><div class="ld" style="background:#fbbf24"></div>গণিত</div>
-  <div class="li"><div class="ld" style="background:#ea580c"></div>Grand Revision</div>
+  
+  <div class="fbtns" id="wkBtns" style="margin-left:auto"></div>
 </div>
 
 <!-- ══════════════ MAIN CONTENT ══════════════ -->
@@ -343,7 +335,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ════════════════════════════════════════════
-//  APP STATE
+//  APP STATE & UTILS
 // ════════════════════════════════════════════
 let currentUser = null;
 let checked     = {};
@@ -351,550 +343,507 @@ let isGuest     = false;
 let saveTimer   = null;
 const GUEST_KEY = 'hsc55_guest_progress';
 
+// Custom Toast Function
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  let icon = '✅';
+  if(type === 'warning') icon = '⚠️';
+  if(type === 'error') icon = '❌';
+
+  toast.innerHTML = `
+    <span style="font-size:16px">${icon}</span>
+    <span>${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+  `;
+  container.appendChild(toast);
+  
+  // Trigger animation
+  setTimeout(() => toast.classList.add('show'), 10);
+  
+  // Auto remove after 5 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
 // ════════════════════════════════════════════
 //  SUBJECT STYLES
 // ════════════════════════════════════════════
 const sc = {
-  "বাংলা ১ম পত্র": {bg:"#dbeafe",col:"#1e40af",brd:"#93c5fd"},
-  "বাংলা ২য় পত্র": {bg:"#e0e7ff",col:"#3730a3",brd:"#a5b4fc"},
-  "English 1st":   {bg:"#fef9c3",col:"#854d0e",brd:"#fde047"},
-  "English 2nd":   {bg:"#fef3c7",col:"#92400e",brd:"#fcd34d"},
-  "ICT":           {bg:"#e0f2fe",col:"#075985",brd:"#7dd3fc"},
-  "পদার্থ ১ম":    {bg:"#dcfce7",col:"#166534",brd:"#86efac"},
-  "পদার্থ ২য়":   {bg:"#d1fae5",col:"#065f46",brd:"#6ee7b7"},
-  "রসায়ন ১ম":    {bg:"#fce7f3",col:"#9d174d",brd:"#f9a8d4"},
-  "রসায়ন ২য়":   {bg:"#fdf2f8",col:"#831843",brd:"#f0abfc"},
-  "জীব ১ম":       {bg:"#f0fdf4",col:"#14532d",brd:"#86efac"},
-  "জীব ২য়":      {bg:"#ecfdf5",col:"#064e3b",brd:"#6ee7b7"},
-  "গণিত ১ম":      {bg:"#fef3c7",col:"#78350f",brd:"#fbbf24"},
-  "গণিত ২য়":     {bg:"#fffbeb",col:"#92400e",brd:"#fcd34d"},
-  "Grand Revision":{bg:"#431407",col:"#fed7aa",brd:"#ea580c"},
+  "বাংলা ১ম পত্র": {bg:"#1e3a8a", col:"#bfdbfe", brd:"#3b82f6"},
+  "বাংলা ২য় পত্র": {bg:"#312e81", col:"#c7d2fe", brd:"#6366f1"},
+  "English 1st":   {bg:"#713f12", col:"#fef08a", brd:"#eab308"},
+  "English 2nd":   {bg:"#7c2d12", col:"#fed7aa", brd:"#f97316"},
+  "ICT":           {bg:"#083344", col:"#bae6fd", brd:"#0ea5e9"},
+  "পদার্থ ১ম":     {bg:"#14532d", col:"#bbf7d0", brd:"#22c55e"},
+  "পদার্থ ২য়":     {bg:"#064e3b", col:"#a7f3d0", brd:"#10b981"},
+  "রসায়ন ১ম":     {bg:"#831843", col:"#fbcfe8", brd:"#ec4899"},
+  "রসায়ন ২য়":     {bg:"#701a75", col:"#f5d0fe", brd:"#d946ef"},
+  "জীব ১ম":        {bg:"#14532d", col:"#bbf7d0", brd:"#22c55e"},
+  "জীব ২য়":        {bg:"#064e3b", col:"#a7f3d0", brd:"#10b981"},
+  "গণিত ১ম":       {bg:"#713f12", col:"#fef08a", brd:"#eab308"},
+  "গণিত ২য়":       {bg:"#7c2d12", col:"#fed7aa", brd:"#f97316"},
+  "Grand Revision":{bg:"#431407", col:"#fed7aa", brd:"#ea580c"},
 };
 
 // ════════════════════════════════════════════
-//  WEEKS  ✅ document অনুযায়ী আপডেট করা হয়েছে
+//  WEEKS DATA
 // ════════════════════════════════════════════
 const weeks = [
-  {id:1, label:"Week 1", title:"বাংলা ১ম + ২য় + English 1st + 2nd",   color:"#9d174d", days:[1,7],   phase:"study"},
-  {id:2, label:"Week 2", title:"English 2nd + ICT + পদার্থ ১ম",        color:"#5b21b6", days:[8,14],  phase:"study"},
-  {id:3, label:"Week 3", title:"পদার্থ ১ম + ২য় + রসায়ন ১ম",          color:"#155e75", days:[15,21], phase:"study"},
-  {id:4, label:"Week 4", title:"রসায়ন ১ম + ২য় + জীব ১ম",             color:"#064e3b", days:[22,28], phase:"study"},
-  {id:5, label:"Week 5", title:"জীব ১ম + ২য় পত্র",                    color:"#78350f", days:[29,35], phase:"study"},
-  {id:6, label:"Week 6", title:"গণিত ১ম + ২য় পত্র",                   color:"#1e3a8a", days:[36,43], phase:"study"},
-  {id:7, label:"Grand Revision Week 1", title:"সব বিষয়ের প্রথম রাউন্ড Revision", color:"#7c2d12", days:[44,49], phase:"revision"},
-  {id:8, label:"Grand Revision Week 2", title:"Mock Test + Final Practice",         color:"#9a3412", days:[50,55], phase:"revision"},
+  {id:1, label:"W1", title:"বাংলা + English", color:"#831843", days:[1,7], phase:"study"},
+  {id:2, label:"W2", title:"English + ICT + পদার্থ", color:"#312e81", days:[8,14], phase:"study"},
+  {id:3, label:"W3", title:"পদার্থ + রসায়ন", color:"#083344", days:[15,21], phase:"study"},
+  {id:4, label:"W4", title:"রসায়ন + জীব", color:"#064e3b", days:[22,28], phase:"study"},
+  {id:5, label:"W5", title:"জীব ১ম + ২য়", color:"#422006", days:[29,35], phase:"study"},
+  {id:6, label:"W6", title:"গণিত ১ম + ২য়", color:"#1e3a8a", days:[36,43], phase:"study"},
+  {id:7, label:"Rev 1", title:"প্রথম রাউন্ড Revision", color:"#7c2d12", days:[44,49], phase:"revision"},
+  {id:8, label:"Rev 2", title:"Mock Test + Final", color:"#9a3412", days:[50,55], phase:"revision"},
 ];
 
 // ════════════════════════════════════════════
-//  PLAN DATA ✅ document-এর সাথে মিলিয়ে সম্পূর্ণ সংশোধন
+//  PLAN DATA (Updated with Exact Dates & Content)
 // ════════════════════════════════════════════
 const plan = [
+  // ══ Week 1 ══
+  {d:1, date:"১২/০৪/২০২৬", s:"বাংলা ১ম পত্র", phase:"study", t:"গদ্য অধ্যায় ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি · অপরিচিতা · সাহিত্যে খেলা · বিলাসী · অধ্যাঙ্গিনী · যৌবনের গান | গদ্য অধ্যায় ৭–১২: জীবন ও বৃক্ষ · গন্তব্য কাবুল · মাসি-পিসি · কপিলদাস মুমুর্ষু শেষ কাজ · রেইনকোট · নেকলেস | উপন্যাস: লালসালু | পদ্য অধ্যায় ১–১২: ঋতুবর্ণন · বিভীষণের প্রতি মেঘনাদ · সোনার তরী · বিদ্রোহী · সুচেতনা · প্রতিদান · তাহারেই পড়ে মনে · পদ্মা · ফেব্রুয়ারি ১৯৬৯ · আঠার বছর বয়স · আমি কিংবদন্তির কথা বলছি · প্রত্যাবর্তনের লজ্জা | নাটক: সিরাজউদ্দৌলা"},
+  {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", phase:"study", t:"অধ্যায় ১–৪: বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম (ণ-ত্ব, য-ত্ব, ই-কার) | ব্যাকরণিক শব্দশ্রেণি (বিশেষ্য, সর্বনাম, ক্রিয়া, অব্যয়, যোজক) | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
+  {d:3, date:"১৪/০৪/২০২৬", s:"বাংলা ২য় পত্র", phase:"study", t:"অধ্যায় ৫: বাক্যতত্ত্ব (বাক্যের শ্রেণি, পদক্রম, রূপান্তর) | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল/বৈদ্যুতিক চিঠি | আবেদনপত্র | সারাংশ/সারমর্ম | ভাব-সম্প্রসারণ | কবিতাংশ | সংলাপ | খুদে গল্প | প্রবন্ধ রচনা"},
+  {d:4, date:"১৫/০৪/২০২৬", s:"English 1st", phase:"study", t:"Seen Comprehension (MCQ + questions) — top 8 passages | Summarizing (seen + unseen) | Unseen Comprehension — top 10 passages | Cloze test with clues (top 15) | Cloze test without clues (top 15)"},
+  {d:5, date:"১৬/০৪/২০২৬", s:"English 1st", phase:"study", t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics) | Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
+  {d:6, date:"১৭/০৪/২০২৬", s:"English 2nd", phase:"study", t:"Article | Preposition | Special words/phrases (modal verbs) | Completing sentence — all clause types (all board questions)"},
+  {d:7, date:"১৮/০৪/২০২৬", s:"English 2nd", phase:"study", t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
 
-  // ══ Week 1: বাংলা + English 1st + English 2nd (Day 1–7) ══
+  // ══ Week 2 ══
+  {d:8, date:"১৯/০৪/২০২৬", s:"English 2nd", phase:"study", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
+  {d:9, date:"২০/০৪/২০২৬", s:"ICT", phase:"study", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
+  {d:10, date:"২১/০৪/২০২৬", s:"ICT", phase:"study", t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
+  {d:11, date:"২২/০৪/২০২৬", s:"ICT", phase:"study", t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
+  {d:12, date:"২৩/০৪/২০২৬", s:"পদার্থ ১ম", phase:"study", t:"অধ্যায় ৩: গতিবিদ্যা — প্রাস (পাল্লা, উচ্চতা, বিচরণকাল, বেগ), লেখচিত্র থেকে ত্বরণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার, ক্ষেত্রফল নির্ণয়, Gradient/Divergence/Curl"},
+  {d:13, date:"২৪/০৪/২০২৬", s:"পদার্থ ১ম", phase:"study", t:"অধ্যায় ৫: কাজ শক্তি ও ক্ষমতা — কাজ-শক্তি উপপাদ্য, পাম্পের ক্ষমতা, গতিশক্তি, বিভবশক্তি, স্প্রিং শক্তি | অধ্যায় ৬: মহাকর্ষ ও অভিকর্ষ — কেপলারের সূত্র, g নির্ণয়, মুক্তিবেগ, কৃত্রিম উপগ্রহ, ভূস্থির উপগ্রহ"},
+  {d:14, date:"২৫/০৪/২০২৬", s:"পদার্থ ১ম", phase:"study", t:"অধ্যায় ৮: পর্যাবৃত্ত গতি — সরল দোলক, স্প্রিং, কৌণিক বেগ | অধ্যায় ৯: তরঙ্গ"},
 
-  // Day 1 — বাংলা ১ম পত্র
-  {d:1, s:"বাংলা ১ম পত্র", phase:"study",
-   t:"গদ্য অধ্যায় ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি · অপরিচিতা · সাহিত্যে খেলা · বিলাসী · অধ্যাঙ্গিনী · যৌবনের গান | গদ্য অধ্যায় ৭–১২: জীবন ও বৃক্ষ · গন্তব্য কাবুল · মাসি-পিসি · কপিলদাস মুমুর্ষু শেষ কাজ · রেইনকোট · নেকলেস | উপন্যাস: লালসালু | পদ্য অধ্যায় ১–১২: ঋতুবর্ণন · বিভীষণের প্রতি মেঘনাদ · সোনার তরী · বিদ্রোহী · সুচেতনা · প্রতিদান · তাহারেই পড়ে মনে · পদ্মা · ফেব্রুয়ারি ১৯৬৯ · আঠার বছর বয়স · আমি কিংবদন্তির কথা বলছি · প্রত্যাবর্তনের লজ্জা | নাটক: সিরাজউদ্দৌলা"},
+  // ══ Week 3 ══
+  {d:15, date:"২৬/০৪/২০২৬", s:"পদার্থ ১ম", phase:"study", t:"অধ্যায় ১০: আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | অধ্যায় ৭: পদার্থের গাঠনিক ধর্ম — ইয়ং গুণাঙ্ক, পয়সনের অনুপাত, পৃষ্ঠটান, সান্দ্রতা"},
+  {d:16, date:"২৭/০৪/২০২৬", s:"পদার্থ ২য়", phase:"study", t:"অধ্যায় ১: তাপগতিবিদ্যা — Carnot engine, দক্ষতা, এন্ট্রপি, গৃহীত/বর্জিত তাপ, গৃহীত কাজ | অধ্যায় ২: স্থির তড়িৎ — বিভব, তড়িৎ প্রাবল্য, ধারকত্ব, সঞ্চিত শক্তি"},
+  {d:17, date:"২৮/০৪/২০২৬", s:"পদার্থ ২য়", phase:"study", t:"অধ্যায় ৩: চলতড়িৎ — Kirchhoff, Wheatstone bridge, Joule's law, ধারার ক্ষমতা | অধ্যায় ৭: ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন, তরঙ্গদৈর্ঘ্য নির্ণয়, ডোরার প্রস্থ"},
+  {d:18, date:"২৯/০৪/২০২৬", s:"পদার্থ ২য়", phase:"study", t:"অধ্যায় ৮: আধুনিক পদার্থবিজ্ঞানের সূচনা — আলোক তড়িৎ ক্রিয়া, de Broglie তরঙ্গদৈর্ঘ্য, X-ray, আপেক্ষিকতা (ভর, দৈর্ঘ্য, কাল) | অধ্যায় ৯: পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান — অর্ধায়ু, গড় আয়ু, ভরত্রুটি, ফিশন, ফিউশন"},
+  {d:19, date:"৩০/০৪/২০২৬", s:"পদার্থ ২য়", phase:"study", t:"অধ্যায় ১০: সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate, Amplifier, Rectifier"},
+  {d:20, date:"০১/০৫/২০২৬", s:"রসায়ন ১ম", phase:"study", t:"অধ্যায় ২: গুণগত রসায়ন — পরমাণুর গঠন, Orbital, কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, দ্রাব্যতা গুণফল"},
+  {d:21, date:"০২/০৫/২০২৬", s:"রসায়ন ১ম", phase:"study", t:"অধ্যায় ৩: মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
 
-  // Day 2 — বাংলা ২য় পত্র (Ch 1–4)
-  {d:2, s:"বাংলা ২য় পত্র", phase:"study",
-   t:"অধ্যায় ১–৪: বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম (ণ-ত্ব, য-ত্ব, ই-কার) | ব্যাকরণিক শব্দশ্রেণি (বিশেষ্য, সর্বনাম, ক্রিয়া, অব্যয়, যোজক) | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
+  // ══ Week 4 ══
+  {d:22, date:"০৩/০৫/২০২৬", s:"রসায়ন ১ম", phase:"study", t:"অধ্যায় ৪: রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer, সক্রিয়ণ শক্তি"},
+  {d:23, date:"০৪/০৫/২০২৬", s:"রসায়ন ১ম", phase:"study", t:"অধ্যায় ১: ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা — Hazard symbol, কাচ যন্ত্রপাতি ব্যবহার | অধ্যায় ৭: রসায়ন এবং প্রযুক্তি — নমনীয় খাদ্যসংরক্ষণ, Recycling"},
+  {d:24, date:"০৫/০৫/২০২৬", s:"রসায়ন ২য়", phase:"study", t:"অধ্যায় ১: পরিবেশ রসায়ন — PV=nRT গাণিতিক সমস্যা, Dalton's partial pressure, Van der Waals, ব্যাপন হার, RMS বেগ, গড় মুক্তপথ"},
+  {d:25, date:"০৬/০৫/২০২৬", s:"রসায়ন ২য়", phase:"study", t:"অধ্যায় ২: পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন (KMnO₄, K₂Cr₂O₇), ঘনমাত্রা (ppm, ppb), pH নির্ণয়"},
+  {d:26, date:"০৭/০৫/২০২৬", s:"রসায়ন ২য়", phase:"study", t:"অধ্যায় ৪: তড়িৎ রসায়ন — Nernst equation, EMF, কোষে সংগৃহীত পদার্থ, ক্যাথোডে বিদ্যুৎ বিশ্লেষণ"},
+  {d:27, date:"০৮/০৫/২০২৬", s:"রসায়ন ২য়", phase:"study", t:"অধ্যায় ৫: অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, সাবান, পলিমার"},
+  {d:28, date:"০৯/০৫/২০২৬", s:"জীব ১ম", phase:"study", t:"অধ্যায় ১: কোষ ও এর গঠন — কোষের গঠন (প্রকৃত/অপ্রকৃত), সকল অঙ্গাণু, Fluid mosaic model, DNA/RNA গঠন, ট্রান্সক্রিপশন, ট্রান্সলেশন, অনুলিপন | অধ্যায় ২: কোষ বিভাজন — Mitosis/Meiosis সব ধাপ (চিত্রসহ), গুরুত্ব, Crossing over"},
 
-  // Day 3 — বাংলা ২য় পত্র (Ch 5 + রচনামূলক)
-  {d:3, s:"বাংলা ২য় পত্র", phase:"study",
-   t:"অধ্যায় ৫: বাক্যতত্ত্ব (বাক্যের শ্রেণি, পদক্রম, রূপান্তর) | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল/বৈদ্যুতিক চিঠি | আবেদনপত্র | সারাংশ/সারমর্ম | ভাব-সম্প্রসারণ | কবিতাংশ | সংলাপ | খুদে গল্প | প্রবন্ধ রচনা"},
+  // ══ Week 5 ══
+  {d:29, date:"১০/০৫/২০২৬", s:"জীব ১ম", phase:"study", t:"অধ্যায় ৩: কোষ রসায়ন — কার্বোহাইড্রেট, প্রোটিন, লিপিড, এনজাইম গঠন ও কাজ | অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Erythrocytic cycle), ডেঙ্গু"},
+  {d:30, date:"১১/০৫/২০২৬", s:"জীব ১ম", phase:"study", t:"অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব) | অধ্যায় ৯: উদ্ভিদ শরীরতত্ত্ব — পত্ররন্ধ্র (আধুনিক মতবাদ), সালোকসংশ্লেষণ (C3/C4/CAM চক্র, আলোক বিক্রিয়া), শ্বসন (Glycolysis, Krebs cycle), প্রস্বেদন"},
+  {d:31, date:"১২/০৫/২০২৬", s:"জীব ১ম", phase:"study", t:"অধ্যায় ১৩: জীবপ্রযুক্তি — GMO, DNA fingerprinting, Genome sequencing"},
+  {d:32, date:"১৩/০৫/২০২৬", s:"জীব ২য়", phase:"study", t:"অধ্যায় ১: প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস — সকল পর্বের বৈশিষ্ট্য ও উদাহরণ, Chordata/Non-Chordata পার্থক্য | অধ্যায় ২: প্রাণীর পরিচিতি — হাইড্রা (গঠন, নিডোসাইট, চলন, প্রজনন)"},
+  {d:33, date:"১৪/০৫/২০২৬", s:"জীব ২য়", phase:"study", t:"অধ্যায় ৩: মানব শারীরবিদ্যা: পরিপাক ও শোষণ — পরিপাকতন্ত্র সব অঙ্গ, যকৃৎ, অগ্নাশয়, ক্ষুদ্রান্ত্রে শোষণ, BMI | অধ্যায় ৪: মানব শারীরবিদ্যা: রক্ত সংবহন — হৃদপিণ্ডের গঠন (চিত্র), কার্ডিয়াক চক্র, রক্তচাপ, হার্ট অ্যাটাক, Heart failure, রক্ততঞ্চন"},
+  {d:34, date:"১৫/০৫/২০২৬", s:"জীব ২য়", phase:"study", t:"অধ্যায় ৫: মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য — ফুসফুসের গঠন, অ্যালভিওলাস, হিমোগ্লোবিন, ক্লোরাইড শিফট, সাইনোসাইটিস | অধ্যায় ৬: মানব শারীরবিদ্যা: বর্জ্য ও নিষ্কাশন"},
+  {d:35, date:"১৬/০৫/২০২৬", s:"জীব ২য়", phase:"study", t:"অধ্যায় ৮: মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | অধ্যায় ১১: জীনতত্ত্ব ও বিবর্তন"},
 
-  // Day 4 — English 1st Paper (Comprehension + Cloze)
-  {d:4, s:"English 1st", phase:"study",
-   t:"Seen Comprehension (MCQ + questions) — top 8 passages | Summarizing (seen + unseen) | Unseen Comprehension — top 10 passages | Cloze test with clues (top 15) | Cloze test without clues (top 15)"},
-
-  // Day 5 — English 1st Paper (Writing skills)
-  {d:5, s:"English 1st", phase:"study",
-   t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics) | Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
-
-  // Day 6 — English 2nd Paper (Grammar Part 1)
-  {d:6, s:"English 2nd", phase:"study",
-   t:"Article | Preposition | Special words/phrases (modal verbs) | Completing sentence — all clause types (all board questions)"},
-
-  // Day 7 — English 2nd Paper (Grammar Part 2)
-  {d:7, s:"English 2nd", phase:"study",
-   t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
-
-  // ══ Week 2: English 2nd + ICT + পদার্থ ১ম (Day 8–14) ══
-
-  // Day 8 — English 2nd Paper (Writing Part)
-  {d:8, s:"English 2nd", phase:"study",
-   t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
-
-  // Day 9 — ICT (সংখ্যা পদ্ধতি + Database)
-  {d:9, s:"ICT", phase:"study",
-   t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
-
-  // Day 10 — ICT (Programming + HTML)
-  {d:10, s:"ICT", phase:"study",
-   t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
-
-  // Day 11 — ICT (Networking)
-  {d:11, s:"ICT", phase:"study",
-   t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
-
-  // Day 12 — পদার্থ ১ম (গতিবিদ্যা + ভেক্টর)
-  {d:12, s:"পদার্থ ১ম", phase:"study",
-   t:"অধ্যায় ৩: গতিবিদ্যা — প্রাস (পাল্লা, উচ্চতা, বিচরণকাল, বেগ), লেখচিত্র থেকে ত্বরণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার, ক্ষেত্রফল নির্ণয়, Gradient/Divergence/Curl"},
-
-  // Day 13 — পদার্থ ১ম (কাজ-শক্তি + মহাকর্ষ)
-  {d:13, s:"পদার্থ ১ম", phase:"study",
-   t:"অধ্যায় ৫: কাজ শক্তি ও ক্ষমতা — কাজ-শক্তি উপপাদ্য, পাম্পের ক্ষমতা, গতিশক্তি, বিভবশক্তি, স্প্রিং শক্তি | অধ্যায় ৬: মহাকর্ষ ও অভিকর্ষ — কেপলারের সূত্র, g নির্ণয়, মুক্তিবেগ, কৃত্রিম উপগ্রহ, ভূস্থির উপগ্রহ"},
-
-  // Day 14 — পদার্থ ১ম (পর্যাবৃত্ত গতি + তরঙ্গ)
-  {d:14, s:"পদার্থ ১ম", phase:"study",
-   t:"অধ্যায় ৮: পর্যাবৃত্ত গতি — সরল দোলক, স্প্রিং, কৌণিক বেগ | অধ্যায় ৯: তরঙ্গ"},
-
-  // ══ Week 3: পদার্থ ১ম + ২য় + রসায়ন ১ম (Day 15–21) ══
-
-  // Day 15 — পদার্থ ১ম (আদর্শ গ্যাস + পদার্থের গাঠনিক ধর্ম)
-  {d:15, s:"পদার্থ ১ম", phase:"study",
-   t:"অধ্যায় ১০: আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | অধ্যায় ৭: পদার্থের গাঠনিক ধর্ম — ইয়ং গুণাঙ্ক, পয়সনের অনুপাত, পৃষ্ঠটান, সান্দ্রতা"},
-
-  // Day 16 — পদার্থ ২য় (তাপগতিবিদ্যা + স্থির তড়িৎ)
-  {d:16, s:"পদার্থ ২য়", phase:"study",
-   t:"অধ্যায় ১: তাপগতিবিদ্যা — Carnot engine, দক্ষতা, এন্ট্রপি, গৃহীত/বর্জিত তাপ, গৃহীত কাজ | অধ্যায় ২: স্থির তড়িৎ — বিভব, তড়িৎ প্রাবল্য, ধারকত্ব, সঞ্চিত শক্তি"},
-
-  // Day 17 — পদার্থ ২য় (চলতড়িৎ + আলোকবিজ্ঞান)
-  {d:17, s:"পদার্থ ২য়", phase:"study",
-   t:"অধ্যায় ৩: চলতড়িৎ — Kirchhoff, Wheatstone bridge, Joule's law, ধারার ক্ষমতা | অধ্যায় ৭: ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন, তরঙ্গদৈর্ঘ্য নির্ণয়, ডোরার প্রস্থ"},
-
-  // Day 18 — পদার্থ ২য় (আধুনিক পদার্থবিজ্ঞান + নিউক্লিয়ার)
-  {d:18, s:"পদার্থ ২য়", phase:"study",
-   t:"অধ্যায় ৮: আধুনিক পদার্থবিজ্ঞানের সূচনা — আলোক তড়িৎ ক্রিয়া, de Broglie তরঙ্গদৈর্ঘ্য, X-ray, আপেক্ষিকতা (ভর, দৈর্ঘ্য, কাল) | অধ্যায় ৯: পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান — অর্ধায়ু, গড় আয়ু, ভরত্রুটি, ফিশন, ফিউশন"},
-
-  // Day 19 — পদার্থ ২য় (সেমিকন্ডাক্টর)
-  {d:19, s:"পদার্থ ২য়", phase:"study",
-   t:"অধ্যায় ১০: সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate, Amplifier, Rectifier"},
-
-  // Day 20 — রসায়ন ১ম (গুণগত রসায়ন)
-  {d:20, s:"রসায়ন ১ম", phase:"study",
-   t:"অধ্যায় ২: গুণগত রসায়ন — পরমাণুর গঠন, Orbital, কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, দ্রাব্যতা গুণফল"},
-
-  // Day 21 — রসায়ন ১ম (পর্যায়বৃত্ত ধর্ম)
-  {d:21, s:"রসায়ন ১ম", phase:"study",
-   t:"অধ্যায় ৩: মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
-
-  // ══ Week 4: রসায়ন ১ম + ২য় + জীব ১ম (Day 22–28) ══
-
-  // Day 22 — রসায়ন ১ম (রাসায়নিক পরিবর্তন)
-  {d:22, s:"রসায়ন ১ম", phase:"study",
-   t:"অধ্যায় ৪: রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer, সক্রিয়ণ শক্তি"},
-
-  // Day 23 — রসায়ন ১ম (Lab Safety + Technology)
-  {d:23, s:"রসায়ন ১ম", phase:"study",
-   t:"অধ্যায় ১: ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা — Hazard symbol, কাচ যন্ত্রপাতি ব্যবহার | অধ্যায় ৭: রসায়ন এবং প্রযুক্তি — নমনীয় খাদ্যসংরক্ষণ, Recycling"},
-
-  // Day 24 — রসায়ন ২য় (পরিবেশ রসায়ন / গ্যাস)
-  {d:24, s:"রসায়ন ২য়", phase:"study",
-   t:"অধ্যায় ১: পরিবেশ রসায়ন — PV=nRT গাণিতিক সমস্যা, Dalton's partial pressure, Van der Waals, ব্যাপন হার, RMS বেগ, গড় মুক্তপথ"},
-
-  // Day 25 — রসায়ন ২য় (পরিমাণগত রসায়ন)
-  {d:25, s:"রসায়ন ২য়", phase:"study",
-   t:"অধ্যায় ২: পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন (KMnO₄, K₂Cr₂O₇), ঘনমাত্রা (ppm, ppb), pH নির্ণয়"},
-
-  // Day 26 — রসায়ন ২য় (তড়িৎ রসায়ন)
-  {d:26, s:"রসায়ন ২য়", phase:"study",
-   t:"অধ্যায় ৪: তড়িৎ রসায়ন — Nernst equation, EMF, কোষে সংগৃহীত পদার্থ, ক্যাথোডে বিদ্যুৎ বিশ্লেষণ"},
-
-  // Day 27 — রসায়ন ২য় (অর্থনৈতিক রসায়ন)
-  {d:27, s:"রসায়ন ২য়", phase:"study",
-   t:"অধ্যায় ৫: অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, সাবান, পলিমার"},
-
-  // Day 28 — জীব ১ম (কোষ গঠন + কোষ বিভাজন)
-  {d:28, s:"জীব ১ম", phase:"study",
-   t:"অধ্যায় ১: কোষ ও এর গঠন — কোষের গঠন (প্রকৃত/অপ্রকৃত), সকল অঙ্গাণু, Fluid mosaic model, DNA/RNA গঠন, ট্রান্সক্রিপশন, ট্রান্সলেশন, অনুলিপন | অধ্যায় ২: কোষ বিভাজন — Mitosis/Meiosis সব ধাপ (চিত্রসহ), গুরুত্ব, Crossing over"},
-
-  // ══ Week 5: জীব ১ম + ২য় (Day 29–35) ══
-
-  // Day 29 — জীব ১ম (কোষ রসায়ন + অণুজীব)
-  {d:29, s:"জীব ১ম", phase:"study",
-   t:"অধ্যায় ৩: কোষ রসায়ন — কার্বোহাইড্রেট, প্রোটিন, লিপিড, এনজাইম গঠন ও কাজ | অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Erythrocytic cycle), ডেঙ্গু"},
-
-  // Day 30 — জীব ১ম (উদ্ভিদ + উদ্ভিদ শরীরতত্ত্ব)
-  {d:30, s:"জীব ১ম", phase:"study",
-   t:"অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব) | অধ্যায় ৯: উদ্ভিদ শরীরতত্ত্ব — পত্ররন্ধ্র (আধুনিক মতবাদ), সালোকসংশ্লেষণ (C3/C4/CAM চক্র, আলোক বিক্রিয়া), শ্বসন (Glycolysis, Krebs cycle), প্রস্বেদন"},
-
-  // Day 31 — জীব ১ম (জীবপ্রযুক্তি)
-  {d:31, s:"জীব ১ম", phase:"study",
-   t:"অধ্যায় ১৩: জীবপ্রযুক্তি — GMO, DNA fingerprinting, Genome sequencing"},
-
-  // Day 32 — জীব ২য় (শ্রেণিবিন্যাস + হাইড্রা)
-  {d:32, s:"জীব ২য়", phase:"study",
-   t:"অধ্যায় ১: প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস — সকল পর্বের বৈশিষ্ট্য ও উদাহরণ, Chordata/Non-Chordata পার্থক্য | অধ্যায় ২: প্রাণীর পরিচিতি — হাইড্রা (গঠন, নিডোসাইট, চলন, প্রজনন)"},
-
-  // Day 33 — জীব ২য় (পরিপাক + রক্ত সংবহন)
-  {d:33, s:"জীব ২য়", phase:"study",
-   t:"অধ্যায় ৩: মানব শারীরবিদ্যা: পরিপাক ও শোষণ — পরিপাকতন্ত্র সব অঙ্গ, যকৃৎ, অগ্নাশয়, ক্ষুদ্রান্ত্রে শোষণ, BMI | অধ্যায় ৪: মানব শারীরবিদ্যা: রক্ত সংবহন — হৃদপিণ্ডের গঠন (চিত্র), কার্ডিয়াক চক্র, রক্তচাপ, হার্ট অ্যাটাক, Heart failure, রক্ততঞ্চন"},
-
-  // Day 34 — জীব ২য় (শ্বসন + বর্জ্য নিষ্কাশন)
-  {d:34, s:"জীব ২য়", phase:"study",
-   t:"অধ্যায় ৫: মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য — ফুসফুসের গঠন, অ্যালভিওলাস, হিমোগ্লোবিন, ক্লোরাইড শিফট, সাইনোসাইটিস | অধ্যায় ৬: মানব শারীরবিদ্যা: বর্জ্য ও নিষ্কাশন"},
-
-  // Day 35 — জীব ২য় (সমন্বয় + জীনতত্ত্ব)
-  {d:35, s:"জীব ২য়", phase:"study",
-   t:"অধ্যায় ৮: মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | অধ্যায় ১১: জীনতত্ত্ব ও বিবর্তন"},
-
-  // ══ Week 6: গণিত ১ম + ২য় (Day 36–43) ══
-
-  // Day 36 — গণিত ১ম (ম্যাট্রিক্স + ভেক্টর)
-  {d:36, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
-
-  // Day 37 — গণিত ১ম (সরলরেখা + বৃত্ত)
-  {d:37, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৩: সরলরেখা | অধ্যায় ৪: বৃত্ত"},
-
-  // Day 38 — গণিত ১ম (ত্রিকোণমিতি + যোগজীকরণ)
-  {d:38, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৭: সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | অধ্যায় ১০: যোগজীকরণ"},
-
-  // Day 39 — গণিত ১ম (অন্তরীকরণ)
-  {d:39, s:"গণিত ১ম", phase:"study",
-   t:"অধ্যায় ৯: অন্তরীকরণ"},
-
-  // Day 40 — গণিত ২য় (বাস্তব সংখ্যা + বহুপদী)
-  {d:40, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয়"},
-
-  // Day 41 — গণিত ২য় (দ্বিপদী + বিপরীত ত্রিকোণমিতি)
-  {d:41, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ৫: দ্বিপদী বিস্তৃতি | অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান"},
-
-  // Day 42 — গণিত ২য় (কনিক + গতিবিদ্যা)
-  {d:42, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা"},
-
-  // Day 43 — গণিত ২য় (বিস্তার পরিমাপ + সম্ভাবনা)
-  {d:43, s:"গণিত ২য়", phase:"study",
-   t:"অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
+  // ══ Week 6 ══
+  {d:36, date:"১৭/০৫/২০২৬", s:"গণিত ১ম", phase:"study", t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
+  {d:37, date:"১৮/০৫/২০২৬", s:"গণিত ১ম", phase:"study", t:"অধ্যায় ৩: সরলরেখা | অধ্যায় ৪: বৃত্ত"},
+  {d:38, date:"১৯/০৫/২০২৬", s:"গণিত ১ম", phase:"study", t:"অধ্যায় ৭: সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | অধ্যায় ১০: যোগজীকরণ"},
+  {d:39, date:"২০/০৫/২০২৬", s:"গণিত ১ম", phase:"study", t:"অধ্যায় ৯: অন্তরীকরণ"},
+  {d:40, date:"২১/০৫/২০২৬", s:"গণিত ২য়", phase:"study", t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয়"},
+  {d:41, date:"২২/০৫/২০২৬", s:"গণিত ২য়", phase:"study", t:"অধ্যায় ৫: দ্বিপদী বিস্তৃতি | অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান"},
+  {d:42, date:"২৩/০৫/২০২৬", s:"গণিত ২য়", phase:"study", t:"অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা"},
+  {d:43, date:"২৪/০৫/২০২৬", s:"গণিত ২য়", phase:"study", t:"অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
 
   // ══════════════════════════════════════════════
-  //  GRAND REVISION — 12 Days (44–55) — অপরিবর্তিত
+  //  GRAND REVISION — 12 Days (44–55) - Updated!
   // ══════════════════════════════════════════════
-
-  {d:44, s:"Grand Revision", phase:"revision",
-   t:"🔵 বাংলা Grand Revision | বাংলা ১ম পত্র: সব গদ্য, পদ্য, উপন্যাস ও নাটক থেকে গুরুত্বপূর্ণ MCQ + সৃজনশীল প্রশ্নের উত্তর অনুশীলন | বাংলা ২য় পত্র: ব্যাকরণ সব নিয়ম, রচনা, পত্র, প্রতিবেদন — দ্রুত সংক্ষিপ্ত নোট review"},
-  {d:45, s:"Grand Revision", phase:"revision",
-   t:"🟡 English Grand Revision | English 1st Paper: Seen/Unseen comprehension, Cloze test, Rearranging, Graph/Chart দ্রুত সমাধান | English 2nd Paper: Grammar rules — Article, Preposition, Right form of verbs, Narration, Sentence changing সব practice"},
-  {d:46, s:"Grand Revision", phase:"revision",
-   t:"🔷 ICT Grand Revision | সংখ্যা পদ্ধতি — দ্রুত conversion practice (Binary↔Decimal↔Hex↔Octal) | Logic gate truth table | Database SQL queries | C programming loop এবং conditional | HTML tag দ্রুত review | Network topology সংক্ষিপ্ত নোট"},
-  {d:47, s:"Grand Revision", phase:"revision",
-   t:"🟢 পদার্থ ১ম পত্র Grand Revision | গতিবিদ্যা + প্রাস সব সূত্র | কাজ-শক্তি-ক্ষমতা গাণিতিক সমস্যা | মহাকর্ষ + কেপলারের সূত্র | পর্যাবৃত্ত গতি + তরঙ্গ | আদর্শ গ্যাস + পদার্থের গাঠনিক ধর্ম — সব formula sheet বানাও এবং ৫টি করে CQ solve করো"},
-  {d:48, s:"Grand Revision", phase:"revision",
-   t:"🟢 পদার্থ ২য় পত্র Grand Revision | তাপগতিবিদ্যা Carnot cycle | স্থির তড়িৎ + চলতড়িৎ সব circuit সমস্যা | আলোকবিজ্ঞান — ব্যতিচার-অপবর্তন | Modern Physics — Photoelectric effect, de Broglie, Nuclear physics | Semiconductor সংক্ষিপ্ত review"},
-  {d:49, s:"Grand Revision", phase:"revision",
-   t:"🩷 রসায়ন Grand Revision | রসায়ন ১ম পত্র: পরমাণু গঠন, Orbital, ইলেকট্রন বিন্যাস, পর্যায়বৃত্ত ধর্ম, রাসায়নিক পরিবর্তন (Kp, Kc, pH, Buffer) — formula sheet | রসায়ন ২য় পত্র: PV=nRT, Titration, Electrochemistry, অর্থনৈতিক রসায়ন সংক্ষিপ্ত নোট"},
-  {d:50, s:"Grand Revision", phase:"revision",
-   t:"🌿 জীববিজ্ঞান Grand Revision | জীব ১ম পত্র: কোষ গঠন + DNA/RNA, Mitosis/Meiosis চিত্রসহ, সালোকসংশ্লেষণ (C3/C4/CAM), Krebs cycle, জীবপ্রযুক্তি | জীব ২য় পত্র: শ্রেণিবিন্যাস সব পর্ব, হাইড্রা, মানব শরীরের সব অংশ (হৃদপিণ্ড, ফুসফুস, বৃক্ক, স্নায়ু) | জীনতত্ত্ব"},
-  {d:51, s:"Grand Revision", phase:"revision",
-   t:"🔶 গণিত Grand Revision | গণিত ১ম পত্র: ম্যাট্রিক্স + ভেক্টর সমস্যা, সরলরেখা + বৃত্ত সব ধরনের প্রশ্ন, ত্রিকোণমিতি, যোগজীকরণ + অন্তরীকরণ — প্রতিটি থেকে ৩টি করে CQ solve | গণিত ২য় পত্র: বহুপদী, দ্বিপদী, কনিক, গতিবিদ্যা, সম্ভাবনা"},
-  {d:52, s:"Grand Revision", phase:"revision",
-   t:"📝 Mock Test Day 1 — বাংলা ১ম + ২য় পত্র | পূর্ণ MCQ exam দাও (সময়: ৩৫ মিনিট প্রতিটি) + সৃজনশীল প্রশ্নের উত্তর লেখার অনুশীলন | ভুল উত্তরগুলো আবার দেখো এবং দুর্বল জায়গা চিহ্নিত করো"},
-  {d:53, s:"Grand Revision", phase:"revision",
-   t:"📝 Mock Test Day 2 — English 1st + 2nd Paper | Full grammar section solve (সময়: ৪০ মিনিট) | Writing section — formal letter, report, paragraph লেখো | উত্তর মিলিয়ে দেখো এবং vocabulary শক্তিশালী করো"},
-  {d:54, s:"Grand Revision", phase:"revision",
-   t:"📝 Mock Test Day 3 — পদার্থ + রসায়ন | Physics 1st + 2nd Paper: MCQ + CQ সব সূত্র দিয়ে solve করো | Chemistry 1st + 2nd Paper: Numerical problems এবং CQ practice | সব formula একবার দ্রুত review করো"},
-  {d:55, s:"Grand Revision", phase:"revision",
-   t:"🏆 Final Day — ICT + জীব + গণিত Mock Test + Overall Review | ICT: সব chapter থেকে MCQ | Biology: চিত্রভিত্তিক প্রশ্নের উত্তর | Math: ৫টি CQ solve করো | সন্ধ্যায়: মনকে শান্ত রাখো, সব subject এর key points এক নজরে দেখো — তুমি প্রস্তুত! ✨"},
+  {d:44, date:"২৫/০৫/২০২৬", s:"Grand Revision", title:"🔵 বাংলা ১ম + ২য় পত্র", phase:"revision",
+   t:"বাংলা ১ম: গদ্যের মূল বিষয়বস্তু · পদ্যের মূল থিম ও কবি পরিচিতি · লালসালু (মজিদের চরিত্র) · সিরাজউদ্দৌলা (মূল ঘটনা)<br><br>বাংলা ২য়: উচ্চারণ ও বানান নিয়মের shortlist · সমাস ও প্রত্যয়ের উদাহরণ · ভাব-সম্প্রসারণ ও প্রবন্ধ রচনার outline পুনরায় দেখো"},
+  
+  {d:45, date:"২৬/০৫/২০২৬", s:"Grand Revision", title:"🟡 English 1st + 2nd Paper", phase:"revision",
+   t:"English 1st: Top 5 seen passage main points · Top 5 paragraph topics · Top 5 story completing endings<br><br>English 2nd: Article rules shortlist · Right form of verb common patterns · Narration changing rules · Formal letter format চেক করো"},
+  
+  {d:46, date:"২৭/০৫/২০২৬", s:"Grand Revision", title:"🩵 ICT", phase:"revision",
+   t:"সংখ্যা রূপান্তর (Binary↔Decimal↔Hex) দ্রুত practice · Logic gate truth table · HTML এর important tags · Network topology পার্থক্য · Database SQL commands"},
+  
+  {d:47, date:"২৮/০৫/২০২৬", s:"Grand Revision", title:"🟢 পদার্থ ১ম পত্র", phase:"revision",
+   t:"প্রাস গতির সূত্র মুখস্থ চেক · ভেক্টর ক্রস ও ডট গুণফল · কেপলারের সূত্র ৩টা · সরল দোলকের সূত্র · পৃষ্ঠটান ও সান্দ্রতার formula · গ্যাসের গতিতত্ত্বের equation"},
+  
+  {d:48, date:"২৯/০৫/২০২৬", s:"Grand Revision", title:"🟢 পদার্থ ২য় পত্র", phase:"revision",
+   t:"Carnot engine দক্ষতার সূত্র · ধারকত্বের formula · Kirchhoff's law · Young's double slit equation · Photoelectric effect · অর্ধায়ুর সমীকরণ · সেমিকন্ডাক্টর ডায়োড বৈশিষ্ট্য"},
+  
+  {d:49, date:"৩০/০৫/২০২৬", s:"Grand Revision", title:"🩷 রসায়ন ১ম পত্র", phase:"revision",
+   t:"Quantum number এর মান ও নিয়ম · ইলেকট্রন বিন্যাসের shortcut · আয়নিকরণ শক্তির trend · Kp ও Kc এর সম্পর্ক · pH ও Buffer calculation · লা-শাতেলিয়ে নীতির application"},
+  
+  {d:50, date:"৩১/০৫/২০২৬", s:"Grand Revision", title:"🩷 রসায়ন ২য় পত্র", phase:"revision",
+   t:"PV=nRT এর গাণিতিক সমস্যা · Van der Waals equation · KMnO₄ টাইট্রেশনের ধাপ · Nernst equation · EMF calculation · অর্থনৈতিক রসায়নের important facts"},
+  
+  {d:51, date:"০১/০৬/২০২৬", s:"Grand Revision", title:"🌿 জীব ১ম পত্র", phase:"revision",
+   t:"DNA/RNA পার্থক্য · Mitosis vs Meiosis চিত্র · C3/C4/CAM এর পার্থক্য · Krebs cycle এর important steps · T2 ফাজের life cycle · GMO এর সংজ্ঞা ও ব্যবহার"},
+  
+  {d:52, date:"০২/০৬/২০২৬", s:"Grand Revision", title:"🌿 জীব ২য় পত্র", phase:"revision",
+   t:"পর্বের বৈশিষ্ট্য shortlist · হাইড্রার নিডোসাইট গঠন · হৃদপিণ্ডের চিত্র ও কার্ডিয়াক চক্র · হিমোগ্লোবিন ও অক্সিজেন বহন · নেফ্রনের গঠন · জীনতত্ত্বের Mendel এর সূত্র"},
+  
+  {d:53, date:"০৩/০৬/২০২৬", s:"Grand Revision", title:"🟠 গণিত ১ম পত্র", phase:"revision",
+   t:"Matrix এর বিপরীত নির্ণয়ের shortcut · Cramer's rule এর steps · সরলরেখার সব ধরনের সমীকরণ · বৃত্তের স্পর্শক · অন্তরীকরণের মূল নিয়ম · যোগজীকরণ দিয়ে ক্ষেত্রফল"},
+  
+  {d:54, date:"০৪/০৬/২০২৬", s:"Grand Revision", title:"🟠 গণিত ২য় পত্র", phase:"revision",
+   t:"অসমতার সমাধান পদ্ধতি · α β দিয়ে মান নির্ণয়ের formula · দ্বিপদী বিস্তৃতির nতম পদ · বিপরীত ত্রিকোণমিতির মান · কনিকের equation ও বৈশিষ্ট্য · সম্ভাবনার মূল সূত্র"},
+  
+  {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", title:"🔥 FINAL DAY — Grand Mock", phase:"revision",
+   t:"সব বিষয় থেকে ১টা করে সৃজনশীল প্রশ্ন নিজে নিজে সমাধান করো। যেগুলোতে ভুল হবে সেগুলোর নোট করো। আজকের পর পরীক্ষার হলে যাওয়ার জন্য তুমি Ready. 💪"}
 ];
 
 // ════════════════════════════════════════════
 //  POMODORO TIMER
 // ════════════════════════════════════════════
 let pomoTimeLeft = 25*60, pomoInterval = null, pomoIsRunning = false, pomoDefaultTime = 25*60;
-function pomoUpdateDisplay(){
+function pomoUpdateDisplay() {
   const m = String(Math.floor(pomoTimeLeft/60)).padStart(2,'0');
   const s = String(pomoTimeLeft%60).padStart(2,'0');
   document.getElementById('pomoDisplay').textContent = `${m}:${s}`;
 }
-function pomoSetTimer(min){ pomoStop(); pomoDefaultTime=min*60; pomoTimeLeft=pomoDefaultTime; pomoUpdateDisplay(); }
-function pomoSetCustom(){
+function pomoSetTimer(min) { pomoStop(); pomoDefaultTime=min*60; pomoTimeLeft=pomoDefaultTime; pomoUpdateDisplay(); }
+function pomoSetCustom() {
   const v = parseInt(document.getElementById('pomoCustom').value);
   if(v && v>0){ pomoSetTimer(v); document.getElementById('pomoCustom').value=''; }
 }
-function pomoToggle(){
-  if(!pomoIsRunning){
-    pomoIsRunning=true;
-    const btn=document.getElementById('pomoStartBtn');
-    btn.textContent='Pause'; btn.classList.add('running');
-    pomoInterval=setInterval(()=>{
-      if(pomoTimeLeft>0){ pomoTimeLeft--; pomoUpdateDisplay(); }
-      else { pomoStop(); alert('⏰ Timer শেষ! বিরতি নাও — তারপর আবার শুরু করো!'); }
-    },1000);
+function pomoToggle() {
+  if(!pomoIsRunning) {
+    pomoIsRunning = true;
+    const btn = document.getElementById('pomoStartBtn');
+    btn.textContent = 'Pause'; btn.classList.add('running');
+    pomoInterval = setInterval(() => {
+      if(pomoTimeLeft > 0) { 
+        pomoTimeLeft--; pomoUpdateDisplay(); 
+      } else { 
+        pomoStop(); 
+        showToast('⏰ Timer শেষ! বিরতি নাও — তারপর আবার শুরু করো!', 'warning'); 
+      }
+    }, 1000);
   } else { pomoStop(); }
 }
-function pomoStop(){
-  pomoIsRunning=false; clearInterval(pomoInterval);
-  const btn=document.getElementById('pomoStartBtn');
-  btn.textContent='Start'; btn.classList.remove('running');
+function pomoStop() {
+  pomoIsRunning = false; clearInterval(pomoInterval);
+  const btn = document.getElementById('pomoStartBtn');
+  btn.textContent = 'Start'; btn.classList.remove('running');
 }
-function pomoReset(){ pomoStop(); pomoTimeLeft=pomoDefaultTime; pomoUpdateDisplay(); }
+function pomoReset() { pomoStop(); pomoTimeLeft = pomoDefaultTime; pomoUpdateDisplay(); }
 
 // ════════════════════════════════════════════
 //  AUTH FUNCTIONS
 // ════════════════════════════════════════════
-function switchTab(tab){
+function switchTab(tab) {
   document.getElementById('loginForm').classList.toggle('hidden', tab!=='login');
   document.getElementById('signupForm').classList.toggle('hidden', tab!=='signup');
   document.getElementById('tabLogin').classList.toggle('active', tab==='login');
   document.getElementById('tabSignup').classList.toggle('active', tab!=='login');
-  document.getElementById('loginMsg').className='auth-msg';
-  document.getElementById('signupMsg').className='auth-msg';
 }
-function showAuthModal(){ document.getElementById('authModal').classList.remove('hidden'); }
-function hideAuthModal(){ document.getElementById('authModal').classList.add('hidden'); }
-function hideLoadingScreen(){ document.getElementById('loadingScreen').classList.add('hidden'); }
+function showAuthModal() { 
+  document.getElementById('authModal').classList.remove('hidden'); 
+  document.getElementById('authModal').setAttribute('aria-hidden', 'false');
+}
+function hideAuthModal() { 
+  document.getElementById('authModal').classList.add('hidden'); 
+  document.getElementById('authModal').setAttribute('aria-hidden', 'true');
+}
+function hideLoadingScreen() { document.getElementById('loadingScreen').classList.add('hidden'); }
 
-async function doLogin(){
+async function doLogin() {
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
-  const msg=document.getElementById('loginMsg');
   const btn=document.getElementById('loginBtn');
-  if(!email||!pass){ showMsg(msg,'error','Email ও password দাও'); return; }
+  if(!email || !pass) { showToast('Email ও password দাও', 'error'); return; }
+  
   btn.disabled=true; btn.textContent='লগইন হচ্ছে...';
-  let data, error;
   try {
-    ({data,error}=await sb.auth.signInWithPassword({email,password:pass}));
-  } catch(e){ btn.disabled=false; btn.textContent='Login করো'; showFetchError(msg); return; }
-  btn.disabled=false; btn.textContent='Login করো';
-  if(error){ showMsg(msg,'error', error.message==='Invalid login credentials'?'Email বা password ভুল':error.message); }
-  else { hideAuthModal(); }
+    const {data, error} = await sb.auth.signInWithPassword({email,password:pass});
+    if(error) throw error;
+    hideAuthModal();
+    showToast('Login সফল হয়েছে!', 'success');
+  } catch(error) { 
+    showToast(error.message === 'Invalid login credentials' ? 'Email বা password ভুল' : error.message, 'error'); 
+  } finally {
+    btn.disabled=false; btn.textContent='Login করো';
+  }
 }
 
-async function doSignup(){
+async function doSignup() {
   const email=document.getElementById('signupEmail').value.trim();
   const pass=document.getElementById('signupPass').value;
   const pass2=document.getElementById('signupPass2').value;
-  const msg=document.getElementById('signupMsg');
   const btn=document.getElementById('signupBtn');
-  if(!email||!pass||!pass2){ showMsg(msg,'error','সব field পূরণ করো'); return; }
-  if(pass!==pass2){ showMsg(msg,'error','Password দুটো মিলছে না'); return; }
-  if(pass.length<6){ showMsg(msg,'error','Password কমপক্ষে ৬ অক্ষর হতে হবে'); return; }
+  
+  if(!email || !pass || !pass2) { showToast('সব ফিল্ড পূরণ করো', 'warning'); return; }
+  if(pass !== pass2) { showToast('Password দুটো মিলছে না', 'error'); return; }
+  if(pass.length < 6) { showToast('Password কমপক্ষে ৬ অক্ষর হতে হবে', 'error'); return; }
+  
   btn.disabled=true; btn.textContent='তৈরি হচ্ছে...';
-  let data, error;
   try {
-    ({data,error}=await sb.auth.signUp({email,password:pass}));
-  } catch(e){ btn.disabled=false; btn.textContent='Account তৈরি করো'; showFetchError(msg); return; }
-  btn.disabled=false; btn.textContent='Account তৈরি করো';
-  if(error){ showMsg(msg,'error',error.message); }
-  else if(data.user && !data.session){ showMsg(msg,'success','✅ Confirmation email গেছে! Email confirm করে login করো।'); }
+    const {data, error} = await sb.auth.signUp({email,password:pass});
+    if(error) throw error;
+    if(data.user && !data.session) {
+      showToast('✅ Confirmation email পাঠানো হয়েছে! Inbox চেক করো।', 'success');
+    }
+  } catch(error) { 
+    showToast(error.message, 'error'); 
+  } finally {
+    btn.disabled=false; btn.textContent='Account তৈরি করো';
+  }
 }
 
-async function doLogout(){
-  await sb.auth.signOut();
-}
+async function doLogout() { await sb.auth.signOut(); showToast('লগ আউট করা হয়েছে', 'success'); }
 
-function continueAsGuest(){
-  isGuest=true;
-  checked=JSON.parse(localStorage.getItem(GUEST_KEY)||'{}');
+function continueAsGuest() {
+  isGuest = true;
+  checked = JSON.parse(localStorage.getItem(GUEST_KEY) || '{}');
   hideAuthModal();
   hideLoadingScreen();
   updateUserUI(null);
   document.getElementById('guestNotice').classList.remove('hidden');
-  setSyncStatus('ok','Guest mode — শুধু এই browser এ save হচ্ছে');
+  setSyncStatus('ok', 'Guest mode — শুধু ব্রাউজারে সেভ হচ্ছে');
   render(); updateProgress();
+  showToast('Guest Mode এ স্বাগতম!', 'warning');
 }
 
-function showMsg(el,type,text){ el.textContent=text; el.className='auth-msg '+type; }
-
-function togglePass(inputId, btnId){
-  const inp=document.getElementById(inputId);
-  const btn=document.getElementById(btnId);
-  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
-  else { inp.type='password'; btn.textContent='👁'; }
-}
-
-function showFetchError(msgEl){
-  document.getElementById('corsWarn').style.display='block';
-  showMsg(msgEl,'error','Connection failed — নিচের নির্দেশনা দেখো');
+function togglePass(inputId, btnId) {
+  const inp = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if(inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁'; }
 }
 
 // ════════════════════════════════════════════
 //  USER UI
 // ════════════════════════════════════════════
-function updateUserUI(user){
-  const lb=document.getElementById('headerLoginBtn');
-  const ed=document.getElementById('userEmailDisplay');
-  const lo=document.getElementById('logoutBtn');
-  if(user){
-    lb.style.display='none'; ed.style.display='inline';
-    ed.textContent=user.email; lo.style.display='inline';
+function updateUserUI(user) {
+  const lb = document.getElementById('headerLoginBtn');
+  const ed = document.getElementById('userEmailDisplay');
+  const lo = document.getElementById('logoutBtn');
+  if(user) {
+    lb.style.display = 'none'; ed.style.display = 'inline';
+    ed.textContent = user.email; lo.style.display = 'inline';
     document.getElementById('guestNotice').classList.add('hidden');
   } else {
-    ed.style.display='none'; lo.style.display='none';
-    lb.style.display= isGuest ? 'none' : 'inline';
+    ed.style.display = 'none'; lo.style.display = 'none';
+    lb.style.display = isGuest ? 'none' : 'inline';
   }
 }
-function setSyncStatus(state,text){
-  const dot=document.getElementById('syncDot');
-  dot.className='sync-dot'+(state==='syncing'?' syncing':state==='offline'?' offline':'');
-  document.getElementById('syncTxt').textContent=text;
+
+function setSyncStatus(state, text) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-dot' + (state==='syncing' ? ' syncing' : state==='offline' ? ' offline' : '');
+  document.getElementById('syncTxt').textContent = text;
 }
 
 // ════════════════════════════════════════════
 //  SUPABASE PROGRESS SYNC
 // ════════════════════════════════════════════
-async function onUserLoggedIn(user){
-  currentUser=user;
+async function onUserLoggedIn(user) {
+  currentUser = user;
   updateUserUI(user);
   hideLoadingScreen();
   hideAuthModal();
-  setSyncStatus('syncing','Progress লোড হচ্ছে...');
+  setSyncStatus('syncing', 'Progress লোড হচ্ছে...');
   await loadProgress();
   render(); updateProgress();
-  setSyncStatus('ok','✅ Synced — '+user.email);
+  setSyncStatus('ok', '✅ Synced — ' + user.email);
 }
-async function loadProgress(){
-  if(isGuest||!currentUser) return;
-  const {data,error}=await sb.from('user_progress').select('checked_days').eq('user_id',currentUser.id).single();
-  if(error && error.code!=='PGRST116'){ setSyncStatus('offline','Load error: '+error.message); return; }
-  checked=(data && data.checked_days) ? data.checked_days : {};
+
+async function loadProgress() {
+  if(isGuest || !currentUser) return;
+  try {
+    const {data, error} = await sb.from('user_progress').select('checked_days').eq('user_id', currentUser.id).single();
+    if(error && error.code !== 'PGRST116') throw error;
+    checked = (data && data.checked_days) ? data.checked_days : {};
+  } catch(err) {
+    setSyncStatus('offline', 'Load error: ' + err.message);
+  }
 }
-async function saveProgress(){
-  if(isGuest){ localStorage.setItem(GUEST_KEY,JSON.stringify(checked)); return; }
+
+async function saveProgress() {
+  if(isGuest) { localStorage.setItem(GUEST_KEY, JSON.stringify(checked)); return; }
   if(!currentUser) return;
-  setSyncStatus('syncing','Saving...');
-  const {error}=await sb.from('user_progress').upsert({
-    user_id:currentUser.id, checked_days:checked, updated_at:new Date().toISOString()
-  },{onConflict:'user_id'});
-  if(error) setSyncStatus('offline','Save error: '+error.message);
-  else setSyncStatus('ok','✅ Synced — '+currentUser.email);
+  setSyncStatus('syncing', 'Saving...');
+  try {
+    const {error} = await sb.from('user_progress').upsert({
+      user_id: currentUser.id, checked_days: checked, updated_at: new Date().toISOString()
+    }, {onConflict: 'user_id'});
+    if(error) throw error;
+    setSyncStatus('ok', '✅ Synced');
+  } catch(err) {
+    setSyncStatus('offline', 'Save error: ' + err.message);
+  }
 }
-function scheduleSave(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveProgress,800); }
+
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveProgress, 800); }
 
 // ════════════════════════════════════════════
-//  RENDER
+//  RENDER UI (Optimized with DocumentFragment)
 // ════════════════════════════════════════════
-let activeWk=null;
+let activeWk = null;
 
-function buildWkBtns(){
-  const c=document.getElementById('wkBtns');
-  const all=document.createElement('button');
-  all.className='fbtn active'; all.textContent='All'; all.id='wbAll';
-  all.onclick=()=>{ activeWk=null; document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active')); all.classList.add('active'); render(); };
-  c.appendChild(all);
-  weeks.forEach(wk=>{
-    const btn=document.createElement('button');
-    btn.className='fbtn'+(wk.phase==='revision'?' revision-week':'');
-    btn.textContent=wk.label;
-    btn.onclick=()=>{
-      activeWk= activeWk===wk.id ? null : wk.id;
-      document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+function buildWkBtns() {
+  const c = document.getElementById('wkBtns');
+  const frag = document.createDocumentFragment();
+  
+  const all = document.createElement('button');
+  all.className = 'fbtn active'; all.textContent = 'All'; all.id = 'wbAll';
+  all.onclick = () => { 
+    activeWk = null; 
+    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active')); 
+    all.classList.add('active'); 
+    render(); 
+  };
+  frag.appendChild(all);
+
+  weeks.forEach(wk => {
+    const btn = document.createElement('button');
+    btn.className = 'fbtn' + (wk.phase==='revision' ? ' revision-week' : '');
+    btn.textContent = wk.label;
+    btn.onclick = () => {
+      activeWk = (activeWk === wk.id) ? null : wk.id;
+      document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
       if(activeWk) btn.classList.add('active');
       else document.getElementById('wbAll').classList.add('active');
       render();
     };
-    c.appendChild(btn);
+    frag.appendChild(btn);
   });
+  c.appendChild(frag);
 }
 
-function render(){
-  const cont=document.getElementById('planC');
-  cont.innerHTML='';
-  const subj=document.getElementById('subF').value;
-  const phase=document.getElementById('phaseF').value;
+function render() {
+  const cont = document.getElementById('planC');
+  const frag = document.createDocumentFragment();
+  const subj = document.getElementById('subF').value;
+  const phase = document.getElementById('phaseF').value;
 
-  weeks.forEach(wk=>{
-    if(activeWk && activeWk!==wk.id) return;
-    if(phase==='study' && wk.phase!=='study') return;
-    if(phase==='revision' && wk.phase!=='revision') return;
+  weeks.forEach(wk => {
+    if(activeWk && activeWk !== wk.id) return;
+    if(phase === 'study' && wk.phase !== 'study') return;
+    if(phase === 'revision' && wk.phase !== 'revision') return;
 
-    const wkDays=plan.filter(d=>
-      d.d>=wk.days[0] && d.d<=wk.days[1] &&
-      (subj==='all' || d.s===subj) &&
-      (phase==='all' || d.phase===phase)
+    const wkDays = plan.filter(d => 
+      d.d >= wk.days[0] && d.d <= wk.days[1] &&
+      (subj === 'all' || d.s === subj) &&
+      (phase === 'all' || d.phase === phase)
     );
     if(!wkDays.length) return;
 
-    const block=document.createElement('div');
-    block.className='week-block';
+    const block = document.createElement('div');
+    block.className = 'week-block';
 
-    if(wk.phase==='revision' && wkDays.length && !cont.querySelector('.grand-banner')){
-      const banner=document.createElement('div');
-      banner.className='grand-banner';
-      banner.innerHTML=`<div style="font-size:28px">🔥</div><div class="grand-banner-text"><h3>Grand Revision Phase শুরু!</h3><p>৪৩ দিনের পড়াশোনা শেষ। এখন সব বিষয় Revise + Mock Test এর সময়।<br>প্রতিটি দিন নির্দিষ্ট plan অনুযায়ী এগিয়ে যাও — তুমি পারবে! 💪</p></div>`;
+    if(wk.id === 7 && !cont.querySelector('.grand-banner') && !frag.querySelector('.grand-banner')) {
+      const banner = document.createElement('div');
+      banner.className = 'grand-banner';
+      banner.innerHTML = `<div style="font-size:32px">🔥</div><div class="grand-banner-text"><h3>Grand Revision Phase শুরু!</h3><p>৪৩ দিনের পড়াশোনা শেষ। এখন সব বিষয় Revise + Mock Test এর সময়। প্রতিটি দিন নির্দিষ্ট plan অনুযায়ী এগিয়ে যাও — তুমি পারবে! 💪</p></div>`;
       block.appendChild(banner);
     }
 
-    const wkDone=wkDays.filter(d=>checked[d.d]).length;
-    const hdr=document.createElement('div');
-    hdr.className='week-hdr';
-    hdr.style.background=wk.color;
-    hdr.innerHTML=`<span class="wbadge">${wk.label}</span><span>${wk.title}</span><span class="wcnt" id="wc${wk.id}">${wkDone}/${wkDays.length} done</span>`;
+    const wkDone = wkDays.filter(d => checked[d.d]).length;
+    const hdr = document.createElement('div');
+    hdr.className = 'week-hdr';
+    hdr.style.background = wk.color;
+    hdr.innerHTML = `<span class="wbadge">${wk.label}</span><span>${wk.title}</span><span class="wcnt" id="wc${wk.id}">${wkDone}/${wkDays.length} done</span>`;
     block.appendChild(hdr);
 
-    wkDays.forEach(d=>{
-      const tc=sc[d.s]||sc["বাংলা ১ম পত্র"];
-      const isDone=checked[d.d];
-      const isRev=d.phase==='revision';
-      const card=document.createElement('div');
-      card.className='day-card'+(isDone?' done':'')+(isRev?' grand-rev':'');
-      card.style.borderLeftColor=tc.brd;
+    wkDays.forEach(d => {
+      const tc = sc[d.s] || sc["Grand Revision"];
+      const isDone = checked[d.d];
+      const isRev = d.phase === 'revision';
+      
+      const card = document.createElement('div');
+      card.className = 'day-card' + (isDone ? ' done' : '') + (isRev ? ' grand-rev' : '');
+      card.style.borderLeftColor = tc.brd;
 
-      const cb=document.createElement('div');
-      cb.className='cb'+(isDone?' checked':'');
+      // Checkbox
+      const cb = document.createElement('div');
+      cb.className = 'cb' + (isDone ? ' checked' : '');
       card.appendChild(cb);
 
-      const dn=document.createElement('div');
-      dn.className='dnum'+(isRev?' rev':'');
-      dn.textContent=`D${d.d}`;
-      card.appendChild(dn);
+      // Day Number
+      const dnc = document.createElement('div');
+      dnc.className = 'dnum-container';
+      const dn = document.createElement('div');
+      dn.className = 'dnum' + (isRev ? ' rev' : '');
+      dn.textContent = `D${d.d}`;
+      dnc.appendChild(dn);
+      card.appendChild(dnc);
 
-      const body=document.createElement('div');
-      body.className='cbody';
-      const meta=document.createElement('div');
-      meta.className='cmeta';
-      const subjBadge=isRev
+      // Body
+      const body = document.createElement('div');
+      body.className = 'cbody';
+      
+      // Meta (Subject & Date)
+      const meta = document.createElement('div');
+      meta.className = 'cmeta';
+      
+      const displaySubj = d.title || d.s; // Use specific title for Revision days if available
+      const subjBadge = isRev
         ? `<span class="rev-badge">🔥 Grand Rev</span>`
         : `<span class="tbadge" style="background:${tc.bg};color:${tc.col}">${d.s}</span>`;
-      meta.innerHTML=`<span class="csubj">${d.s}</span>${subjBadge}`;
+        
+      meta.innerHTML = `
+        <span class="csubj">${displaySubj}</span>
+        ${subjBadge}
+        <span class="date-badge">📅 ${d.date}</span>
+      `;
       body.appendChild(meta);
-      const tp=document.createElement('div');
-      tp.className='ctopic'; tp.textContent=d.t;
+      
+      // Topic
+      const tp = document.createElement('div');
+      tp.className = 'ctopic'; 
+      tp.innerHTML = d.t;
       body.appendChild(tp);
+      
       card.appendChild(body);
 
-      card.onclick=()=>{
-        checked[d.d]=!checked[d.d];
+      // Click Event
+      card.onclick = () => {
+        checked[d.d] = !checked[d.d];
         scheduleSave();
-        card.classList.toggle('done',checked[d.d]);
-        cb.classList.toggle('checked',checked[d.d]);
+        card.classList.toggle('done', checked[d.d]);
+        cb.classList.toggle('checked', checked[d.d]);
         updateProgress();
-        const newDone=wkDays.filter(x=>checked[x.d]).length;
-        const wcEl=document.getElementById('wc'+wk.id);
-        if(wcEl) wcEl.textContent=`${newDone}/${wkDays.length} done`;
+        const newDone = wkDays.filter(x => checked[x.d]).length;
+        const wcEl = document.getElementById('wc'+wk.id);
+        if(wcEl) wcEl.textContent = `${newDone}/${wkDays.length} done`;
       };
       block.appendChild(card);
     });
-    cont.appendChild(block);
+    frag.appendChild(block);
   });
+  
+  cont.innerHTML = '';
+  cont.appendChild(frag);
 }
 
-function updateProgress(){
-  const done=plan.filter(d=>checked[d.d]).length;
-  const pct=Math.round(done/plan.length*100);
-  document.getElementById('pgBar').style.width=pct+'%';
-  document.getElementById('pgTxt').textContent=`${done} / ${plan.length} days completed (${pct}%)`;
-  document.getElementById('doneN').textContent=done;
-  document.getElementById('leftN').textContent=plan.length-done;
+function updateProgress() {
+  const done = plan.filter(d => checked[d.d]).length;
+  const pct = Math.round((done / plan.length) * 100);
+  document.getElementById('pgBar').style.width = pct + '%';
+  document.getElementById('pgTxt').textContent = `${done} / ${plan.length} days completed (${pct}%)`;
 }
 
 // ════════════════════════════════════════════
-//  INIT — ✅ INITIAL_SESSION দিয়ে session persistence
+//  INIT
 // ════════════════════════════════════════════
-async function initApp(){
+async function initApp() {
   pomoUpdateDisplay();
   buildWkBtns();
-  setSyncStatus('syncing','Session চেক হচ্ছে...');
+  setSyncStatus('syncing', 'Session চেক হচ্ছে...');
 
   sb.auth.onAuthStateChange(async (event, session) => {
-
     if (event === 'INITIAL_SESSION') {
       if (session && session.user) {
         await onUserLoggedIn(session.user);
@@ -902,27 +851,23 @@ async function initApp(){
         hideLoadingScreen();
         setSyncStatus('offline', 'Login করো progress save করতে');
         showAuthModal();
-        render();
-        updateProgress();
+        render(); updateProgress();
       }
     }
-
     else if (event === 'SIGNED_IN' && session) {
       if (!currentUser || currentUser.id !== session.user.id) {
         await onUserLoggedIn(session.user);
       }
     }
-
     else if (event === 'SIGNED_OUT') {
       currentUser = null;
-      checked     = {};
-      isGuest     = false;
+      checked = {};
+      isGuest = false;
       updateUserUI(null);
       setSyncStatus('offline', 'Logged out');
       hideLoadingScreen();
       showAuthModal();
     }
-
     else if (event === 'TOKEN_REFRESHED' && session) {
       currentUser = session.user;
       setSyncStatus('ok', '✅ Synced — ' + session.user.email);
