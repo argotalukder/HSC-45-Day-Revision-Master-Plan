@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HSC 55-Day Revision Plan — BrainArena">
+<meta name="description" content="HSC Custom Revision Plan — BrainArena">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z'/%3E%3C/svg%3E" type="image/svg+xml">
-<title>HSC 55-Day Master Plan — BrainArena</title>
+<title>HSC Master Plan — BrainArena</title>
 <style>
 /* ── CSS Variables ── */
 :root {
@@ -31,7 +31,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 .fade-in { animation: fadeIn 0.3s ease-in-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ── Header (Main View) ── */
+/* ── Header ── */
 .header { background: linear-gradient(135deg, #1e1b4b, #1e293b); color: #fff; padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); }
 .header-brand { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--success); margin-bottom: 8px; }
 .header h1 { font-size: clamp(22px, 5vw, 28px); font-weight: 800; margin-bottom: 6px; }
@@ -61,11 +61,16 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 .controls { background: var(--bg-card); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
 .controls-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex: 1; }
 select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; }
-.fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
+.fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
 .fbtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.btn-edit-mode { background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
+
+.controls-right { display: flex; gap: 10px; }
+.btn-feature { padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; border: none; }
+.btn-edit-mode { background: #0284c7; color: white; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
 .btn-edit-mode:hover { background: #0369a1; transform: translateY(-1px); }
+.btn-short-map { background: #6366f1; color: white; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); }
+.btn-short-map:hover { background: #4f46e5; transform: translateY(-1px); }
 
 /* ── Main List ── */
 .container { max-width: 900px; margin: 0 auto; padding: 20px 15px 80px; }
@@ -87,9 +92,24 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .ctopic { font-size: 13.5px; color: var(--text-body); line-height: 1.6; }
 .tbadge { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 
+/* ── Modal Overview (Short Roadmap) ── */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 999; display: none; align-items: center; justify-content: center; }
+.modal-content { background: var(--bg-card); width: 90%; max-width: 500px; max-height: 85vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border); animation: slideUp 0.3s ease; }
+.modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border-radius: 16px 16px 0 0; }
+.modal-header h2 { font-size: 18px; color: #fff; }
+.btn-close { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; }
+.btn-close:hover { color: var(--danger); }
+.modal-body { padding: 10px 0; overflow-y: auto; flex: 1; }
+.short-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+.short-item:hover { background: var(--bg-hover); }
+.short-left { display: flex; align-items: center; gap: 12px; }
+.short-dnum { background: var(--primary); color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; width: 55px; text-align: center; }
+.short-subj { color: #fff; font-size: 14px; font-weight: bold; }
+.short-date { color: var(--text-muted); font-size: 12px; }
+
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
-@keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
+@keyframes slideUp { from { transform: translate(-50%, 20px); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
 
 /* ════════════════════════════════════════════
    FULL SCREEN EDIT MODE CSS
@@ -113,6 +133,13 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .edit-card:hover { border-color: var(--primary); }
 .edit-day-badge { display: inline-block; background: var(--primary); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; }
 
+.btn-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+.btn-delete:hover { background: var(--danger); color: #fff; }
+
+.btn-add-wrap { text-align: center; margin-top: 10px; }
+.btn-add { background: transparent; color: var(--primary); border: 2px dashed var(--primary); padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 700; transition: 0.3s; width: 100%; max-width: 400px; }
+.btn-add:hover { background: var(--primary); color: #fff; }
+
 .input-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px; }
 .input-group { display: flex; flex-direction: column; gap: 5px; }
 .input-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
@@ -123,7 +150,8 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 @media(max-width: 600px) {
   .controls { flex-direction: column; align-items: stretch; }
-  .btn-edit-mode { width: 100%; text-align: center; margin-top: 10px; }
+  .controls-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .btn-feature { width: 100%; text-align: center; }
   .input-row { grid-template-columns: 1fr; gap: 10px; }
   .edit-navbar { flex-direction: column; gap: 15px; }
   .edit-nav-left, .edit-nav-right { width: 100%; justify-content: space-between; }
@@ -135,21 +163,36 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 <div id="toast">Progress Saved!</div>
 
 <!-- ════════════════════════════════════════════
+   SHORT ROADMAP MODAL
+════════════════════════════════════════════ -->
+<div class="modal-overlay" id="shortMapModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>🗺️ Short Roadmap</h2>
+      <button class="btn-close" onclick="closeShortMap()">&times;</button>
+    </div>
+    <div class="modal-body" id="shortMapList">
+      <!-- Injected via JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════
    MAIN DASHBOARD VIEW
 ════════════════════════════════════════════ -->
 <div id="mainView" class="fade-in">
   <header class="header">
     <div class="header-brand">BrainArena</div>
-    <h1>📚 HSC 2026 Master Plan</h1>
-    <p>৫১ দিন পড়াশোনা + ৪ দিন Grand Mock Test = ৫৫ দিন</p>
+    <h1>📚 HSC Custom Master Plan</h1>
+    <p>আপনার প্রয়োজন অনুযায়ী রুটিন সাজিয়ে নিন</p>
     <div class="prog-wrap">
       <div class="prog-bg"><div class="prog-fill" id="pgBar"></div></div>
-      <div class="prog-txt" id="pgTxt">0 / 55 Days Completed (0%)</div>
+      <div class="prog-txt" id="pgTxt">0 / 0 Days Completed (0%)</div>
     </div>
   </header>
 
   <div class="stats-bar">
-    <div class="stat-item"><span class="stat-val">55</span><span class="stat-lbl">Days Total</span></div>
+    <div class="stat-item"><span class="stat-val" id="statTotal">55</span><span class="stat-lbl">Days Total</span></div>
     <div class="stat-item"><span class="stat-val" id="statDone">0</span><span class="stat-lbl">Completed</span></div>
     <div class="stat-item"><span class="stat-val" id="statLeft">55</span><span class="stat-lbl">Remaining</span></div>
   </div>
@@ -185,7 +228,10 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
       </select>
       <div class="fbtns" id="wkBtns"></div>
     </div>
-    <button class="btn-edit-mode" onclick="openEditMode()">⚙️ Edit Plan</button>
+    <div class="controls-right">
+      <button class="btn-feature btn-short-map" onclick="openShortMap()">🗺️ Short Map</button>
+      <button class="btn-feature btn-edit-mode" onclick="openEditMode()">⚙️ Edit Plan</button>
+    </div>
   </div>
 
   <main class="container" id="planList"></main>
@@ -240,7 +286,7 @@ const sc = {
   "Grand Revision":{bg:"#431407", col:"#fed7aa", brd:"#ea580c"},
 };
 
-const weeks = [
+const baseWeeks = [
   {id:1, label:"W1", title:"বাংলা + ইংরেজি", color:"#1e3a8a", days:[1,7]},
   {id:2, label:"W2", title:"ইংরেজি + ICT + পদার্থ", color:"#312e81", days:[8,14]},
   {id:3, label:"W3", title:"পদার্থ + রসায়ন", color:"#083344", days:[15,21]},
@@ -251,78 +297,107 @@ const weeks = [
   {id:8, label:"Rev 2", title:"Mock Test Phase", color:"#9a3412", days:[50,55]},
 ];
 
-// Default fallback Plan
+// Full Default Fallback Plan
 const defaultPlan = [
-  {d:1, date:"১২/০৪/২০২৬", s:"বাংলা ১ম পত্র", t:"গদ্য অধ্যায় ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি · অপরিচিতা · সাহিত্যে খেলা · বিলাসী · অধ্যাঙ্গিনী · যৌবনের গান | গদ্য অধ্যায় ৭–১২: জীবন ও বৃক্ষ · গন্তব্য কাবুল · মাসি-পিসি · কপিলদাস মুমুর্ষু শেষ কাজ · রেইনকোট · নেকলেস | উপন্যাস: লালসালু | পদ্য অধ্যায় ১–১২: ঋতুবর্ণন · বিভীষণের প্রতি মেঘনাদ · সোনার তরী · বিদ্রোহী · সুচেতনা · প্রতিদান · তাহারেই পড়ে মনে · পদ্মা · ফেব্রুয়ারি ১৯৬৯ · আঠার বছর বয়স · আমি কিংবদন্তির কথা বলছি · প্রত্যাবর্তনের লজ্জা | নাটক: সিরাজউদ্দৌলা"},
-  {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"অধ্যায় ১–৪: বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম (ণ-ত্ব, য-ত্ব, ই-কার) | ব্যাকরণিক শব্দশ্রেণি (বিশেষ্য, সর্বনাম, ক্রিয়া, অব্যয়, যোজক) | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
-  {d:3, date:"১৪/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"অধ্যায় ৫: বাক্যতত্ত্ব (বাক্যের শ্রেণি, পদক্রম, রূপান্তর) | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল/বৈদ্যুতিক চিঠি | আবেদনপত্র | সারাংশ/সারমর্ম | ভাব-সম্প্রসারণ | কবিতাংশ | সংলাপ | খুদে গল্প | প্রবন্ধ রচনা"},
-  {d:4, date:"১৫/০৪/২০২৬", s:"English 1st", t:"Seen Comprehension (MCQ + questions) — top 8 passages | Summarizing (seen + unseen) | Unseen Comprehension — top 10 passages | Cloze test with clues (top 15) | Cloze test without clues (top 15)"},
-  {d:5, date:"১৬/০৪/২০২৬", s:"English 1st", t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics) | Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
-  {d:6, date:"১৭/০৪/২০২৬", s:"English 2nd", t:"Article | Preposition | Special words/phrases (modal verbs) | Completing sentence — all clause types (all board questions)"},
-  {d:7, date:"১৮/০৪/২০২৬", s:"English 2nd", t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
-  {d:8, date:"১৯/০৪/২০২৬", s:"English 2nd", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
-  {d:9, date:"২০/০৪/২০২৬", s:"ICT", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
-  {d:10, date:"২১/০৪/২০২৬", s:"ICT", t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
-  {d:11, date:"২২/০৪/২০২৬", s:"ICT", t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
-  {d:12, date:"২৩/০৪/২০২৬", s:"পদার্থ ১ম", t:"অধ্যায় ৩: গতিবিদ্যা — প্রাস (পাল্লা, উচ্চতা, বিচরণকাল, বেগ), লেখচিত্র থেকে ত্বরণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার, ক্ষেত্রফল নির্ণয়, Gradient/Divergence/Curl"},
-  {d:13, date:"২৪/০৪/২০২৬", s:"পদার্থ ১ম", t:"অধ্যায় ৫: কাজ শক্তি ও ক্ষমতা — কাজ-শক্তি উপপাদ্য, পাম্পের ক্ষমতা, গতিশক্তি, বিভবশক্তি, স্প্রিং শক্তি | অধ্যায় ৬: মহাকর্ষ ও অভিকর্ষ — কেপলারের সূত্র, g নির্ণয়, মুক্তিবেগ, কৃত্রিম উপগ্রহ, ভূস্থির উপগ্রহ"},
-  {d:14, date:"২৫/০৪/২০২৬", s:"পদার্থ ১ম", t:"অধ্যায় ৮: পর্যাবৃত্ত গতি — সরল দোলক, স্প্রিং, কৌণিক বেগ | অধ্যায় ৯: তরঙ্গ"},
-  {d:15, date:"২৬/০৪/২০২৬", s:"পদার্থ ১ম", t:"অধ্যায় ১০: আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | অধ্যায় ৭: পদার্থের গাঠনিক ধর্ম — ইয়ং গুণাঙ্ক, পয়সনের অনুপাত, পৃষ্ঠটান, সান্দ্রতা"},
-  {d:16, date:"২৭/০৪/২০২৬", s:"পদার্থ ২য়", t:"অধ্যায় ১: তাপগতিবিদ্যা — Carnot engine, দক্ষতা, এন্ট্রপি, গৃহীত/বর্জিত তাপ, গৃহীত কাজ | অধ্যায় ২: স্থির তড়িৎ — বিভব, তড়িৎ প্রাবল্য, ধারকত্ব, সঞ্চিত শক্তি"},
-  {d:17, date:"২৮/০৪/২০২৬", s:"পদার্থ ২য়", t:"অধ্যায় ৩: চলতড়িৎ — Kirchhoff, Wheatstone bridge, Joule's law, ধারার ক্ষমতা | অধ্যায় ৭: ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন, তরঙ্গদৈর্ঘ্য নির্ণয়, ডোরার প্রস্থ"},
-  {d:18, date:"২৯/০৪/২০২৬", s:"পদার্থ ২য়", t:"অধ্যায় ৮: আধুনিক পদার্থবিজ্ঞানের সূচনা — আলোক তড়িৎ ক্রিয়া, de Broglie তরঙ্গদৈর্ঘ্য, X-ray, আপেক্ষিকতা (ভর, দৈর্ঘ্য, কাল) | অধ্যায় ৯: পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান — অর্ধায়ু, গড় আয়ু, ভরত্রুটি, ফিশন, ফিউশন"},
-  {d:19, date:"৩০/০৪/২০২৬", s:"পদার্থ ২য়", t:"অধ্যায় ১০: সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate, Amplifier, Rectifier"},
-  {d:20, date:"০১/০৫/২০২৬", s:"রসায়ন ১ম", t:"অধ্যায় ২: গুণগত রসায়ন — পরমাণুর গঠন, Orbital, কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, দ্রাব্যতা গুণফল"},
-  {d:21, date:"০২/০৫/২০২৬", s:"রসায়ন ১ম", t:"অধ্যায় ৩: মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
-  {d:22, date:"০৩/০৫/২০২৬", s:"রসায়ন ১ম", t:"অধ্যায় ৪: রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer, সক্রিয়ণ শক্তি"},
-  {d:23, date:"০৪/০৫/২০২৬", s:"রসায়ন ১ম", t:"অধ্যায় ১: ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা — Hazard symbol, কাচ যন্ত্রপাতি ব্যবহার | অধ্যায় ৭: রসায়ন এবং প্রযুক্তি — নমনীয় খাদ্যসংরক্ষণ, Recycling"},
-  {d:24, date:"০৫/০৫/২০২৬", s:"রসায়ন ২য়", t:"অধ্যায় ১: পরিবেশ রসায়ন — PV=nRT গাণিতিক সমস্যা, Dalton's partial pressure, Van der Waals, ব্যাপন হার, RMS বেগ, গড় মুক্তপথ"},
-  {d:25, date:"০৬/০৫/২০২৬", s:"রসায়ন ২য়", t:"অধ্যায় ২: পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন (KMnO₄, K₂Cr₂O₇), ঘনমাত্রা (ppm, ppb), pH নির্ণয়"},
-  {d:26, date:"০৭/০৫/২০২৬", s:"রসায়ন ২য়", t:"অধ্যায় ৪: তড়িৎ রসায়ন — Nernst equation, EMF, কোষে সংগৃহীত পদার্থ, ক্যাথোডে বিদ্যুৎ বিশ্লেষণ"},
-  {d:27, date:"০৮/০৫/২০২৬", s:"রসায়ন ২য়", t:"অধ্যায় ৫: অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, সাবান, পলিমার"},
-  {d:28, date:"০৯/০৫/২০২৬", s:"জীব ১ম", t:"অধ্যায় ১: কোষ ও এর গঠন — কোষের গঠন (প্রকৃত/অপ্রকৃত), সকল অঙ্গাণু, Fluid mosaic model, DNA/RNA গঠন, ট্রান্সক্রিপশন, ট্রান্সলেশন, অনুলিপন | অধ্যায় ২: কোষ বিভাজন — Mitosis/Meiosis সব ধাপ (চিত্রসহ), গুরুত্ব, Crossing over"},
-  {d:29, date:"১০/০৫/২০২৬", s:"জীব ১ম", t:"অধ্যায় ৩: কোষ রসায়ন — কার্বোহাইড্রেট, প্রোটিন, লিপিড, এনজাইম গঠন ও কাজ | অধ্যায় ৪: অণুজীব — ব্যাকটেরিয়া গঠন, T2 ফাজ সংখ্যাবৃদ্ধি, ম্যালেরিয়া জীবাণু (Eryথ্রোসাইটিক চক্র), ডেঙ্গু"},
-  {d:30, date:"১১/০৫/২০২৬", s:"জীব ১ম", t:"অধ্যায় ৭: নগ্নবীজী ও আবৃতবীজী উদ্ভিদ — Cycas, Malvaceae, Poaceae (বৈশিষ্ট্য ও গুরুত্ব) | অধ্যায় ৯: উদ্ভিদ শরীরতত্ত্ব — পত্ররন্ধ্র (আধুনিক মতবাদ), সালোকসংশ্লেষণ (C3/C4/CAM চক্র, আলোক বিক্রিয়া), শ্বসন (Glycolysis, Krebs cycle), প্রস্বেদন"},
-  {d:31, date:"১২/০৫/২০২৬", s:"জীব ১ম", t:"অধ্যায় ১৩: জীবপ্রযুক্তি — GMO, DNA fingerprinting, Genome sequencing"},
-  {d:32, date:"১৩/০৫/২০২৬", s:"জীব ২য়", t:"অধ্যায় ১: প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস — সকল পর্বের বৈশিষ্ট্য ও উদাহরণ, Chordata/Non-Chordata পার্থক্য | অধ্যায় ২: প্রাণীর পরিচিতি — হাইড্রা (গঠন, নিডোসাইট, চলন, প্রজনন)"},
-  {d:33, date:"১৪/০৫/২০২৬", s:"জীব ২য়", t:"অধ্যায় ৩: মানব শারীরবিদ্যা: পরিপাক ও শোষণ — পরিপাকতন্ত্র সব অঙ্গ, যকৃৎ, অগ্নাশয়, ক্ষুদ্রান্ত্রে শোষণ, BMI | অধ্যায় ৪: মানব শারীরবিদ্যা: রক্ত সংবহন — হৃদপিণ্ডের গঠন (চিত্র), কার্ডিয়াক চক্র, রক্তচাপ, হার্ট অ্যাটাক, Heart failure, রক্ততঞ্চন"},
-  {d:34, date:"১৫/০৫/২০২৬", s:"জীব ২য়", t:"অধ্যায় ৫: মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য — ফুসফুসের গঠন, অ্যালভিওলাস, হিমোগ্লোবিন, ক্লোরাইড শিফট, সাইনোসাইটিস | অধ্যায় ৬: মানব শারীরবিদ্যা: বর্জ্য ও নিষ্কাশন"},
-  {d:35, date:"১৬/০৫/২০২৬", s:"জীব ২য়", t:"অধ্যায় ৮: মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | অধ্যায় ১১: জীনতত্ত্ব ও বিবর্তন"},
-  {d:36, date:"১৭/০৫/২০২৬", s:"গণিত ১ম", t:"অধ্যায় ১: ম্যাট্রিক্স ও নির্ণায়ক — ট্রান্সপোজ, বিপরীত ম্যাট্রিক্স, Cramer's rule, প্রতিসম/বিপ্রতিসম, নির্ণায়ক প্রমাণ | অধ্যায় ২: ভেক্টর — ক্রস গুণফল, ডট গুণফল, লম্ব একক ভেক্টর, ক্ষেত্রফল, Gradient/Divergence/Curl"},
-  {d:37, date:"১৮/০৫/২০২৬", s:"গণিত ১ম", t:"অধ্যায় ৩: সরলরেখা | অধ্যায় ৪: বৃত্ত"},
-  {d:38, date:"১৯/০৫/২০২৬", s:"গণিত ১ম", t:"অধ্যায় ৭: সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | অধ্যায় ১০: যোগজীকরণ"},
-  {d:39, date:"২০/০৫/২০২৬", s:"গণিত ১ম", t:"অধ্যায় ৯: অন্তরীকরণ"},
-  {d:40, date:"২১/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ১: বাস্তব সংখ্যা ও অসমতা — পরমমান, সংখ্যারেখা, অসমতার সমাধান | অধ্যায় ৪: বহুপদী সমীকরণ — মূলের প্রকৃতি, প্রতিসম মূলবিশিষ্ট সমীকরণ, মূল থেকে সমীকরণ গঠন, α β দিয়ে মান নির্ণয়"},
-  {d:41, date:"২২/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ৫: দ্বিপদী বিস্তৃতি | অধ্যায় ৭: বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ — মান নির্ণয়, প্রমাণ, সমীকরণ সমাধান"},
-  {d:42, date:"২৩/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা"},
-  {d:43, date:"২৪/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
-
-  {d:44, date:"২৫/০৫/২০২৬", s:"Grand Revision", t:"<b>🔵 বাংলা ১ম + ২য় পত্র:</b> গুরুত্বপূর্ণ MCQ + সৃজনশীল উত্তর অনুশীলন। ব্যাকরণ সব নিয়ম ও রচনার outline চোখ বুলাও।"},
-  {d:45, date:"২৬/০৫/২০২৬", s:"Grand Revision", t:"<b>🟡 English 1st + 2nd Paper:</b> Grammar rules shortlist, formal letter format, seen/unseen key points review."},
-  {d:46, date:"২৭/০৫/২০২৬", s:"Grand Revision", t:"<b>🩵 ICT:</b> সংখ্যা রূপান্তর (Binary-Hex), Logic gate truth table, HTML tags, SQL commands."},
-  {d:47, date:"২৮/০৫/২০২৬", s:"Grand Revision", t:"<b>🟢 পদার্থ ১ম পত্র:</b> প্রাস গতির সূত্র, কাজ-শক্তি-ক্ষমতা, মহাকর্ষ, আদর্শ গ্যাস ও সূত্রসমূহ দ্রুত চোখ বুলাও।"},
-  {d:48, date:"২৯/০৫/২০২৬", s:"Grand Revision", t:"<b>🟢 পদার্থ ২য় পত্র:</b> তাপগতিবিদ্যা, চলতড়িৎ, ব্যতিচার-অপবর্তন, আধুনিক পদার্থবিজ্ঞান ও সেমিকন্ডাক্টর।"},
-  {d:49, date:"৩০/০৫/২০২৬", s:"Grand Revision", t:"<b>🩷 রসায়ন ১ম পত্র:</b> কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, Kp-Kc, pH-Buffer calculation review."},
-  {d:50, date:"৩১/০৫/২০২৬", s:"Grand Revision", t:"<b>🩷 রসায়ন ২য় পত্র:</b> PV=nRT সমস্যা, টাইট্রেশন, তড়িৎ রসায়ন (EMF), অর্থনৈতিক রসায়ন তথ্য।"},
-  {d:51, date:"০১/০৬/২০২৬", s:"Grand Revision", t:"<b>🌿 জীব ১ম পত্র:</b> DNA/RNA পার্থক্য, Mitosis/Meiosis চিত্র, C3/C4 চক্র, জীবপ্রযুক্তি।"},
-  {d:52, date:"০২/০৬/২০২৬", s:"Grand Revision", t:"<b>🌿 জীব ২য় পত্র:</b> প্রাণীর শ্রেণিবিন্যাস, হাইড্রা গঠন, মানব শারীরবিদ্যা (হৃদপিণ্ড, ফুসফুস, নেফ্রন) ও জীনতত্ত্ব।"},
-  {d:53, date:"০৩/০৬/২০২৬", s:"Grand Revision", t:"<b>🟠 গণিত ১ম পত্র:</b> ম্যাট্রিক্স, ভেক্টর, সরলরেখা, বৃত্ত, ত্রিকোণমিতি, যোগজীকরণ ও অন্তরীকরণ সূত্রাবলী।"},
-  {d:54, date:"০৪/০৬/২০২৬", s:"Grand Revision", t:"<b>🟠 গণিত ২য় পত্র:</b> বহুপদী, দ্বিপদী, বিপরীত ত্রিকোণমিতি, কনিক, গতিবিদ্যা ও সম্ভাবনা।"},
-  {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", t:"<b>🏆 Final Mock Test Day:</b> সব বিষয়ের ভুল হওয়া টপিকগুলো একবার দেখে নাও। তুমি সম্পূর্ণ প্রস্তুত! 💪"},
+  {d:1, date:"১২/০৪/২০২৬", s:"বাংলা ১ম পত্র", t:"গদ্য ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি, অপরিচিতা, সাহিত্যে খেলা, বিলাসী, অধ্যাঙ্গিনী, যৌবনের গান | উপন্যাস: লালসালু | পদ্য ১–৬: ঋতুবর্ণন..."},
+  {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম | ব্যাকরণিক শব্দশ্রেণি | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
+  {d:3, date:"১৪/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"বাক্যতত্ত্ব | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল | আবেদনপত্র | সারাংশ | ভাব-সম্প্রসারণ | রচনা"},
+  {d:4, date:"১৫/০৪/২০২৬", s:"English 1st", t:"Seen Comprehension (MCQ + questions) | Summarizing | Unseen Comprehension | Cloze test with clues | Cloze test without clues"},
+  {d:5, date:"১৬/০৪/২০২৬", s:"English 1st", t:"Rearranging sentences | Paragraph writing | Completing a story | Informal letters | Informal emails | Graph/Chart"},
+  {d:6, date:"১৭/০৪/২০২৬", s:"English 2nd", t:"Article | Preposition | Special words/phrases | Completing sentence"},
+  {d:7, date:"১৮/০৪/২০২৬", s:"English 2nd", t:"Right form of verbs | Changing sentence | Narration"},
+  {d:8, date:"১৯/০৪/২০২৬", s:"English 2nd", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Composition"},
+  {d:9, date:"২০/০৪/২০২৬", s:"ICT", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex, Logic gates | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL"},
+  {d:10, date:"২১/০৪/২০২৬", s:"ICT", t:"প্রোগ্রামিং ভাষা — C program | ওয়েভ ডিজাইন পরিচিতি ও HTML"},
+  {d:11, date:"২২/০৪/২০২৬", s:"ICT", t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
+  {d:12, date:"২৩/০৪/২০২৬", s:"পদার্থ ১ম", t:"গতিবিদ্যা — প্রাস | ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার"},
+  {d:13, date:"২৪/০৪/২০২৬", s:"পদার্থ ১ম", t:"কাজ শক্তি ও ক্ষমতা | মহাকর্ষ ও অভিকর্ষ"},
+  {d:14, date:"২৫/০৪/২০২৬", s:"পদার্থ ১ম", t:"পর্যাবৃত্ত গতি | তরঙ্গ"},
+  {d:15, date:"২৬/০৪/২০২৬", s:"পদার্থ ১ম", t:"আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | পদার্থের গাঠনিক ধর্ম"},
+  {d:16, date:"২৭/০৪/২০২৬", s:"পদার্থ ২য়", t:"তাপগতিবিদ্যা — Carnot engine | স্থির তড়িৎ — বিভব, ধারকত্ব"},
+  {d:17, date:"২৮/০৪/২০২৬", s:"পদার্থ ২য়", t:"চলতড়িৎ — Kirchhoff, Wheatstone | ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন"},
+  {d:18, date:"২৯/০৪/২০২৬", s:"পদার্থ ২য়", t:"আধুনিক পদার্থবিজ্ঞানের সূচনা | পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান"},
+  {d:19, date:"৩০/০৪/২০২৬", s:"পদার্থ ২য়", t:"সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate"},
+  {d:20, date:"০১/০৫/২০২৬", s:"রসায়ন ১ম", t:"গুণগত রসায়ন — পরমাণুর গঠন, কোয়ান্টাম সংখ্যা, দ্রাব্যতা গুণফল"},
+  {d:21, date:"০২/০৫/২০২৬", s:"রসায়ন ১ম", t:"মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
+  {d:22, date:"০৩/০৫/২০২৬", s:"রসায়ন ১ম", t:"রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer"},
+  {d:23, date:"০৪/০৫/২০২৬", s:"রসায়ন ১ম", t:"ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা | রসায়ন এবং প্রযুক্তি"},
+  {d:24, date:"০৫/০৫/২০২৬", s:"রসায়ন ২য়", t:"পরিবেশ রসায়ন — PV=nRT, Dalton's partial pressure, Van der Waals"},
+  {d:25, date:"০৬/০৫/২০২৬", s:"রসায়ন ২য়", t:"পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন, ঘনমাত্রা, pH"},
+  {d:26, date:"০৭/০৫/২০২৬", s:"রসায়ন ২য়", t:"তড়িৎ রসায়ন — Nernst equation, EMF"},
+  {d:27, date:"০৮/০৫/২০২৬", s:"রসায়ন ২য়", t:"অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, পলিমার"},
+  {d:28, date:"০৯/০৫/২০২৬", s:"জীব ১ম", t:"কোষ ও এর গঠন | কোষ বিভাজন — Mitosis/Meiosis"},
+  {d:29, date:"১০/০৫/২০২৬", s:"জীব ১ম", t:"কোষ রসায়ন | অণুজীব — ব্যাকটেরিয়া, ম্যালেরিয়া, ডেঙ্গু"},
+  {d:30, date:"১১/০৫/২০২৬", s:"জীব ১ম", t:"নগ্নবীজী ও আবৃতবীজী উদ্ভিদ | উদ্ভিদ শরীরতত্ত্ব — সালোকসংশ্লেষণ, শ্বসন"},
+  {d:31, date:"১২/০৫/২০২৬", s:"জীব ১ম", t:"জীবপ্রযুক্তি — GMO, DNA fingerprinting"},
+  {d:32, date:"১৩/০৫/২০২৬", s:"জীব ২য়", t:"প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস | প্রাণীর পরিচিতি — হাইড্রা"},
+  {d:33, date:"১৪/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: পরিপাক ও শোষণ | রক্ত সংবহন — হৃদপিণ্ডের গঠন"},
+  {d:34, date:"১৫/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য | বর্জ্য ও নিষ্কাশন"},
+  {d:35, date:"১৬/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | জীনতত্ত্ব ও বিবর্তন"},
+  {d:36, date:"১৭/০৫/২০২৬", s:"গণিত ১ম", t:"ম্যাট্রিক্স ও নির্ণায়ক | ভেক্টর"},
+  {d:37, date:"১৮/০৫/২০২৬", s:"গণিত ১ম", t:"সরলরেখা | বৃত্ত"},
+  {d:38, date:"১৯/০৫/২০২৬", s:"গণিত ১ম", t:"সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | যোগজীকরণ"},
+  {d:39, date:"২০/০৫/২০২৬", s:"গণিত ১ম", t:"অন্তরীকরণ"},
+  {d:40, date:"২১/০৫/২০২৬", s:"গণিত ২য়", t:"বাস্তব সংখ্যা ও অসমতা | বহুপদী সমীকরণ"},
+  {d:41, date:"২২/০৫/২০২৬", s:"গণিত ২য়", t:"দ্বিপদী বিস্তৃতি | বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ"},
+  {d:42, date:"২৩/০৫/২০২৬", s:"গণিত ২য়", t:"কনিক | গতিবিদ্যা"},
+  {d:43, date:"২৪/০৫/২০২৬", s:"গণিত ২য়", t:"বিস্তার পরিমাপ ও সম্ভাবনা"},
+  {d:44, date:"২৫/০৫/২০২৬", s:"Grand Revision", t:"🔵 বাংলা ১ম + ২য় পত্র: গুরুত্বপূর্ণ MCQ + সৃজনশীল উত্তর অনুশীলন।"},
+  {d:45, date:"২৬/০৫/২০২৬", s:"Grand Revision", t:"🟡 English 1st + 2nd Paper: Grammar rules, formats review."},
+  {d:46, date:"২৭/০৫/২০২৬", s:"Grand Revision", t:"🩵 ICT: সংখ্যা রূপান্তর, Logic gate, HTML tags, SQL."},
+  {d:47, date:"২৮/০৫/২০২৬", s:"Grand Revision", t:"🟢 পদার্থ ১ম পত্র: প্রাস গতির সূত্র, কাজ-শক্তি-ক্ষমতা, মহাকর্ষ।"},
+  {d:48, date:"২৯/০৫/২০২৬", s:"Grand Revision", t:"🟢 পদার্থ ২য় পত্র: তাপগতিবিদ্যা, চলতড়িৎ, ব্যতিচার-অপবর্তন।"},
+  {d:49, date:"৩০/০৫/২০২৬", s:"Grand Revision", t:"🩷 রসায়ন ১ম পত্র: কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, pH।"},
+  {d:50, date:"৩১/০৫/২০২৬", s:"Grand Revision", t:"🩷 রসায়ন ২য় পত্র: PV=nRT, টাইট্রেশন, তড়িৎ রসায়ন।"},
+  {d:51, date:"০১/০৬/২০২৬", s:"Grand Revision", t:"🌿 জীব ১ম পত্র: DNA/RNA, Mitosis/Meiosis, C3/C4।"},
+  {d:52, date:"০২/০৬/২০২৬", s:"Grand Revision", t:"🌿 জীব ২য় পত্র: শ্রেণিবিন্যাস, হাইড্রা, মানব শারীরবিদ্যা।"},
+  {d:53, date:"০৩/০৬/২০২৬", s:"Grand Revision", t:"🟠 গণিত ১ম পত্র: ম্যাট্রিক্স, ভেক্টর, সরলরেখা, ত্রিকোণমিতি।"},
+  {d:54, date:"০৪/০৬/২০২৬", s:"Grand Revision", t:"🟠 গণিত ২য় পত্র: বহুপদী, দ্বিপদী, কনিক, সম্ভাবনা।"},
+  {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", t:"🏆 Final Mock Test Day: সব ভুল হওয়া টপিক রিভিশন।"}
 ];
 
 let plan = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAN)) || JSON.parse(JSON.stringify(defaultPlan));
 
 // ════════════════════════════════════════════
+//  DYNAMIC WEEKS GENERATOR (NEW)
+// ════════════════════════════════════════════
+function getActiveWeeks() {
+  let wks = [...baseWeeks];
+  let maxDay = plan.length;
+  
+  // যদি প্ল্যানে ৫৫ দিনের বেশি দিন যুক্ত করা হয়, প্রতি ৭ দিন পরপর নতুন Week তৈরি হবে
+  if (maxDay > 55) {
+    let startDay = 56;
+    let weekNum = 9; // যেহেতু Rev 2 হচ্ছে ৮ নম্বর সপ্তাহ
+    
+    while (startDay <= maxDay) {
+      let endDay = Math.min(startDay + 6, maxDay);
+      wks.push({
+        id: weekNum + 100, // ইউনিক আইডি
+        label: `Week ${weekNum}`,
+        title: `Extra Routine ${weekNum - 8}`,
+        color: `#4c1d95`,
+        days: [startDay, endDay]
+      });
+      startDay += 7;
+      weekNum++;
+    }
+  }
+  return wks;
+}
+
+// ════════════════════════════════════════════
 //  RENDER MAIN LIST
 // ════════════════════════════════════════════
+let activeWk = null;
 
 function render() {
   const cont = document.getElementById('planList');
   const subj = document.getElementById('subF').value;
   cont.innerHTML = '';
+  const currentWeeks = getActiveWeeks();
 
-  weeks.forEach(wk => {
+  currentWeeks.forEach(wk => {
     if (activeWk && activeWk !== wk.id) return;
 
     const wkDays = plan.filter(d => 
@@ -343,7 +418,7 @@ function render() {
     `;
 
     wkDays.forEach(d => {
-      const tc = sc[d.s] || sc["Grand Revision"];
+      const tc = sc[d.s] || {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"}; 
       const isDone = checked[d.d];
       
       const card = document.createElement('div');
@@ -357,7 +432,7 @@ function render() {
         <div class="cbody">
           <div class="cmeta">
             <span class="csubj">${d.s}</span>
-            <span class="tbadge" style="background:${tc.bg}; color:${tc.col}">${d.s === 'Grand Revision' ? '🔥 Revision' : d.s}</span>
+            <span class="tbadge" style="background:${tc.bg}; color:${tc.col}">${d.s}</span>
             <span class="date-badge">📅 ${d.date}</span>
           </div>
           <div class="ctopic">${d.t}</div>
@@ -375,19 +450,21 @@ function toggleDay(id) {
   checked[id] = !checked[id];
   localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
   render();
-  showToast("Progress Saved!");
+  showToast(checked[id] ? "Day Completed! 🎉" : "Marked as Undone.");
 }
 
 function updateProgress() {
-  const done = Object.values(checked).filter(Boolean).length;
-  const pct = Math.round((done / 55) * 100);
+  const total = plan.length;
+  const done = plan.filter(p => checked[p.d]).length; 
+  const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+  
   document.getElementById('pgBar').style.width = pct + '%';
-  document.getElementById('pgTxt').textContent = `${done} / 55 Days Completed (${pct}%)`;
+  document.getElementById('pgTxt').textContent = `${done} / ${total} Days Completed (${pct}%)`;
+  document.getElementById('statTotal').textContent = total;
   document.getElementById('statDone').textContent = done;
-  document.getElementById('statLeft').textContent = 55 - done;
+  document.getElementById('statLeft').textContent = total - done;
 }
 
-let activeWk = null;
 function buildWkBtns() {
   const c = document.getElementById('wkBtns');
   c.innerHTML = '';
@@ -402,7 +479,7 @@ function buildWkBtns() {
   };
   c.appendChild(allBtn);
 
-  weeks.forEach(wk => {
+  getActiveWeeks().forEach(wk => {
     const btn = document.createElement('button');
     btn.className = 'fbtn';
     btn.textContent = wk.label;
@@ -424,15 +501,54 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════════
-//  FULL SCREEN EDIT + AUTO-SORT LOGIC
+//  SHORT ROADMAP OVERVIEW (NEW)
 // ════════════════════════════════════════════
+function openShortMap() {
+  const modal = document.getElementById('shortMapModal');
+  const listCont = document.getElementById('shortMapList');
+  listCont.innerHTML = ''; // clear previous
+  
+  plan.forEach(item => {
+    const el = document.createElement('div');
+    el.className = 'short-item';
+    el.innerHTML = `
+      <div class="short-left">
+        <span class="short-dnum">Day ${item.d}</span>
+        <span class="short-subj">${item.s}</span>
+      </div>
+      <span class="short-date">${item.date || 'No Date'}</span>
+    `;
+    listCont.appendChild(el);
+  });
+  
+  modal.style.display = 'flex';
+}
+
+function closeShortMap() {
+  document.getElementById('shortMapModal').style.display = 'none';
+}
+
+
+// ════════════════════════════════════════════
+//  FULL SCREEN EDIT + AUTO-SORT + ADD/DELETE
+// ════════════════════════════════════════════
+
+function syncInputsToPlan() {
+  plan.forEach((item, index) => {
+    const dEl = document.getElementById(`edit_date_${index}`);
+    if(dEl) {
+      item.date = dEl.value;
+      item.s = document.getElementById(`edit_subj_${index}`).value;
+      item.t = document.getElementById(`edit_topic_${index}`).value;
+    }
+  });
+}
 
 function openEditMode() {
   document.getElementById('mainView').style.display = 'none';
   const editView = document.getElementById('editView');
   editView.style.display = 'block';
   editView.classList.add('fade-in');
-  window.scrollTo(0,0);
 
   const container = document.getElementById('editContainerList');
   container.innerHTML = ''; 
@@ -440,9 +556,9 @@ function openEditMode() {
   plan.forEach((item, index) => {
     const card = document.createElement('div');
     card.className = 'edit-card fade-in';
-    card.style.animationDelay = `${(index % 10) * 0.05}s`; 
     
     card.innerHTML = `
+      <button class="btn-delete" onclick="deleteDay(${index})" title="Delete this day">🗑️ Delete</button>
       <div class="edit-day-badge">DAY ${item.d}</div>
       <div class="input-row">
         <div class="input-group">
@@ -461,85 +577,87 @@ function openEditMode() {
     `;
     container.appendChild(card);
   });
+
+  const addBtnWrap = document.createElement('div');
+  addBtnWrap.className = 'btn-add-wrap';
+  addBtnWrap.innerHTML = `<button class="btn-add" onclick="addNewDay()">➕ Add New Day</button>`;
+  container.appendChild(addBtnWrap);
 }
 
 function closeEditMode() {
   document.getElementById('editView').style.display = 'none';
-  const mainView = document.getElementById('mainView');
-  mainView.style.display = 'block';
-  mainView.classList.add('fade-in');
+  document.getElementById('mainView').style.display = 'block';
   window.scrollTo(0,0);
 }
 
-// Date Parser: Converts Bengali/English date string to an integer (YYYYMMDD) for sorting
+function addNewDay() {
+  syncInputsToPlan(); 
+  plan.push({ d: plan.length + 1, date: "", s: "নতুন বিষয়", t: "" });
+  openEditMode(); 
+  setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 100);
+}
+
+function deleteDay(index) {
+  if(confirm("আপনি কি নিশ্চিত যে এই দিনটি ডিলিট করতে চান?")) {
+    syncInputsToPlan(); 
+    plan.splice(index, 1); 
+    openEditMode(); 
+  }
+}
+
 function parseDateForSort(dateStr) {
+  if(!dateStr) return 99999999; 
   const b2e = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
   let engStr = String(dateStr).replace(/[০-৯]/g, m => b2e[m]).trim();
-  let parts = engStr.split(/[-/.]/); // Matches 12/04/2026 or 12-04-2026
-  
+  let parts = engStr.split(/[-/.]/); 
   if(parts.length >= 3) {
     let d = parseInt(parts[0], 10);
     let m = parseInt(parts[1], 10);
     let y = parseInt(parts[2], 10);
-    return (y * 10000) + (m * 100) + d; // Output: 20260412
+    return (y * 10000) + (m * 100) + d; 
   }
-  return 99999999; // Fallback so invalid dates go to bottom
+  return 99999999; 
 }
 
 function savePlanData() {
-  // 1. Gather all inputs and temporarily store their 'checked' state
+  syncInputsToPlan(); 
+  
   plan.forEach((item, index) => {
-    item.date = document.getElementById(`edit_date_${index}`).value;
-    item.s = document.getElementById(`edit_subj_${index}`).value;
-    item.t = document.getElementById(`edit_topic_${index}`).value;
-    
-    // Attach old checkmark status before we shuffle them around
     item.wasChecked = checked[item.d] || false; 
-    item.oldIndex = index; // To keep stability if two dates are exactly the same
+    item.oldIndex = index;
   });
 
-  // 2. Sort chronologically by date
   plan.sort((a, b) => {
     let dateA = parseDateForSort(a.date);
     let dateB = parseDateForSort(b.date);
-    
-    if (dateA !== dateB) {
-      return dateA - dateB; // Sort ascending
-    }
-    return a.oldIndex - b.oldIndex; // Fallback to original order if dates match
+    if (dateA !== dateB) return dateA - dateB;
+    return a.oldIndex - b.oldIndex;
   });
 
-  // 3. Reassign "Day 1 to Day 55" sequentially and remap 'checked' progress
-  checked = {}; // Reset checked object
+  let newChecked = {}; 
   plan.forEach((item, index) => {
-    item.d = index + 1; // Reassign sequential ID
-    
-    // If it was completed before, map it to the NEW Day number
-    if (item.wasChecked) {
-      checked[item.d] = true;
-    }
-    
-    // Cleanup temporary properties
+    item.d = index + 1; 
+    if (item.wasChecked) newChecked[item.d] = true;
     delete item.wasChecked;
     delete item.oldIndex;
   });
+  checked = newChecked; 
 
-  // 4. Save the sorted plan and remapped progress to LocalStorage
   localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(plan));
   localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
   
   closeEditMode();
+  buildWkBtns(); 
   render();
-  showToast("Plan Auto-Sorted & Saved! 🎉");
+  showToast("Plan Saved & Sorted! 🎉");
 }
 
 function resetToDefault() {
-  if(confirm("Are you sure? This will delete your custom plan and restore the original routine.")) {
+  if(confirm("আপনি কি নিশ্চিত? এটি আপনার সব কাস্টম প্ল্যান ডিলিট করে মূল রুটিনে ফিরে যাবে।")) {
     plan = JSON.parse(JSON.stringify(defaultPlan));
     localStorage.removeItem(STORAGE_KEY_PLAN);
-    
     openEditMode(); 
-    showToast("Restored to Default Plan!");
+    showToast("Restored Defaults!");
   }
 }
 
