@@ -60,7 +60,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 /* ── Controls ── */
 .controls { background: var(--bg-card); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
 .controls-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex: 1; }
-select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; }
+select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; min-width: 150px; }
 .fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
 .fbtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -128,7 +128,7 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .btn-reset { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
 .btn-reset:hover { background: var(--danger); color: #fff; }
 
-.edit-container { max-width: 800px; margin: 30px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 20px; }
+.edit-container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 15px; }
 .edit-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s; position: relative;}
 .edit-card:hover { border-color: var(--primary); }
 .edit-day-badge { display: inline-block; background: var(--primary); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; }
@@ -136,7 +136,7 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .btn-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
 .btn-delete:hover { background: var(--danger); color: #fff; }
 
-.btn-add-wrap { text-align: center; margin-top: 10px; }
+.btn-add-wrap { text-align: center; margin-top: 10px; margin-bottom: 30px;}
 .btn-add { background: transparent; color: var(--primary); border: 2px dashed var(--primary); padding: 15px 30px; border-radius: 12px; cursor: pointer; font-size: 15px; font-weight: 700; transition: 0.3s; width: 100%; max-width: 400px; }
 .btn-add:hover { background: var(--primary); color: #fff; }
 
@@ -147,6 +147,12 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .form-control { width: 100%; padding: 12px 15px; border-radius: 8px; background: var(--input-bg); color: #fff; border: 1px solid var(--border); outline: none; font-size: 14px; font-family: inherit; transition: 0.3s; }
 .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
 textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
+
+/* Edit Weeks Section */
+.edit-weeks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.wk-edit-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+.wk-edit-box label { display: block; font-size: 11px; color: var(--primary); font-weight: bold; margin-bottom: 5px; }
+.wk-edit-box input { width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; outline: none; font-size: 13px;}
 
 @media(max-width: 600px) {
   .controls { flex-direction: column; align-items: stretch; }
@@ -210,21 +216,7 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
   <div class="controls">
     <div class="controls-left">
       <select id="subF" onchange="render()">
-        <option value="all">সকল বিষয়</option>
-        <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
-        <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
-        <option value="English 1st">English 1st</option>
-        <option value="English 2nd">English 2nd</option>
-        <option value="ICT">ICT</option>
-        <option value="পদার্থ ১ম">পদার্থ ১ম</option>
-        <option value="পদার্থ ২য়">পদার্থ ২য়</option>
-        <option value="রসায়ন ১ম">রসায়ন ১ম</option>
-        <option value="রসায়ন ২য়">রসায়ন ২য়</option>
-        <option value="জীব ১ম">জীব ১ম</option>
-        <option value="জীব ২য়">জীব ২য়</option>
-        <option value="গণিত ১ম">গণিত ১ম</option>
-        <option value="গণিত ২য়">গণিত ২য়</option>
-        <option value="Grand Revision">🔥 Grand Revision</option>
+        <!-- Options injected via JS dynamically -->
       </select>
       <div class="fbtns" id="wkBtns"></div>
     </div>
@@ -255,6 +247,13 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
     </div>
   </div>
 
+  <div class="edit-container" style="padding-top: 10px;">
+    <h3 style="color:#fff; font-size: 15px; margin-bottom: 10px;">📅 Edit Week Titles</h3>
+    <div class="edit-weeks-grid" id="editWeeksContainer">
+      <!-- Week Title Inputs Injected Here -->
+    </div>
+  </div>
+
   <div class="edit-container" id="editContainerList">
     <!-- JS will inject edit cards here -->
   </div>
@@ -266,8 +265,10 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 // ════════════════════════════════════════════
 const STORAGE_KEY_PROG = 'hsc_2026_progress';
 const STORAGE_KEY_PLAN = 'hsc_2026_custom_plan';
+const STORAGE_KEY_WEEKS = 'hsc_2026_custom_weeks';
 
 let checked = JSON.parse(localStorage.getItem(STORAGE_KEY_PROG) || '{}');
+let customWeekTitles = JSON.parse(localStorage.getItem(STORAGE_KEY_WEEKS)) || {};
 
 const sc = {
   "বাংলা ১ম পত্র": {bg:"#1e3a8a", col:"#bfdbfe", brd:"#3b82f6"},
@@ -285,6 +286,24 @@ const sc = {
   "গণিত ২য়":       {bg:"#7c2d12", col:"#fed7aa", brd:"#f97316"},
   "Grand Revision":{bg:"#431407", col:"#fed7aa", brd:"#ea580c"},
 };
+
+// Auto Generate Color for Unknown Subjects
+function getSubjColor(subj) {
+  if (sc[subj]) return sc[subj];
+  if (!subj) return {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"}; // Fallback Blank
+  
+  // Hash string to generate a consistent color
+  let hash = 0;
+  for (let i = 0; i < subj.length; i++) {
+    hash = subj.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const hue = Math.abs(hash) % 360;
+  return { 
+    bg: `hsl(${hue}, 70%, 20%)`, 
+    col: `hsl(${hue}, 70%, 85%)`, 
+    brd: `hsl(${hue}, 60%, 50%)` 
+  };
+}
 
 const baseWeeks = [
   {id:1, label:"W1", title:"বাংলা + ইংরেজি", color:"#1e3a8a", days:[1,7]},
@@ -359,10 +378,34 @@ const defaultPlan = [
 let plan = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAN)) || JSON.parse(JSON.stringify(defaultPlan));
 
 // ════════════════════════════════════════════
-//  DYNAMIC WEEKS GENERATOR (NEW)
+//  DYNAMIC SUBJECT DROPDOWN
+// ════════════════════════════════════════════
+function populateSubjectDropdown() {
+  const select = document.getElementById('subF');
+  const currentVal = select.value; 
+  select.innerHTML = '<option value="all">সকল বিষয়</option>';
+
+  // Get unique subjects from the plan array
+  const uniqueSubjects = [...new Set(plan.map(d => d.s).filter(Boolean))];
+  
+  uniqueSubjects.forEach(subj => {
+    const opt = document.createElement('option');
+    opt.value = subj;
+    opt.textContent = subj;
+    select.appendChild(opt);
+  });
+
+  // Restore previous selection if it still exists
+  if (uniqueSubjects.includes(currentVal)) {
+    select.value = currentVal;
+  }
+}
+
+// ════════════════════════════════════════════
+//  DYNAMIC WEEKS GENERATOR (Supports Custom Names)
 // ════════════════════════════════════════════
 function getActiveWeeks() {
-  let wks = [...baseWeeks];
+  let wks = JSON.parse(JSON.stringify(baseWeeks)); // Deep copy base
   let maxDay = plan.length;
   
   if (maxDay > 55) {
@@ -373,7 +416,7 @@ function getActiveWeeks() {
       let endDay = Math.min(startDay + 6, maxDay);
       wks.push({
         id: weekNum + 100,
-        label: `Week ${weekNum}`,
+        label: `W${weekNum}`,
         title: `Extra Routine ${weekNum - 8}`,
         color: `#4c1d95`,
         days: [startDay, endDay]
@@ -382,6 +425,14 @@ function getActiveWeeks() {
       weekNum++;
     }
   }
+
+  // Apply User's Custom Titles to any week
+  wks.forEach(w => {
+    if (customWeekTitles[w.id]) {
+      w.title = customWeekTitles[w.id];
+    }
+  });
+
   return wks;
 }
 
@@ -417,7 +468,7 @@ function render() {
     `;
 
     wkDays.forEach(d => {
-      const tc = sc[d.s] || {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"}; 
+      const tc = getSubjColor(d.s); 
       const isDone = checked[d.d];
       
       const card = document.createElement('div');
@@ -500,7 +551,7 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════════
-//  SHORT ROADMAP OVERVIEW (SUBJECT COLORS ADDED)
+//  SHORT ROADMAP OVERVIEW 
 // ════════════════════════════════════════════
 function openShortMap() {
   const modal = document.getElementById('shortMapModal');
@@ -508,12 +559,11 @@ function openShortMap() {
   listCont.innerHTML = ''; 
   
   plan.forEach(item => {
-    // Get corresponding subject color (fallback to default grey if not found)
-    const tc = sc[item.s] || {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"};
+    const tc = getSubjColor(item.s);
     
     const el = document.createElement('div');
     el.className = 'short-item';
-    el.style.borderLeftColor = tc.brd; // Color left border
+    el.style.borderLeftColor = tc.brd; 
     
     el.innerHTML = `
       <div class="short-left">
@@ -556,6 +606,21 @@ function openEditMode() {
   editView.style.display = 'block';
   editView.classList.add('fade-in');
 
+  // Load Week Title Editors
+  const weeksContainer = document.getElementById('editWeeksContainer');
+  weeksContainer.innerHTML = '';
+  let currentWeeks = getActiveWeeks();
+  currentWeeks.forEach(wk => {
+    const box = document.createElement('div');
+    box.className = 'wk-edit-box';
+    box.innerHTML = `
+      <label>${wk.label} Name</label>
+      <input type="text" id="edit_wk_title_${wk.id}" value="${wk.title}" placeholder="E.g. Extra Routine">
+    `;
+    weeksContainer.appendChild(box);
+  });
+
+  // Load Daily Cards
   const container = document.getElementById('editContainerList');
   container.innerHTML = ''; 
 
@@ -626,6 +691,17 @@ function parseDateForSort(dateStr) {
 }
 
 function savePlanData() {
+  // 1. Save Week Custom Titles
+  let currentWeeks = getActiveWeeks();
+  currentWeeks.forEach(wk => {
+    let inputEl = document.getElementById(`edit_wk_title_${wk.id}`);
+    if (inputEl) {
+      customWeekTitles[wk.id] = inputEl.value;
+    }
+  });
+  localStorage.setItem(STORAGE_KEY_WEEKS, JSON.stringify(customWeekTitles));
+
+  // 2. Save Daily Plan & Sort
   syncInputsToPlan(); 
   
   plan.forEach((item, index) => {
@@ -652,6 +728,7 @@ function savePlanData() {
   localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(plan));
   localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
   
+  populateSubjectDropdown(); // Update dropdown with new subjects
   closeEditMode();
   buildWkBtns(); 
   render();
@@ -661,7 +738,11 @@ function savePlanData() {
 function resetToDefault() {
   if(confirm("আপনি কি নিশ্চিত? এটি আপনার সব কাস্টম প্ল্যান ডিলিট করে মূল রুটিনে ফিরে যাবে।")) {
     plan = JSON.parse(JSON.stringify(defaultPlan));
+    customWeekTitles = {}; // Reset week names
     localStorage.removeItem(STORAGE_KEY_PLAN);
+    localStorage.removeItem(STORAGE_KEY_WEEKS);
+    
+    populateSubjectDropdown();
     openEditMode(); 
     showToast("Restored Defaults!");
   }
@@ -694,6 +775,7 @@ function pomoStop() {
 function pomoReset() { pomoStop(); pTime = 25 * 60; pomoUpdate(); }
 
 // Init
+populateSubjectDropdown();
 buildWkBtns();
 render();
 pomoUpdate();
