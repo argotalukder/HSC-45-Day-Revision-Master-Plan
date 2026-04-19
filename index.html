@@ -21,12 +21,17 @@
   --warning: #facc15;
   --danger: #ef4444;
   --border: #334155;
+  --input-bg: #0b1120;
 }
 
 *{ box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); color: var(--text-body); min-height: 100vh; line-height: 1.5; }
 
-/* ── Header ── */
+/* ── Common ── */
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── Header (Main View) ── */
 .header { background: linear-gradient(135deg, #1e1b4b, #1e293b); color: #fff; padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); }
 .header-brand { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--success); margin-bottom: 8px; }
 .header h1 { font-size: clamp(22px, 5vw, 28px); font-weight: 800; margin-bottom: 6px; }
@@ -59,8 +64,8 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
 .fbtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
-.edit-btn { background: #0284c7; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; }
-.edit-btn:hover { background: #0369a1; }
+.btn-edit-mode { background: #0284c7; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
+.btn-edit-mode:hover { background: #0369a1; transform: translateY(-1px); }
 
 /* ── Main List ── */
 .container { max-width: 900px; margin: 0 auto; padding: 20px 15px 80px; }
@@ -80,36 +85,47 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .csubj { font-size: 14px; font-weight: 800; color: #fff; }
 .date-badge { font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
 .ctopic { font-size: 13.5px; color: var(--text-body); line-height: 1.6; }
-
-/* ── Badges ── */
 .tbadge { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
 @keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
 
-/* ── Edit Modal ── */
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
-.modal-content { background: var(--bg-card); width: 95%; max-width: 800px; height: 90vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border); }
-.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-.modal-header h2 { color: #fff; font-size: 20px; }
-.close-modal { background: none; border: none; color: var(--text-muted); font-size: 28px; cursor: pointer; }
-.close-modal:hover { color: var(--danger); }
-.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-.edit-row { background: var(--bg-main); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
-.edit-row-header { font-weight: bold; color: var(--primary); margin-bottom: 10px; font-size: 14px; }
-.input-group { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-.input-group input { flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; background: var(--bg-card); color: #fff; border: 1px solid var(--border); outline: none; }
-.input-group textarea { width: 100%; padding: 10px; border-radius: 6px; background: var(--bg-card); color: #fff; border: 1px solid var(--border); outline: none; min-height: 80px; resize: vertical; font-family: inherit; }
-.modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border-radius: 0 0 16px 16px;}
-.btn-save { background: var(--success); color: #fff; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
-.btn-save:hover { background: #16a34a; }
-.btn-reset { background: var(--danger); color: #fff; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+/* ════════════════════════════════════════════
+   FULL SCREEN EDIT MODE CSS
+════════════════════════════════════════════ */
+#editView { display: none; background: var(--bg-main); min-height: 100vh; padding-bottom: 80px; }
+
+.edit-navbar { position: sticky; top: 0; z-index: 200; background: var(--bg-card); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+.edit-nav-left, .edit-nav-right { display: flex; gap: 10px; align-items: center; }
+.edit-title { color: #fff; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 8px;}
+
+.btn-icon { background: var(--bg-hover); color: #fff; border: 1px solid var(--border); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+.btn-icon:hover { background: var(--border); }
+.btn-save { background: var(--success); color: #fff; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 700; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3); transition: 0.2s; }
+.btn-save:hover { background: #16a34a; transform: translateY(-2px); }
+.btn-reset { background: transparent; color: var(--danger); border: 1px solid var(--danger); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; }
+.btn-reset:hover { background: var(--danger); color: #fff; }
+
+.edit-container { max-width: 800px; margin: 30px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 20px; }
+.edit-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s; }
+.edit-card:hover { border-color: var(--primary); }
+.edit-day-badge { display: inline-block; background: var(--primary); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; }
+
+.input-row { display: grid; grid-template-columns: 1fr 2fr; gap: 15px; margin-bottom: 15px; }
+.input-group { display: flex; flex-direction: column; gap: 5px; }
+.input-label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+.form-control { width: 100%; padding: 12px 15px; border-radius: 8px; background: var(--input-bg); color: #fff; border: 1px solid var(--border); outline: none; font-size: 14px; font-family: inherit; transition: 0.3s; }
+.form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 @media(max-width: 600px) {
-  .pomodoro-container { flex-direction: column; }
   .controls { flex-direction: column; align-items: stretch; }
-  .edit-btn { width: 100%; text-align: center; margin-top: 10px; }
+  .btn-edit-mode { width: 100%; text-align: center; margin-top: 10px; }
+  .input-row { grid-template-columns: 1fr; gap: 10px; }
+  .edit-navbar { flex-direction: column; gap: 15px; }
+  .edit-nav-left, .edit-nav-right { width: 100%; justify-content: space-between; }
 }
 </style>
 </head>
@@ -117,72 +133,80 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 
 <div id="toast">Progress Saved!</div>
 
-<header class="header">
-  <div class="header-brand">BrainArena</div>
-  <h1>📚 HSC 2026 Master Plan</h1>
-  <p>৫১ দিন পড়াশোনা + ৪ দিন Grand Mock Test = ৫৫ দিন</p>
-  <div class="prog-wrap">
-    <div class="prog-bg"><div class="prog-fill" id="pgBar"></div></div>
-    <div class="prog-txt" id="pgTxt">0 / 55 Days Completed (0%)</div>
-  </div>
-</header>
-
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-val">55</span><span class="stat-lbl">Days Total</span></div>
-  <div class="stat-item"><span class="stat-val" id="statDone">0</span><span class="stat-lbl">Completed</span></div>
-  <div class="stat-item"><span class="stat-val" id="statLeft">55</span><span class="stat-lbl">Remaining</span></div>
-</div>
-
-<div class="pomodoro-container">
-  <div class="pomo-display" id="pomoDisplay">25:00</div>
-  <div class="pomo-controls">
-    <button class="pomo-btn" onclick="pomoSet(25)">25m</button>
-    <button class="pomo-btn" onclick="pomoSet(45)">45m</button>
-    <button class="pomo-btn pomo-btn-start" id="pomoBtn" onclick="pomoToggle()">Start</button>
-    <button class="pomo-btn" onclick="pomoReset()">Reset</button>
-  </div>
-</div>
-
-<div class="controls">
-  <div class="controls-left">
-    <select id="subF" onchange="render()">
-      <option value="all">সকল বিষয়</option>
-      <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
-      <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
-      <option value="English 1st">English 1st</option>
-      <option value="English 2nd">English 2nd</option>
-      <option value="ICT">ICT</option>
-      <option value="পদার্থ ১ম">পদার্থ ১ম</option>
-      <option value="পদার্থ ২য়">পদার্থ ২য়</option>
-      <option value="রসায়ন ১ম">রসায়ন ১ম</option>
-      <option value="রসায়ন ২য়">রসায়ন ২য়</option>
-      <option value="জীব ১ম">জীব ১ম</option>
-      <option value="জীব ২য়">জীব ২য়</option>
-      <option value="গণিত ১ম">গণিত ১ম</option>
-      <option value="গণিত ২য়">গণিত ২য়</option>
-      <option value="Grand Revision">🔥 Grand Revision</option>
-    </select>
-    <div class="fbtns" id="wkBtns"></div>
-  </div>
-  <button class="edit-btn" onclick="openEditModal()">⚙️ Edit Plan</button>
-</div>
-
-<main class="container" id="planList"></main>
-
-<!-- Edit Modal -->
-<div class="modal-overlay" id="editModal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>⚙️ Customize Roadmap</h2>
-      <button class="close-modal" onclick="closeEditModal()">&times;</button>
+<!-- ════════════════════════════════════════════
+   MAIN DASHBOARD VIEW
+════════════════════════════════════════════ -->
+<div id="mainView" class="fade-in">
+  <header class="header">
+    <div class="header-brand">BrainArena</div>
+    <h1>📚 HSC 2026 Master Plan</h1>
+    <p>৫১ দিন পড়াশোনা + ৪ দিন Grand Mock Test = ৫৫ দিন</p>
+    <div class="prog-wrap">
+      <div class="prog-bg"><div class="prog-fill" id="pgBar"></div></div>
+      <div class="prog-txt" id="pgTxt">0 / 55 Days Completed (0%)</div>
     </div>
-    <div class="modal-body" id="modalBodyList">
-      <!-- Edit forms will be injected here via JS -->
+  </header>
+
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-val">55</span><span class="stat-lbl">Days Total</span></div>
+    <div class="stat-item"><span class="stat-val" id="statDone">0</span><span class="stat-lbl">Completed</span></div>
+    <div class="stat-item"><span class="stat-val" id="statLeft">55</span><span class="stat-lbl">Remaining</span></div>
+  </div>
+
+  <div class="pomodoro-container">
+    <div class="pomo-display" id="pomoDisplay">25:00</div>
+    <div class="pomo-controls">
+      <button class="pomo-btn" onclick="pomoSet(25)">25m</button>
+      <button class="pomo-btn" onclick="pomoSet(45)">45m</button>
+      <button class="pomo-btn pomo-btn-start" id="pomoBtn" onclick="pomoToggle()">Start</button>
+      <button class="pomo-btn" onclick="pomoReset()">Reset</button>
     </div>
-    <div class="modal-footer">
+  </div>
+
+  <div class="controls">
+    <div class="controls-left">
+      <select id="subF" onchange="render()">
+        <option value="all">সকল বিষয়</option>
+        <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
+        <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
+        <option value="English 1st">English 1st</option>
+        <option value="English 2nd">English 2nd</option>
+        <option value="ICT">ICT</option>
+        <option value="পদার্থ ১ম">পদার্থ ১ম</option>
+        <option value="পদার্থ ২য়">পদার্থ ২য়</option>
+        <option value="রসায়ন ১ম">রসায়ন ১ম</option>
+        <option value="রসায়ন ২য়">রসায়ন ২য়</option>
+        <option value="জীব ১ম">জীব ১ম</option>
+        <option value="জীব ২য়">জীব ২য়</option>
+        <option value="গণিত ১ম">গণিত ১ম</option>
+        <option value="গণিত ২য়">গণিত ২য়</option>
+        <option value="Grand Revision">🔥 Grand Revision</option>
+      </select>
+      <div class="fbtns" id="wkBtns"></div>
+    </div>
+    <button class="btn-edit-mode" onclick="openEditMode()">⚙️ Edit Plan</button>
+  </div>
+
+  <main class="container" id="planList"></main>
+</div>
+
+<!-- ════════════════════════════════════════════
+   FULL SCREEN EDIT VIEW
+════════════════════════════════════════════ -->
+<div id="editView">
+  <div class="edit-navbar">
+    <div class="edit-nav-left">
+      <button class="btn-icon" onclick="closeEditMode()">← Back</button>
+      <div class="edit-title">⚙️ Customize Roadmap</div>
+    </div>
+    <div class="edit-nav-right">
       <button class="btn-reset" onclick="resetToDefault()">Reset to Default</button>
       <button class="btn-save" onclick="savePlanData()">💾 Save Changes</button>
     </div>
+  </div>
+
+  <div class="edit-container" id="editContainerList">
+    <!-- JS will inject edit cards here -->
   </div>
 </div>
 
@@ -232,7 +256,7 @@ const defaultPlan = [
   {d:5, date:"১৬/০৪/২০২৬", s:"English 1st", t:"Rearranging sentences (all top stories) | Paragraph writing (all 12 top topics) | Completing a story (all 17 top topics) | Informal letters (top 14) | Informal emails (top 5) | Graph/Chart description (all types) | Appreciating short story/poem (all types)"},
   {d:6, date:"১৭/০৪/২০২৬", s:"English 2nd", t:"Article | Preposition | Special words/phrases (modal verbs) | Completing sentence — all clause types (all board questions)"},
   {d:7, date:"১৮/০৪/২০২৬", s:"English 2nd", t:"Right form of verbs | Changing sentence (Active/Passive, Simple/Complex/Compound, Positive/Comparative/Superlative) | Narration"},
-  {d:8, date:"১৯/০৪/২০২৬", s:"English 2nd", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
+  {d:8, date:"۱۹/০৪/২০২৬", s:"English 2nd", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Formal letter | Formal email | Report writing | Paragraph | Composition"},
   {d:9, date:"২০/০৪/২০২৬", s:"ICT", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex রূপান্তর, 2's complement, Logic gates, Boolean algebra, Truth table | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL, Relationship, Indexing"},
   {d:10, date:"২১/০৪/২০২৬", s:"ICT", t:"প্রোগ্রামিং ভাষা — Flowchart, Algorithm, C program, Loop types | ওয়েভ ডিজাইন পরিচিতি ও HTML — সব Tag, Table, Image, Hyperlink, Static vs Dynamic"},
   {d:11, date:"২২/০৪/২০২৬", s:"ICT", t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং — Bandwidth, Topology, WiFi, WiMax, Bluetooth, Mobile generations (2G–5G), LAN/MAN/WAN | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
@@ -269,7 +293,6 @@ const defaultPlan = [
   {d:42, date:"২৩/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ৬: কনিক | অধ্যায় ৯: গতিবিদ্যা"},
   {d:43, date:"২৪/০৫/২০২৬", s:"গণিত ২য়", t:"অধ্যায় ১০: বিস্তার পরিমাপ ও সম্ভাবনা"},
 
-  // Grand Revision
   {d:44, date:"২৫/০৫/২০২৬", s:"Grand Revision", t:"<b>🔵 বাংলা ১ম + ২য় পত্র:</b> গুরুত্বপূর্ণ MCQ + সৃজনশীল উত্তর অনুশীলন। ব্যাকরণ সব নিয়ম ও রচনার outline চোখ বুলাও।"},
   {d:45, date:"২৬/০৫/২০২৬", s:"Grand Revision", t:"<b>🟡 English 1st + 2nd Paper:</b> Grammar rules shortlist, formal letter format, seen/unseen key points review."},
   {d:46, date:"২৭/০৫/২০২৬", s:"Grand Revision", t:"<b>🩵 ICT:</b> সংখ্যা রূপান্তর (Binary-Hex), Logic gate truth table, HTML tags, SQL commands."},
@@ -284,11 +307,10 @@ const defaultPlan = [
   {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", t:"<b>🏆 Final Mock Test Day:</b> সব বিষয়ের ভুল হওয়া টপিকগুলো একবার দেখে নাও। তুমি সম্পূর্ণ প্রস্তুত! 💪"},
 ];
 
-// লোড প্ল্যান: লোকাল স্টোরেজ থেকে নিবে, না থাকলে ডিফল্টটা নিবে
 let plan = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAN)) || JSON.parse(JSON.stringify(defaultPlan));
 
 // ════════════════════════════════════════════
-//  CORE LOGIC
+//  RENDER MAIN LIST
 // ════════════════════════════════════════════
 
 function render() {
@@ -306,7 +328,7 @@ function render() {
     if (!wkDays.length) return;
 
     const block = document.createElement('div');
-    block.className = 'week-block';
+    block.className = 'week-block fade-in';
     
     const doneCount = wkDays.filter(d => checked[d.d]).length;
     block.innerHTML = `
@@ -317,7 +339,6 @@ function render() {
     `;
 
     wkDays.forEach(d => {
-      // যদি নতুন কোনো সাবজেক্ট লেখে ইউজার, তাহলে বাই-ডিফল্ট একটা কালার পাবে
       const tc = sc[d.s] || sc["Grand Revision"];
       const isDone = checked[d.d];
       
@@ -399,61 +420,75 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════════
-//  EDIT PLAN LOGIC (NEW)
+//  FULL SCREEN EDIT LOGIC
 // ════════════════════════════════════════════
 
-function openEditModal() {
-  const modalBody = document.getElementById('modalBodyList');
-  modalBody.innerHTML = '';
-  
+function openEditMode() {
+  document.getElementById('mainView').style.display = 'none';
+  const editView = document.getElementById('editView');
+  editView.style.display = 'block';
+  editView.classList.add('fade-in');
+  window.scrollTo(0,0);
+
+  const container = document.getElementById('editContainerList');
+  container.innerHTML = ''; // Clear previous
+
   plan.forEach((item, index) => {
-    const row = document.createElement('div');
-    row.className = 'edit-row';
+    const card = document.createElement('div');
+    card.className = 'edit-card fade-in';
+    card.style.animationDelay = `${(index % 10) * 0.05}s`; // Staggered intro
     
-    // Create HTML structure for each day's edit fields
-    row.innerHTML = `
-      <div class="edit-row-header">Day ${item.d}</div>
-      <div class="input-group">
-        <input type="text" id="edit_date_${index}" value="${item.date}" placeholder="তারিখ (যেমন: ১২/০৪/২০২৬)">
-        <input type="text" id="edit_subj_${index}" value="${item.s}" placeholder="বিষয় (যেমন: বাংলা ১ম পত্র)">
+    card.innerHTML = `
+      <div class="edit-day-badge">DAY ${item.d}</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label">Date (তারিখ)</label>
+          <input type="text" class="form-control" id="edit_date_${index}" value="${item.date}" placeholder="e.g. ১২/০৪/২০২৬">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Subject (বিষয়)</label>
+          <input type="text" class="form-control" id="edit_subj_${index}" value="${item.s}" placeholder="e.g. বাংলা ১ম পত্র">
+        </div>
       </div>
       <div class="input-group">
-        <textarea id="edit_topic_${index}" placeholder="পড়ার টপিক">${item.t}</textarea>
+        <label class="input-label">Topics to Study (পড়ার টপিক)</label>
+        <textarea class="form-control" id="edit_topic_${index}" placeholder="What to study on this day...">${item.t}</textarea>
       </div>
     `;
-    modalBody.appendChild(row);
+    container.appendChild(card);
   });
-
-  document.getElementById('editModal').style.display = 'flex';
 }
 
-function closeEditModal() {
-  document.getElementById('editModal').style.display = 'none';
+function closeEditMode() {
+  document.getElementById('editView').style.display = 'none';
+  const mainView = document.getElementById('mainView');
+  mainView.style.display = 'block';
+  mainView.classList.add('fade-in');
+  window.scrollTo(0,0);
 }
 
 function savePlanData() {
-  // Update the 'plan' array with new values from the modal
   plan.forEach((item, index) => {
     item.date = document.getElementById(`edit_date_${index}`).value;
     item.s = document.getElementById(`edit_subj_${index}`).value;
     item.t = document.getElementById(`edit_topic_${index}`).value;
   });
 
-  // Save to LocalStorage
   localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(plan));
   
-  closeEditModal();
-  render(); // Refresh UI
-  showToast("Plan Updated Successfully!");
+  closeEditMode();
+  render();
+  showToast("Plan Saved Successfully! 🎉");
 }
 
 function resetToDefault() {
-  if(confirm("আপনি কি নিশ্চিত? এটি আপনার সব কাস্টম এডিট ডিলিট করে আগের ডিফল্ট রুটিনে ফিরে যাবে।")) {
-    plan = JSON.parse(JSON.stringify(defaultPlan)); // Reset to default
-    localStorage.removeItem(STORAGE_KEY_PLAN); // Clear custom plan from storage
-    closeEditModal();
-    render();
-    showToast("Reset to Default Plan!");
+  if(confirm("Are you sure? This will delete your custom plan and restore the original routine.")) {
+    plan = JSON.parse(JSON.stringify(defaultPlan));
+    localStorage.removeItem(STORAGE_KEY_PLAN);
+    
+    // Re-render Edit UI to show default data instantly
+    openEditMode(); 
+    showToast("Restored to Default Plan!");
   }
 }
 
