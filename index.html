@@ -53,11 +53,14 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 .pomo-btn-start.running { background: var(--danger); }
 
 /* ── Controls ── */
-.controls { background: var(--bg-card); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
+.controls { background: var(--bg-card); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
+.controls-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex: 1; }
 select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; }
 .fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; }
 .fbtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+.edit-btn { background: #0284c7; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; }
+.edit-btn:hover { background: #0369a1; }
 
 /* ── Main List ── */
 .container { max-width: 900px; margin: 0 auto; padding: 20px 15px 80px; }
@@ -80,15 +83,33 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 
 /* ── Badges ── */
 .tbadge { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-.rev-badge { background: #7c2d12; color: #fed7aa; border: 1px solid #ea580c; }
 
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
 @keyframes slideUp { from { bottom: -50px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
 
+/* ── Edit Modal ── */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+.modal-content { background: var(--bg-card); width: 95%; max-width: 800px; height: 90vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border); }
+.modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.modal-header h2 { color: #fff; font-size: 20px; }
+.close-modal { background: none; border: none; color: var(--text-muted); font-size: 28px; cursor: pointer; }
+.close-modal:hover { color: var(--danger); }
+.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+.edit-row { background: var(--bg-main); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid var(--border); }
+.edit-row-header { font-weight: bold; color: var(--primary); margin-bottom: 10px; font-size: 14px; }
+.input-group { display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.input-group input { flex: 1; min-width: 150px; padding: 10px; border-radius: 6px; background: var(--bg-card); color: #fff; border: 1px solid var(--border); outline: none; }
+.input-group textarea { width: 100%; padding: 10px; border-radius: 6px; background: var(--bg-card); color: #fff; border: 1px solid var(--border); outline: none; min-height: 80px; resize: vertical; font-family: inherit; }
+.modal-footer { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border-radius: 0 0 16px 16px;}
+.btn-save { background: var(--success); color: #fff; padding: 10px 24px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+.btn-save:hover { background: #16a34a; }
+.btn-reset { background: var(--danger); color: #fff; padding: 10px 20px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 14px; }
+
 @media(max-width: 600px) {
   .pomodoro-container { flex-direction: column; }
-  .controls { justify-content: center; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .edit-btn { width: 100%; text-align: center; margin-top: 10px; }
 }
 </style>
 </head>
@@ -123,34 +144,56 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 </div>
 
 <div class="controls">
-  <select id="subF" onchange="render()">
-    <option value="all">সকল বিষয়</option>
-    <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
-    <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
-    <option value="English 1st">English 1st</option>
-    <option value="English 2nd">English 2nd</option>
-    <option value="ICT">ICT</option>
-    <option value="পদার্থ ১ম">পদার্থ ১ম</option>
-    <option value="পদার্থ ২য়">পদার্থ ২য়</option>
-    <option value="রসায়ন ১ম">রসায়ন ১ম</option>
-    <option value="রসায়ন ২য়">রসায়ন ২য়</option>
-    <option value="জীব ১ম">জীব ১ম</option>
-    <option value="জীব ২য়">জীব ২য়</option>
-    <option value="গণিত ১ম">গণিত ১ম</option>
-    <option value="গণিত ২য়">গণিত ২য়</option>
-    <option value="Grand Revision">🔥 Grand Revision</option>
-  </select>
-  <div class="fbtns" id="wkBtns"></div>
+  <div class="controls-left">
+    <select id="subF" onchange="render()">
+      <option value="all">সকল বিষয়</option>
+      <option value="বাংলা ১ম পত্র">বাংলা ১ম</option>
+      <option value="বাংলা ২য় পত্র">বাংলা ২য়</option>
+      <option value="English 1st">English 1st</option>
+      <option value="English 2nd">English 2nd</option>
+      <option value="ICT">ICT</option>
+      <option value="পদার্থ ১ম">পদার্থ ১ম</option>
+      <option value="পদার্থ ২য়">পদার্থ ২য়</option>
+      <option value="রসায়ন ১ম">রসায়ন ১ম</option>
+      <option value="রসায়ন ২য়">রসায়ন ২য়</option>
+      <option value="জীব ১ম">জীব ১ম</option>
+      <option value="জীব ২য়">জীব ২য়</option>
+      <option value="গণিত ১ম">গণিত ১ম</option>
+      <option value="গণিত ২য়">গণিত ২য়</option>
+      <option value="Grand Revision">🔥 Grand Revision</option>
+    </select>
+    <div class="fbtns" id="wkBtns"></div>
+  </div>
+  <button class="edit-btn" onclick="openEditModal()">⚙️ Edit Plan</button>
 </div>
 
 <main class="container" id="planList"></main>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>⚙️ Customize Roadmap</h2>
+      <button class="close-modal" onclick="closeEditModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBodyList">
+      <!-- Edit forms will be injected here via JS -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn-reset" onclick="resetToDefault()">Reset to Default</button>
+      <button class="btn-save" onclick="savePlanData()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
 
 <script>
 // ════════════════════════════════════════════
 //  DATA & STATE
 // ════════════════════════════════════════════
-const STORAGE_KEY = 'hsc_2026_progress';
-let checked = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+const STORAGE_KEY_PROG = 'hsc_2026_progress';
+const STORAGE_KEY_PLAN = 'hsc_2026_custom_plan';
+
+let checked = JSON.parse(localStorage.getItem(STORAGE_KEY_PROG) || '{}');
 
 const sc = {
   "বাংলা ১ম পত্র": {bg:"#1e3a8a", col:"#bfdbfe", brd:"#3b82f6"},
@@ -180,8 +223,8 @@ const weeks = [
   {id:8, label:"Rev 2", title:"Mock Test Phase", color:"#9a3412", days:[50,55]},
 ];
 
-// ডেটা (পূর্ণাঙ্গ ৫৫ দিন)
-const plan = [
+// ডিফল্ট ডেটা (কোথাও পরিবর্তন হলে এখান থেকে রিকভার হবে)
+const defaultPlan = [
   {d:1, date:"১২/০৪/২০২৬", s:"বাংলা ১ম পত্র", t:"গদ্য অধ্যায় ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি · অপরিচিতা · সাহিত্যে খেলা · বিলাসী · অধ্যাঙ্গিনী · যৌবনের গান | গদ্য অধ্যায় ৭–১২: জীবন ও বৃক্ষ · গন্তব্য কাবুল · মাসি-পিসি · কপিলদাস মুমুর্ষু শেষ কাজ · রেইনকোট · নেকলেস | উপন্যাস: লালসালু | পদ্য অধ্যায় ১–১২: ঋতুবর্ণন · বিভীষণের প্রতি মেঘনাদ · সোনার তরী · বিদ্রোহী · সুচেতনা · প্রতিদান · তাহারেই পড়ে মনে · পদ্মা · ফেব্রুয়ারি ১৯৬৯ · আঠার বছর বয়স · আমি কিংবদন্তির কথা বলছি · প্রত্যাবর্তনের লজ্জা | নাটক: সিরাজউদ্দৌলা"},
   {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"অধ্যায় ১–৪: বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম (ণ-ত্ব, য-ত্ব, ই-কার) | ব্যাকরণিক শব্দশ্রেণি (বিশেষ্য, সর্বনাম, ক্রিয়া, অব্যয়, যোজক) | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
   {d:3, date:"১৪/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"অধ্যায় ৫: বাক্যতত্ত্ব (বাক্যের শ্রেণি, পদক্রম, রূপান্তর) | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল/বৈদ্যুতিক চিঠি | আবেদনপত্র | সারাংশ/সারমর্ম | ভাব-সম্প্রসারণ | কবিতাংশ | সংলাপ | খুদে গল্প | প্রবন্ধ রচনা"},
@@ -241,6 +284,9 @@ const plan = [
   {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", t:"<b>🏆 Final Mock Test Day:</b> সব বিষয়ের ভুল হওয়া টপিকগুলো একবার দেখে নাও। তুমি সম্পূর্ণ প্রস্তুত! 💪"},
 ];
 
+// লোড প্ল্যান: লোকাল স্টোরেজ থেকে নিবে, না থাকলে ডিফল্টটা নিবে
+let plan = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAN)) || JSON.parse(JSON.stringify(defaultPlan));
+
 // ════════════════════════════════════════════
 //  CORE LOGIC
 // ════════════════════════════════════════════
@@ -271,6 +317,7 @@ function render() {
     `;
 
     wkDays.forEach(d => {
+      // যদি নতুন কোনো সাবজেক্ট লেখে ইউজার, তাহলে বাই-ডিফল্ট একটা কালার পাবে
       const tc = sc[d.s] || sc["Grand Revision"];
       const isDone = checked[d.d];
       
@@ -301,9 +348,9 @@ function render() {
 
 function toggleDay(id) {
   checked[id] = !checked[id];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(checked));
+  localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
   render();
-  showToast();
+  showToast("Progress Saved!");
 }
 
 function updateProgress() {
@@ -318,6 +365,7 @@ function updateProgress() {
 let activeWk = null;
 function buildWkBtns() {
   const c = document.getElementById('wkBtns');
+  c.innerHTML = '';
   const allBtn = document.createElement('button');
   allBtn.className = 'fbtn active';
   allBtn.textContent = 'All Weeks';
@@ -343,10 +391,70 @@ function buildWkBtns() {
   });
 }
 
-function showToast() {
+function showToast(msg) {
   const t = document.getElementById('toast');
+  t.textContent = msg;
   t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 1500);
+  setTimeout(() => { t.style.display = 'none'; }, 2000);
+}
+
+// ════════════════════════════════════════════
+//  EDIT PLAN LOGIC (NEW)
+// ════════════════════════════════════════════
+
+function openEditModal() {
+  const modalBody = document.getElementById('modalBodyList');
+  modalBody.innerHTML = '';
+  
+  plan.forEach((item, index) => {
+    const row = document.createElement('div');
+    row.className = 'edit-row';
+    
+    // Create HTML structure for each day's edit fields
+    row.innerHTML = `
+      <div class="edit-row-header">Day ${item.d}</div>
+      <div class="input-group">
+        <input type="text" id="edit_date_${index}" value="${item.date}" placeholder="তারিখ (যেমন: ১২/০৪/২০২৬)">
+        <input type="text" id="edit_subj_${index}" value="${item.s}" placeholder="বিষয় (যেমন: বাংলা ১ম পত্র)">
+      </div>
+      <div class="input-group">
+        <textarea id="edit_topic_${index}" placeholder="পড়ার টপিক">${item.t}</textarea>
+      </div>
+    `;
+    modalBody.appendChild(row);
+  });
+
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').style.display = 'none';
+}
+
+function savePlanData() {
+  // Update the 'plan' array with new values from the modal
+  plan.forEach((item, index) => {
+    item.date = document.getElementById(`edit_date_${index}`).value;
+    item.s = document.getElementById(`edit_subj_${index}`).value;
+    item.t = document.getElementById(`edit_topic_${index}`).value;
+  });
+
+  // Save to LocalStorage
+  localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(plan));
+  
+  closeEditModal();
+  render(); // Refresh UI
+  showToast("Plan Updated Successfully!");
+}
+
+function resetToDefault() {
+  if(confirm("আপনি কি নিশ্চিত? এটি আপনার সব কাস্টম এডিট ডিলিট করে আগের ডিফল্ট রুটিনে ফিরে যাবে।")) {
+    plan = JSON.parse(JSON.stringify(defaultPlan)); // Reset to default
+    localStorage.removeItem(STORAGE_KEY_PLAN); // Clear custom plan from storage
+    closeEditModal();
+    render();
+    showToast("Reset to Default Plan!");
+  }
 }
 
 // ════════════════════════════════════════════
@@ -382,4 +490,4 @@ pomoUpdate();
 </script>
 
 </body>
-  </html>
+</html>
