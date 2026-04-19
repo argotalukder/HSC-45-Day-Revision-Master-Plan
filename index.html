@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="HSC Custom Revision Plan — BrainArena">
+<meta name="description" content="HSC Smart Revision Plan V2.0 — BrainArena">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'%3E%3Cpath d='M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z'/%3E%3C/svg%3E" type="image/svg+xml">
-<title>HSC Master Plan — BrainArena</title>
+<title>HSC Smart Plan V2.0 — BrainArena</title>
 <style>
 /* ── CSS Variables ── */
 :root {
@@ -32,7 +32,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── Header ── */
-.header { background: linear-gradient(135deg, #1e1b4b, #1e293b); color: #fff; padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); }
+.header { background: linear-gradient(135deg, #1e1b4b, #1e293b); color: #fff; padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border); position: relative; }
 .header-brand { font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--success); margin-bottom: 8px; }
 .header h1 { font-size: clamp(22px, 5vw, 28px); font-weight: 800; margin-bottom: 6px; }
 .header p { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; }
@@ -43,10 +43,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 .prog-fill { height: 100%; background: linear-gradient(90deg, var(--success), #4ade80); width: 0%; transition: width 0.4s ease; }
 .prog-txt { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
-/* ── Stats ── */
+/* ── Stats & Streak ── */
 .stats-bar { display: flex; justify-content: center; gap: 20px; padding: 15px; background: var(--bg-card); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .stat-item { text-align: center; }
 .stat-val { display: block; font-size: 20px; font-weight: 800; color: var(--primary); }
+.stat-val.streak { color: var(--warning); }
 .stat-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
 
 /* ── Pomodoro ── */
@@ -60,17 +61,18 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg-main); c
 /* ── Controls ── */
 .controls { background: var(--bg-card); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.3); border-bottom: 1px solid var(--border); }
 .controls-left { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; flex: 1; }
-select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; min-width: 150px; }
+select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); color: #fff; border: 1px solid var(--border); font-size: 13px; outline: none; cursor: pointer; min-width: 130px; }
 .fbtns { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
 .fbtn { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-muted); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .fbtn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-.controls-right { display: flex; gap: 10px; }
-.btn-feature { padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; transition: 0.2s; white-space: nowrap; border: none; }
-.btn-edit-mode { background: #0284c7; color: white; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
-.btn-edit-mode:hover { background: #0369a1; transform: translateY(-1px); }
-.btn-short-map { background: #6366f1; color: white; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); }
-.btn-short-map:hover { background: #4f46e5; transform: translateY(-1px); }
+.controls-right { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-feature { padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; transition: 0.2s; white-space: nowrap; border: none; display: flex; align-items: center; gap: 5px;}
+.btn-analytics { background: #0891b2; color: white; }
+.btn-badges { background: #d97706; color: white; }
+.btn-short-map { background: #6366f1; color: white; }
+.btn-edit-mode { background: #0284c7; color: white; }
+.btn-feature:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
 /* ── Main List ── */
 .container { max-width: 900px; margin: 0 auto; padding: 20px 15px 80px; }
@@ -90,22 +92,38 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .csubj { font-size: 14px; font-weight: 800; color: #fff; }
 .date-badge { font-size: 11px; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border); }
 .ctopic { font-size: 13.5px; color: var(--text-body); line-height: 1.6; }
-.tbadge { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+.tbadge { padding: 2px 8px; border-radius: 5px; font-size: 10px; font-weight: 800; text-transform: uppercase; border: 1px solid transparent; }
 
-/* ── Modal Overview (Short Roadmap) ── */
+/* ── Modals (Analytics, Badges, Shortmap) ── */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 999; display: none; align-items: center; justify-content: center; }
 .modal-content { background: var(--bg-card); width: 90%; max-width: 500px; max-height: 85vh; border-radius: 16px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border: 1px solid var(--border); animation: slideUp 0.3s ease; }
 .modal-header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); border-radius: 16px 16px 0 0; }
-.modal-header h2 { font-size: 18px; color: #fff; }
+.modal-header h2 { font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px;}
 .btn-close { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; }
 .btn-close:hover { color: var(--danger); }
-.modal-body { padding: 10px 0; overflow-y: auto; flex: 1; }
-.short-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; border-left: 4px solid transparent; }
+.modal-body { padding: 15px; overflow-y: auto; flex: 1; }
+
+/* Short Map Styling */
+.short-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; border-left: 4px solid transparent; background: rgba(0,0,0,0.1); margin-bottom: 5px; border-radius: 6px;}
 .short-item:hover { background: var(--bg-hover); }
 .short-left { display: flex; align-items: center; gap: 12px; }
 .short-dnum { background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; font-weight: bold; padding: 4px 8px; border-radius: 6px; width: 55px; text-align: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); }
 .short-subj-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
 .short-date { color: var(--text-muted); font-size: 12px; }
+
+/* Analytics Styling */
+.prog-item { margin-bottom: 15px; }
+.prog-info { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 5px; }
+.prog-bar-wrap { height: 10px; background: rgba(0,0,0,0.3); border-radius: 10px; overflow: hidden; border: 1px solid var(--border);}
+.prog-bar-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+
+/* Badges Styling */
+.badges-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+.badge-card { background: rgba(0,0,0,0.2); border: 1px solid var(--border); padding: 15px; border-radius: 12px; text-align: center; filter: grayscale(1); opacity: 0.5; transition: 0.3s; }
+.badge-card.unlocked { filter: grayscale(0); opacity: 1; border-color: var(--primary); background: linear-gradient(180deg, rgba(99, 102, 241, 0.1), transparent); box-shadow: 0 4px 10px rgba(99,102,241,0.2); }
+.badge-icon { font-size: 32px; margin-bottom: 8px; }
+.badge-name { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px; }
+.badge-desc { font-size: 11px; color: var(--text-muted); line-height: 1.2; }
 
 /* ── Toast ── */
 #toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: #fff; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid var(--primary); display: none; z-index: 1000; animation: slideUp 0.3s ease; }
@@ -115,7 +133,6 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
    FULL SCREEN EDIT MODE CSS
 ════════════════════════════════════════════ */
 #editView { display: none; background: var(--bg-main); min-height: 100vh; padding-bottom: 80px; }
-
 .edit-navbar { position: sticky; top: 0; z-index: 200; background: var(--bg-card); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
 .edit-nav-left, .edit-nav-right { display: flex; gap: 10px; align-items: center; }
 .edit-title { color: #fff; font-size: 18px; font-weight: 800; display: flex; flex-direction: column; }
@@ -129,9 +146,8 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .btn-reset:hover { background: var(--danger); color: #fff; }
 
 .edit-container { max-width: 800px; margin: 20px auto; padding: 0 15px; display: flex; flex-direction: column; gap: 15px; }
-.edit-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.2s; position: relative;}
-.edit-card:hover { border-color: var(--primary); }
-.edit-day-badge { display: inline-block; background: var(--primary); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; }
+.edit-card { background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border); border-left-width: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; position: relative;}
+.edit-day-badge { display: inline-block; background: var(--primary); color: #fff; font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 6px; margin-bottom: 15px; text-transform: uppercase; transition: 0.3s;}
 
 .btn-delete { position: absolute; top: 15px; right: 15px; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid var(--danger); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
 .btn-delete:hover { background: var(--danger); color: #fff; }
@@ -149,15 +165,15 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 
 /* Edit Weeks Section */
-.edit-weeks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.edit-weeks-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 .wk-edit-box { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
 .wk-edit-box label { display: block; font-size: 11px; color: var(--primary); font-weight: bold; margin-bottom: 5px; }
 .wk-edit-box input { width: 100%; background: var(--input-bg); color: #fff; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; outline: none; font-size: 13px;}
 
 @media(max-width: 600px) {
   .controls { flex-direction: column; align-items: stretch; }
-  .controls-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .btn-feature { width: 100%; text-align: center; }
+  .controls-right { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .btn-feature { justify-content: center; }
   .input-row { grid-template-columns: 1fr; gap: 10px; }
   .edit-navbar { flex-direction: column; gap: 15px; }
   .edit-nav-left, .edit-nav-right { width: 100%; justify-content: space-between; }
@@ -166,20 +182,29 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 </head>
 <body>
 
-<div id="toast">Progress Saved!</div>
+<div id="toast">Message here</div>
 
 <!-- ════════════════════════════════════════════
-   SHORT ROADMAP MODAL
+   MODALS (Analytics, Badges, Shortmap)
 ════════════════════════════════════════════ -->
 <div class="modal-overlay" id="shortMapModal">
   <div class="modal-content">
-    <div class="modal-header">
-      <h2>🗺️ Short Roadmap</h2>
-      <button class="btn-close" onclick="closeShortMap()">&times;</button>
-    </div>
-    <div class="modal-body" id="shortMapList">
-      <!-- Injected via JS -->
-    </div>
+    <div class="modal-header"><h2>🗺️ Short Roadmap</h2><button class="btn-close" onclick="closeModal('shortMapModal')">&times;</button></div>
+    <div class="modal-body" id="shortMapList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="analyticsModal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>📊 Smart Analytics</h2><button class="btn-close" onclick="closeModal('analyticsModal')">&times;</button></div>
+    <div class="modal-body" id="analyticsList"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="badgesModal">
+  <div class="modal-content" style="max-width: 600px;">
+    <div class="modal-header"><h2>🏆 Achievements & Badges</h2><button class="btn-close" onclick="closeModal('badgesModal')">&times;</button></div>
+    <div class="modal-body" id="badgesList"></div>
   </div>
 </div>
 
@@ -188,9 +213,9 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 ════════════════════════════════════════════ -->
 <div id="mainView" class="fade-in">
   <header class="header">
-    <div class="header-brand">BrainArena</div>
-    <h1>📚 HSC Custom Master Plan</h1>
-    <p>আপনার প্রয়োজন অনুযায়ী রুটিন সাজিয়ে নিন</p>
+    <div class="header-brand">BrainArena V2.0</div>
+    <h1>📚 HSC Smart Master Plan</h1>
+    <p>Smart Tracker • Analytics • Streaks</p>
     <div class="prog-wrap">
       <div class="prog-bg"><div class="prog-fill" id="pgBar"></div></div>
       <div class="prog-txt" id="pgTxt">0 / 0 Days Completed (0%)</div>
@@ -198,6 +223,7 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
   </header>
 
   <div class="stats-bar">
+    <div class="stat-item"><span class="stat-val streak" id="statStreak">0</span><span class="stat-lbl">Day Streak 🔥</span></div>
     <div class="stat-item"><span class="stat-val" id="statTotal">55</span><span class="stat-lbl">Days Total</span></div>
     <div class="stat-item"><span class="stat-val" id="statDone">0</span><span class="stat-lbl">Completed</span></div>
     <div class="stat-item"><span class="stat-val" id="statLeft">55</span><span class="stat-lbl">Remaining</span></div>
@@ -215,14 +241,14 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 
   <div class="controls">
     <div class="controls-left">
-      <select id="subF" onchange="render()">
-        <!-- Options injected via JS dynamically -->
-      </select>
+      <select id="subF" onchange="render()"></select>
       <div class="fbtns" id="wkBtns"></div>
     </div>
     <div class="controls-right">
-      <button class="btn-feature btn-short-map" onclick="openShortMap()">🗺️ Short Map</button>
-      <button class="btn-feature btn-edit-mode" onclick="openEditMode()">⚙️ Edit Plan</button>
+      <button class="btn-feature btn-analytics" onclick="openAnalytics()">📊 Analytics</button>
+      <button class="btn-feature btn-badges" onclick="openBadges()">🏆 Badges</button>
+      <button class="btn-feature btn-short-map" onclick="openShortMap()">🗺️ Map</button>
+      <button class="btn-feature btn-edit-mode" onclick="openEditMode()">⚙️ Edit</button>
     </div>
   </div>
 
@@ -249,14 +275,10 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 
   <div class="edit-container" style="padding-top: 10px;">
     <h3 style="color:#fff; font-size: 15px; margin-bottom: 10px;">📅 Edit Week Titles</h3>
-    <div class="edit-weeks-grid" id="editWeeksContainer">
-      <!-- Week Title Inputs Injected Here -->
-    </div>
+    <div class="edit-weeks-grid" id="editWeeksContainer"></div>
   </div>
 
-  <div class="edit-container" id="editContainerList">
-    <!-- JS will inject edit cards here -->
-  </div>
+  <div class="edit-container" id="editContainerList"></div>
 </div>
 
 <script>
@@ -266,9 +288,13 @@ textarea.form-control { min-height: 90px; resize: vertical; line-height: 1.5; }
 const STORAGE_KEY_PROG = 'hsc_2026_progress';
 const STORAGE_KEY_PLAN = 'hsc_2026_custom_plan';
 const STORAGE_KEY_WEEKS = 'hsc_2026_custom_weeks';
+const STORAGE_KEY_STREAK = 'hsc_2026_streak';
+const STORAGE_KEY_BADGES = 'hsc_2026_badges';
 
 let checked = JSON.parse(localStorage.getItem(STORAGE_KEY_PROG) || '{}');
 let customWeekTitles = JSON.parse(localStorage.getItem(STORAGE_KEY_WEEKS)) || {};
+let userStreak = JSON.parse(localStorage.getItem(STORAGE_KEY_STREAK)) || { count: 0, lastDate: null };
+let unlockedBadges = JSON.parse(localStorage.getItem(STORAGE_KEY_BADGES)) || [];
 
 const sc = {
   "বাংলা ১ম পত্র": {bg:"#1e3a8a", col:"#bfdbfe", brd:"#3b82f6"},
@@ -287,22 +313,23 @@ const sc = {
   "Grand Revision":{bg:"#431407", col:"#fed7aa", brd:"#ea580c"},
 };
 
-// Auto Generate Color for Unknown Subjects
+// Badges Definition
+const BADGES_LIST = [
+  { id: 'b1', name: 'First Step', desc: 'Completed 1st day of study', icon: '🌟', condition: (d, s, t) => d >= 1 },
+  { id: 'b2', name: 'On Fire', desc: '3 Day Study Streak', icon: '🔥', condition: (d, s, t) => s >= 3 },
+  { id: 'b3', name: 'Consistency King', desc: '7 Day Study Streak', icon: '👑', condition: (d, s, t) => s >= 7 },
+  { id: 'b4', name: 'Halfway There', desc: 'Completed 50% of the plan', icon: '🚀', condition: (d, s, t) => t > 0 && (d/t) >= 0.5 },
+  { id: 'b5', name: 'Mastermind', desc: '100% Plan Completed', icon: '🎓', condition: (d, s, t) => t > 0 && d === t }
+];
+
 function getSubjColor(subj) {
   if (sc[subj]) return sc[subj];
-  if (!subj) return {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"}; // Fallback Blank
+  if (!subj) return {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"}; 
   
-  // Hash string to generate a consistent color
   let hash = 0;
-  for (let i = 0; i < subj.length; i++) {
-    hash = subj.charCodeAt(i) + ((hash << 5) - hash);
-  }
+  for (let i = 0; i < subj.length; i++) hash = subj.charCodeAt(i) + ((hash << 5) - hash);
   const hue = Math.abs(hash) % 360;
-  return { 
-    bg: `hsl(${hue}, 70%, 20%)`, 
-    col: `hsl(${hue}, 70%, 85%)`, 
-    brd: `hsl(${hue}, 60%, 50%)` 
-  };
+  return { bg: `hsl(${hue}, 70%, 20%)`, col: `hsl(${hue}, 70%, 85%)`, brd: `hsl(${hue}, 60%, 50%)` };
 }
 
 const baseWeeks = [
@@ -316,66 +343,70 @@ const baseWeeks = [
   {id:8, label:"Rev 2", title:"Mock Test Phase", color:"#9a3412", days:[50,55]},
 ];
 
-// Full Default Fallback Plan
 const defaultPlan = [
   {d:1, date:"১২/০৪/২০২৬", s:"বাংলা ১ম পত্র", t:"গদ্য ১–৬: বাঙ্গালার নব্য লেখকদিগের প্রতি, অপরিচিতা, সাহিত্যে খেলা, বিলাসী, অধ্যাঙ্গিনী, যৌবনের গান | উপন্যাস: লালসালু | পদ্য ১–৬: ঋতুবর্ণন..."},
-  {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"বাংলা উচ্চারণ নিয়ম (এ, অ, ব-ফলা, ম-ফলা, স-ফলা) | বাংলা বানান নিয়ম | ব্যাকরণিক শব্দশ্রেণি | শব্দ গঠন (উপসর্গ, প্রকৃতি-প্রত্যয়, সমাস)"},
-  {d:3, date:"১৪/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"বাক্যতত্ত্ব | পারিভাষিক শব্দ | অনুবাদ | দিনলিপি | প্রতিবেদন | ই-মেইল | আবেদনপত্র | সারাংশ | ভাব-সম্প্রসারণ | রচনা"},
-  {d:4, date:"১৫/০৪/২০২৬", s:"English 1st", t:"Seen Comprehension (MCQ + questions) | Summarizing | Unseen Comprehension | Cloze test with clues | Cloze test without clues"},
-  {d:5, date:"১৬/০৪/২০২৬", s:"English 1st", t:"Rearranging sentences | Paragraph writing | Completing a story | Informal letters | Informal emails | Graph/Chart"},
-  {d:6, date:"১৭/০৪/২০২৬", s:"English 2nd", t:"Article | Preposition | Special words/phrases | Completing sentence"},
-  {d:7, date:"১৮/০৪/২০২৬", s:"English 2nd", t:"Right form of verbs | Changing sentence | Narration"},
-  {d:8, date:"১৯/০৪/২০২৬", s:"English 2nd", t:"Pronoun referencing | Modifiers | Connectors | Synonym-Antonym | Punctuation | Composition"},
-  {d:9, date:"২০/০৪/২০২৬", s:"ICT", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex, Logic gates | ডেটাবেজ ম্যানেজমেন্ট সিষ্টেম — SQL"},
-  {d:10, date:"২১/০৪/২০২৬", s:"ICT", t:"প্রোগ্রামিং ভাষা — C program | ওয়েভ ডিজাইন পরিচিতি ও HTML"},
-  {d:11, date:"২২/০৪/২০২৬", s:"ICT", t:"কমিউনিকেশন সিস্টেমস ও নেটওয়ার্কিং | তথ্য ও যোগাযোগ প্রযুক্তি: বিশ্ব ও বাংলাদেশ প্রেক্ষিত"},
-  {d:12, date:"২৩/০৪/২০২৬", s:"পদার্থ ১ম", t:"গতিবিদ্যা — প্রাস | ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার"},
-  {d:13, date:"২৪/০৪/২০২৬", s:"পদার্থ ১ম", t:"কাজ শক্তি ও ক্ষমতা | মহাকর্ষ ও অভিকর্ষ"},
-  {d:14, date:"২৫/০৪/২০২৬", s:"পদার্থ ১ম", t:"পর্যাবৃত্ত গতি | তরঙ্গ"},
-  {d:15, date:"২৬/০৪/২০২৬", s:"পদার্থ ১ম", t:"আদর্শ গ্যাস ও গ্যাসের গতিতত্ত্ব | পদার্থের গাঠনিক ধর্ম"},
-  {d:16, date:"২৭/০৪/২০২৬", s:"পদার্থ ২য়", t:"তাপগতিবিদ্যা — Carnot engine | স্থির তড়িৎ — বিভব, ধারকত্ব"},
-  {d:17, date:"২৮/০৪/২০২৬", s:"পদার্থ ২য়", t:"চলতড়িৎ — Kirchhoff, Wheatstone | ভৌত আলোকবিজ্ঞান — ব্যতিচার, অপবর্তন"},
-  {d:18, date:"২৯/০৪/২০২৬", s:"পদার্থ ২য়", t:"আধুনিক পদার্থবিজ্ঞানের সূচনা | পরমাণুর মডেল ও নিউক্লিয়ার পদার্থবিজ্ঞান"},
-  {d:19, date:"৩০/০৪/২০২৬", s:"পদার্থ ২য়", t:"সেমিকন্ডাক্টর ও ইলেকট্রনিক্স — p-n junction, Transistor, Logic gate"},
-  {d:20, date:"০১/০৫/২০২৬", s:"রসায়ন ১ম", t:"গুণগত রসায়ন — পরমাণুর গঠন, কোয়ান্টাম সংখ্যা, দ্রাব্যতা গুণফল"},
-  {d:21, date:"০২/০৫/২০২৬", s:"রসায়ন ১ম", t:"মৌলের পর্যায়বৃত্ত ধর্ম — আয়নিকরণ শক্তি, ইলেকট্রন আসক্তি, আয়নিক ও সমযোজী বন্ধন"},
-  {d:22, date:"০৩/০৫/২০২৬", s:"রসায়ন ১ম", t:"রাসায়নিক পরিবর্তন — Kp, Kc, লা-শাতেলিয়ে নীতি, pH, Buffer"},
-  {d:23, date:"০৪/০৫/২০২৬", s:"রসায়ন ১ম", t:"ল্যাবরেটরি নিরাপত্তা ও পরিচ্ছন্নতা | রসায়ন এবং প্রযুক্তি"},
-  {d:24, date:"০৫/০৫/২০২৬", s:"রসায়ন ২য়", t:"পরিবেশ রসায়ন — PV=nRT, Dalton's partial pressure, Van der Waals"},
-  {d:25, date:"০৬/০৫/২০২৬", s:"রসায়ন ২য়", t:"পরিমাণগত রসায়ন — সমতাকরণ, টাইট্রেশন, ঘনমাত্রা, pH"},
-  {d:26, date:"০৭/০৫/২০২৬", s:"রসায়ন ২য়", t:"তড়িৎ রসায়ন — Nernst equation, EMF"},
-  {d:27, date:"০৮/০৫/২০২৬", s:"রসায়ন ২য়", t:"অর্থনৈতিক রসায়ন — শিল্পে রসায়ন, সার, সিমেন্ট, কাচ, পলিমার"},
-  {d:28, date:"০৯/০৫/২০২৬", s:"জীব ১ম", t:"কোষ ও এর গঠন | কোষ বিভাজন — Mitosis/Meiosis"},
-  {d:29, date:"১০/০৫/২০২৬", s:"জীব ১ম", t:"কোষ রসায়ন | অণুজীব — ব্যাকটেরিয়া, ম্যালেরিয়া, ডেঙ্গু"},
-  {d:30, date:"১১/০৫/২০২৬", s:"জীব ১ম", t:"নগ্নবীজী ও আবৃতবীজী উদ্ভিদ | উদ্ভিদ শরীরতত্ত্ব — সালোকসংশ্লেষণ, শ্বসন"},
-  {d:31, date:"১২/০৫/২০২৬", s:"জীব ১ম", t:"জীবপ্রযুক্তি — GMO, DNA fingerprinting"},
-  {d:32, date:"১৩/০৫/২০২৬", s:"জীব ২য়", t:"প্রাণীর বিভিন্নতা ও শ্রেণিবিন্যাস | প্রাণীর পরিচিতি — হাইড্রা"},
-  {d:33, date:"১৪/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: পরিপাক ও শোষণ | রক্ত সংবহন — হৃদপিণ্ডের গঠন"},
-  {d:34, date:"১৫/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: শ্বসন ও শ্বাসকার্য | বর্জ্য ও নিষ্কাশন"},
-  {d:35, date:"১৬/০৫/২০২৬", s:"জীব ২য়", t:"মানব শারীরবিদ্যা: সমন্বয় ও নিয়ন্ত্রণ | জীনতত্ত্ব ও বিবর্তন"},
-  {d:36, date:"১৭/০৫/২০২৬", s:"গণিত ১ম", t:"ম্যাট্রিক্স ও নির্ণায়ক | ভেক্টর"},
-  {d:37, date:"১৮/০৫/২০২৬", s:"গণিত ১ম", t:"সরলরেখা | বৃত্ত"},
-  {d:38, date:"১৯/০৫/২০২৬", s:"গণিত ১ম", t:"সংযুক্ত কোণের ত্রিকোণমিতিক অনুপাত | যোগজীকরণ"},
-  {d:39, date:"২০/০৫/২০২৬", s:"গণিত ১ম", t:"অন্তরীকরণ"},
-  {d:40, date:"২১/০৫/২০২৬", s:"গণিত ২য়", t:"বাস্তব সংখ্যা ও অসমতা | বহুপদী সমীকরণ"},
-  {d:41, date:"২২/০৫/২০২৬", s:"গণিত ২য়", t:"দ্বিপদী বিস্তৃতি | বিপরীত ত্রিকোণমিতিক ফাংশন ও সমীকরণ"},
-  {d:42, date:"২৩/০৫/২০২৬", s:"গণিত ২য়", t:"কনিক | গতিবিদ্যা"},
-  {d:43, date:"২৪/০৫/২০২৬", s:"গণিত ২য়", t:"বিস্তার পরিমাপ ও সম্ভাবনা"},
-  {d:44, date:"২৫/০৫/২০২৬", s:"Grand Revision", t:"🔵 বাংলা ১ম + ২য় পত্র: গুরুত্বপূর্ণ MCQ + সৃজনশীল উত্তর অনুশীলন।"},
-  {d:45, date:"২৬/০৫/২০২৬", s:"Grand Revision", t:"🟡 English 1st + 2nd Paper: Grammar rules, formats review."},
-  {d:46, date:"২৭/০৫/২০২৬", s:"Grand Revision", t:"🩵 ICT: সংখ্যা রূপান্তর, Logic gate, HTML tags, SQL."},
-  {d:47, date:"২৮/০৫/২০২৬", s:"Grand Revision", t:"🟢 পদার্থ ১ম পত্র: প্রাস গতির সূত্র, কাজ-শক্তি-ক্ষমতা, মহাকর্ষ।"},
-  {d:48, date:"২৯/০৫/২০২৬", s:"Grand Revision", t:"🟢 পদার্থ ২য় পত্র: তাপগতিবিদ্যা, চলতড়িৎ, ব্যতিচার-অপবর্তন।"},
-  {d:49, date:"৩০/০৫/২০২৬", s:"Grand Revision", t:"🩷 রসায়ন ১ম পত্র: কোয়ান্টাম সংখ্যা, ইলেকট্রন বিন্যাস, pH।"},
-  {d:50, date:"৩১/০৫/২০২৬", s:"Grand Revision", t:"🩷 রসায়ন ২য় পত্র: PV=nRT, টাইট্রেশন, তড়িৎ রসায়ন।"},
-  {d:51, date:"০১/০৬/২০২৬", s:"Grand Revision", t:"🌿 জীব ১ম পত্র: DNA/RNA, Mitosis/Meiosis, C3/C4।"},
-  {d:52, date:"০২/০৬/২০২৬", s:"Grand Revision", t:"🌿 জীব ২য় পত্র: শ্রেণিবিন্যাস, হাইড্রা, মানব শারীরবিদ্যা।"},
-  {d:53, date:"০৩/০৬/২০২৬", s:"Grand Revision", t:"🟠 গণিত ১ম পত্র: ম্যাট্রিক্স, ভেক্টর, সরলরেখা, ত্রিকোণমিতি।"},
-  {d:54, date:"০৪/০৬/২০২৬", s:"Grand Revision", t:"🟠 গণিত ২য় পত্র: বহুপদী, দ্বিপদী, কনিক, সম্ভাবনা।"},
-  {d:55, date:"০৫/০৬/২০২৬", s:"Grand Revision", t:"🏆 Final Mock Test Day: সব ভুল হওয়া টপিক রিভিশন।"}
+  {d:2, date:"১৩/০৪/২০২৬", s:"বাংলা ২য় পত্র", t:"বাংলা উচ্চারণ নিয়ম | বাংলা বানান নিয়ম | ব্যাকরণিক শব্দশ্রেণি | শব্দ গঠন"},
+  {d:3, date:"১৪/০৪/২০২৬", s:"English 1st", t:"Seen Comprehension (MCQ + questions) | Summarizing | Unseen Comprehension"},
+  {d:4, date:"১৫/০৪/২০২৬", s:"English 2nd", t:"Article | Preposition | Special words/phrases | Completing sentence"},
+  {d:5, date:"১৬/০৪/২০২৬", s:"ICT", t:"সংখ্যা পদ্ধতি ও ডিজিটাল ডিভাইস — Binary/Octal/Hex, Logic gates"},
+  {d:6, date:"১৭/০৪/২০২৬", s:"পদার্থ ১ম", t:"গতিবিদ্যা — প্রাস | ভেক্টর — ক্রস গুণফল, ডট গুণফল, নদী পারাপার"},
+  {d:7, date:"১৮/০৪/২০২৬", s:"রসায়ন ১ম", t:"গুণগত রসায়ন — পরমাণুর গঠন, কোয়ান্টাম সংখ্যা, দ্রাব্যতা গুণফল"},
+  {d:8, date:"১৯/০৪/২০২৬", s:"জীব ১ম", t:"কোষ ও এর গঠন | কোষ বিভাজন — Mitosis/Meiosis"},
+  {d:9, date:"২০/০৪/২০২৬", s:"গণিত ১ম", t:"ম্যাট্রিক্স ও নির্ণায়ক | ভেক্টর"},
+  {d:10, date:"২১/০৪/২০২৬", s:"Grand Revision", t:"রিভিশন: এই ১০ দিনের পড়া একসাথে রিভিউ করুন।"}
 ];
 
 let plan = JSON.parse(localStorage.getItem(STORAGE_KEY_PLAN)) || JSON.parse(JSON.stringify(defaultPlan));
+
+// ════════════════════════════════════════════
+//  STREAK & BADGES LOGIC
+// ════════════════════════════════════════════
+function updateStreakOnAction() {
+  const today = new Date().toISOString().split('T')[0];
+  
+  if (userStreak.lastDate !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    if (userStreak.lastDate === yesterdayStr) {
+      userStreak.count++;
+    } else {
+      userStreak.count = 1;
+    }
+    userStreak.lastDate = today;
+    localStorage.setItem(STORAGE_KEY_STREAK, JSON.stringify(userStreak));
+  }
+  document.getElementById('statStreak').textContent = userStreak.count;
+}
+
+function checkAndUnlockBadges() {
+  const total = plan.length;
+  const done = plan.filter(p => checked[p.d]).length;
+  const streak = userStreak.count;
+
+  BADGES_LIST.forEach(b => {
+    if (!unlockedBadges.includes(b.id) && b.condition(done, streak, total)) {
+      unlockedBadges.push(b.id);
+      localStorage.setItem(STORAGE_KEY_BADGES, JSON.stringify(unlockedBadges));
+      showToast(`🏆 New Badge Unlocked: ${b.name}!`);
+    }
+  });
+}
+
+function initStreakDisplay() {
+  // Check if streak was broken before user even clicks
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+  if (userStreak.lastDate && userStreak.lastDate !== today && userStreak.lastDate !== yesterdayStr) {
+    userStreak.count = 0; // Streak broken
+    localStorage.setItem(STORAGE_KEY_STREAK, JSON.stringify(userStreak));
+  }
+  document.getElementById('statStreak').textContent = userStreak.count;
+}
 
 // ════════════════════════════════════════════
 //  DYNAMIC SUBJECT DROPDOWN
@@ -385,54 +416,28 @@ function populateSubjectDropdown() {
   const currentVal = select.value; 
   select.innerHTML = '<option value="all">সকল বিষয়</option>';
 
-  // Get unique subjects from the plan array
   const uniqueSubjects = [...new Set(plan.map(d => d.s).filter(Boolean))];
-  
   uniqueSubjects.forEach(subj => {
     const opt = document.createElement('option');
     opt.value = subj;
     opt.textContent = subj;
     select.appendChild(opt);
   });
-
-  // Restore previous selection if it still exists
-  if (uniqueSubjects.includes(currentVal)) {
-    select.value = currentVal;
-  }
+  if (uniqueSubjects.includes(currentVal)) select.value = currentVal;
 }
 
-// ════════════════════════════════════════════
-//  DYNAMIC WEEKS GENERATOR (Supports Custom Names)
-// ════════════════════════════════════════════
 function getActiveWeeks() {
-  let wks = JSON.parse(JSON.stringify(baseWeeks)); // Deep copy base
+  let wks = JSON.parse(JSON.stringify(baseWeeks)); 
   let maxDay = plan.length;
-  
   if (maxDay > 55) {
-    let startDay = 56;
-    let weekNum = 9; 
-    
+    let startDay = 56, weekNum = 9; 
     while (startDay <= maxDay) {
       let endDay = Math.min(startDay + 6, maxDay);
-      wks.push({
-        id: weekNum + 100,
-        label: `W${weekNum}`,
-        title: `Extra Routine ${weekNum - 8}`,
-        color: `#4c1d95`,
-        days: [startDay, endDay]
-      });
-      startDay += 7;
-      weekNum++;
+      wks.push({ id: weekNum + 100, label: `W${weekNum}`, title: `Extra Routine ${weekNum - 8}`, color: `#4c1d95`, days: [startDay, endDay] });
+      startDay += 7; weekNum++;
     }
   }
-
-  // Apply User's Custom Titles to any week
-  wks.forEach(w => {
-    if (customWeekTitles[w.id]) {
-      w.title = customWeekTitles[w.id];
-    }
-  });
-
+  wks.forEach(w => { if (customWeekTitles[w.id]) w.title = customWeekTitles[w.id]; });
   return wks;
 }
 
@@ -450,39 +455,31 @@ function render() {
   currentWeeks.forEach(wk => {
     if (activeWk && activeWk !== wk.id) return;
 
-    const wkDays = plan.filter(d => 
-      d.d >= wk.days[0] && d.d <= wk.days[1] &&
-      (subj === 'all' || d.s === subj)
-    );
+    const wkDays = plan.filter(d => d.d >= wk.days[0] && d.d <= wk.days[1] && (subj === 'all' || d.s === subj));
     if (!wkDays.length) return;
 
     const block = document.createElement('div');
     block.className = 'week-block fade-in';
-    
     const doneCount = wkDays.filter(d => checked[d.d]).length;
     block.innerHTML = `
       <div class="week-hdr" style="background:${wk.color}">
-        <span>${wk.label}: ${wk.title}</span>
-        <span style="font-size:11px">${doneCount}/${wkDays.length} Done</span>
+        <span>${wk.label}: ${wk.title}</span><span style="font-size:11px">${doneCount}/${wkDays.length} Done</span>
       </div>
     `;
 
     wkDays.forEach(d => {
       const tc = getSubjColor(d.s); 
       const isDone = checked[d.d];
-      
       const card = document.createElement('div');
       card.className = `day-card ${isDone ? 'done' : ''}`;
       card.style.borderLeftColor = tc.brd;
       card.innerHTML = `
         <div class="cb"></div>
-        <div class="dnum-box">
-          <span class="dnum">Day ${d.d}</span>
-        </div>
+        <div class="dnum-box"><span class="dnum">Day ${d.d}</span></div>
         <div class="cbody">
           <div class="cmeta">
             <span class="csubj">${d.s}</span>
-            <span class="tbadge" style="background:${tc.bg}; color:${tc.col}">${d.s}</span>
+            <span class="tbadge" style="background:${tc.bg}; color:${tc.col}; border-color:${tc.brd}">${d.s}</span>
             <span class="date-badge">📅 ${d.date}</span>
           </div>
           <div class="ctopic">${d.t}</div>
@@ -499,7 +496,13 @@ function render() {
 function toggleDay(id) {
   checked[id] = !checked[id];
   localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
+  
+  if (checked[id]) {
+    updateStreakOnAction();
+  }
+  
   render();
+  checkAndUnlockBadges();
   showToast(checked[id] ? "Day Completed! 🎉" : "Marked as Undone.");
 }
 
@@ -517,77 +520,166 @@ function updateProgress() {
 
 function buildWkBtns() {
   const c = document.getElementById('wkBtns');
-  c.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.className = 'fbtn active';
-  allBtn.textContent = 'All Weeks';
-  allBtn.onclick = () => {
-    activeWk = null;
-    document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-    allBtn.classList.add('active');
-    render();
-  };
-  c.appendChild(allBtn);
-
+  c.innerHTML = '<button class="fbtn active" onclick="setWk(null, this)">All Weeks</button>';
   getActiveWeeks().forEach(wk => {
-    const btn = document.createElement('button');
-    btn.className = 'fbtn';
-    btn.textContent = wk.label;
-    btn.onclick = () => {
-      activeWk = wk.id;
-      document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      render();
-    };
-    c.appendChild(btn);
+    c.innerHTML += `<button class="fbtn" onclick="setWk(${wk.id}, this)">${wk.label}</button>`;
   });
+}
+
+function setWk(id, el) {
+  activeWk = id;
+  document.querySelectorAll('#wkBtns .fbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
 }
 
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.style.display = 'block';
-  setTimeout(() => { t.style.display = 'none'; }, 2000);
+  setTimeout(() => { t.style.display = 'none'; }, 2500);
 }
 
 // ════════════════════════════════════════════
-//  SHORT ROADMAP OVERVIEW 
+//  MODALS LOGIC
 // ════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+// 🗺️ SHORT MAP
 function openShortMap() {
-  const modal = document.getElementById('shortMapModal');
   const listCont = document.getElementById('shortMapList');
   listCont.innerHTML = ''; 
-  
   plan.forEach(item => {
     const tc = getSubjColor(item.s);
-    
-    const el = document.createElement('div');
-    el.className = 'short-item';
-    el.style.borderLeftColor = tc.brd; 
-    
-    el.innerHTML = `
-      <div class="short-left">
-        <span class="short-dnum">Day ${item.d}</span>
-        <span class="short-subj-badge" style="background:${tc.bg}; color:${tc.col}; border: 1px solid ${tc.brd}">
-          ${item.s}
-        </span>
+    listCont.innerHTML += `
+      <div class="short-item" style="border-left-color:${tc.brd}">
+        <div class="short-left">
+          <span class="short-dnum">Day ${item.d}</span>
+          <span class="short-subj-badge" style="background:${tc.bg}; color:${tc.col}; border: 1px solid ${tc.brd}">${item.s}</span>
+        </div>
+        <span class="short-date">${item.date || 'No Date'}</span>
       </div>
-      <span class="short-date">${item.date || 'No Date'}</span>
     `;
-    listCont.appendChild(el);
   });
-  
-  modal.style.display = 'flex';
+  openModal('shortMapModal');
 }
 
-function closeShortMap() {
-  document.getElementById('shortMapModal').style.display = 'none';
+// 📊 SMART ANALYTICS
+function openAnalytics() {
+  const listCont = document.getElementById('analyticsList');
+  listCont.innerHTML = '';
+  const subjects = [...new Set(plan.map(d => d.s).filter(Boolean))];
+
+  subjects.forEach(subj => {
+    const subjDays = plan.filter(d => d.s === subj);
+    const doneDays = subjDays.filter(d => checked[d.d]).length;
+    const total = subjDays.length;
+    const pct = Math.round((doneDays / total) * 100) || 0;
+    const tc = getSubjColor(subj);
+
+    listCont.innerHTML += `
+      <div class="prog-item">
+        <div class="prog-info">
+          <span>${subj}</span><span>${doneDays}/${total} (${pct}%)</span>
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-fill" style="width: ${pct}%; background: ${tc.brd};"></div>
+        </div>
+      </div>
+    `;
+  });
+  openModal('analyticsModal');
+}
+
+// 🏆 BADGES
+function openBadges() {
+  const listCont = document.getElementById('badgesList');
+  listCont.innerHTML = '<div class="badges-grid"></div>';
+  const grid = listCont.querySelector('.badges-grid');
+
+  BADGES_LIST.forEach(b => {
+    const isUnlocked = unlockedBadges.includes(b.id);
+    grid.innerHTML += `
+      <div class="badge-card ${isUnlocked ? 'unlocked' : ''}">
+        <div class="badge-icon">${b.icon}</div>
+        <div class="badge-name">${b.name}</div>
+        <div class="badge-desc">${b.desc}</div>
+      </div>
+    `;
+  });
+  openModal('badgesModal');
 }
 
 
 // ════════════════════════════════════════════
-//  FULL SCREEN EDIT + AUTO-SORT + ADD/DELETE
+//  FULL SCREEN EDIT + SMART COLORS
 // ════════════════════════════════════════════
+function openEditMode() {
+  document.getElementById('mainView').style.display = 'none';
+  const editView = document.getElementById('editView');
+  editView.style.display = 'block';
+  editView.classList.add('fade-in');
+
+  const weeksContainer = document.getElementById('editWeeksContainer');
+  weeksContainer.innerHTML = '';
+  getActiveWeeks().forEach(wk => {
+    weeksContainer.innerHTML += `
+      <div class="wk-edit-box">
+        <label>${wk.label} Name</label>
+        <input type="text" id="edit_wk_title_${wk.id}" value="${wk.title}" placeholder="E.g. Extra Routine">
+      </div>`;
+  });
+
+  const container = document.getElementById('editContainerList');
+  container.innerHTML = ''; 
+
+  plan.forEach((item, index) => {
+    const tc = getSubjColor(item.s); // Initial color based on existing subject
+    
+    const card = document.createElement('div');
+    card.className = 'edit-card fade-in';
+    card.id = `edit_card_${index}`;
+    card.style.borderLeftColor = tc.brd;
+    
+    card.innerHTML = `
+      <button class="btn-delete" onclick="deleteDay(${index})" title="Delete this day">🗑️ Delete</button>
+      <div class="edit-day-badge" id="edit_badge_${index}" style="background:${tc.bg}; color:${tc.col}; border:1px solid ${tc.brd}">DAY ${item.d} - ${item.s || 'New'}</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label">Date (তারিখ)</label>
+          <input type="text" class="form-control" id="edit_date_${index}" value="${item.date}" placeholder="e.g. ১২/০৪/২০২৬">
+        </div>
+        <div class="input-group">
+          <label class="input-label">Subject (বিষয়)</label>
+          <!-- oninput attribute added for LIVE color change -->
+          <input type="text" class="form-control" id="edit_subj_${index}" value="${item.s}" placeholder="e.g. Physics" oninput="updateEditCardColor(${index}, this.value)">
+        </div>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Topics to Study (পড়ার টপিক)</label>
+        <textarea class="form-control" id="edit_topic_${index}" placeholder="What to study...">${item.t}</textarea>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+
+  container.innerHTML += `<div class="btn-add-wrap"><button class="btn-add" onclick="addNewDay()">➕ Add New Day</button></div>`;
+}
+
+// Live Color Update for Edit Cards
+function updateEditCardColor(index, newSubject) {
+  const card = document.getElementById(`edit_card_${index}`);
+  const badge = document.getElementById(`edit_badge_${index}`);
+  if(card && badge) {
+    const tc = getSubjColor(newSubject);
+    card.style.borderLeftColor = tc.brd;
+    badge.style.background = tc.bg;
+    badge.style.color = tc.col;
+    badge.style.borderColor = tc.brd;
+    badge.textContent = `DAY ${plan[index]?.d || ''} - ${newSubject || 'New'}`;
+  }
+}
 
 function syncInputsToPlan() {
   plan.forEach((item, index) => {
@@ -598,61 +690,6 @@ function syncInputsToPlan() {
       item.t = document.getElementById(`edit_topic_${index}`).value;
     }
   });
-}
-
-function openEditMode() {
-  document.getElementById('mainView').style.display = 'none';
-  const editView = document.getElementById('editView');
-  editView.style.display = 'block';
-  editView.classList.add('fade-in');
-
-  // Load Week Title Editors
-  const weeksContainer = document.getElementById('editWeeksContainer');
-  weeksContainer.innerHTML = '';
-  let currentWeeks = getActiveWeeks();
-  currentWeeks.forEach(wk => {
-    const box = document.createElement('div');
-    box.className = 'wk-edit-box';
-    box.innerHTML = `
-      <label>${wk.label} Name</label>
-      <input type="text" id="edit_wk_title_${wk.id}" value="${wk.title}" placeholder="E.g. Extra Routine">
-    `;
-    weeksContainer.appendChild(box);
-  });
-
-  // Load Daily Cards
-  const container = document.getElementById('editContainerList');
-  container.innerHTML = ''; 
-
-  plan.forEach((item, index) => {
-    const card = document.createElement('div');
-    card.className = 'edit-card fade-in';
-    
-    card.innerHTML = `
-      <button class="btn-delete" onclick="deleteDay(${index})" title="Delete this day">🗑️ Delete</button>
-      <div class="edit-day-badge">DAY ${item.d}</div>
-      <div class="input-row">
-        <div class="input-group">
-          <label class="input-label">Date (তারিখ)</label>
-          <input type="text" class="form-control" id="edit_date_${index}" value="${item.date}" placeholder="e.g. ১২/০৪/২০২৬">
-        </div>
-        <div class="input-group">
-          <label class="input-label">Subject (বিষয়)</label>
-          <input type="text" class="form-control" id="edit_subj_${index}" value="${item.s}" placeholder="e.g. বাংলা ১ম পত্র">
-        </div>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Topics to Study (পড়ার টপিক)</label>
-        <textarea class="form-control" id="edit_topic_${index}" placeholder="What to study on this day...">${item.t}</textarea>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-
-  const addBtnWrap = document.createElement('div');
-  addBtnWrap.className = 'btn-add-wrap';
-  addBtnWrap.innerHTML = `<button class="btn-add" onclick="addNewDay()">➕ Add New Day</button>`;
-  container.appendChild(addBtnWrap);
 }
 
 function closeEditMode() {
@@ -669,7 +706,7 @@ function addNewDay() {
 }
 
 function deleteDay(index) {
-  if(confirm("আপনি কি নিশ্চিত যে এই দিনটি ডিলিট করতে চান?")) {
+  if(confirm("Are you sure you want to delete this day?")) {
     syncInputsToPlan(); 
     plan.splice(index, 1); 
     openEditMode(); 
@@ -681,67 +718,49 @@ function parseDateForSort(dateStr) {
   const b2e = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
   let engStr = String(dateStr).replace(/[০-৯]/g, m => b2e[m]).trim();
   let parts = engStr.split(/[-/.]/); 
-  if(parts.length >= 3) {
-    let d = parseInt(parts[0], 10);
-    let m = parseInt(parts[1], 10);
-    let y = parseInt(parts[2], 10);
-    return (y * 10000) + (m * 100) + d; 
-  }
+  if(parts.length >= 3) { return (parseInt(parts[2], 10) * 10000) + (parseInt(parts[1], 10) * 100) + parseInt(parts[0], 10); }
   return 99999999; 
 }
 
 function savePlanData() {
-  // 1. Save Week Custom Titles
-  let currentWeeks = getActiveWeeks();
-  currentWeeks.forEach(wk => {
+  getActiveWeeks().forEach(wk => {
     let inputEl = document.getElementById(`edit_wk_title_${wk.id}`);
-    if (inputEl) {
-      customWeekTitles[wk.id] = inputEl.value;
-    }
+    if (inputEl) customWeekTitles[wk.id] = inputEl.value;
   });
   localStorage.setItem(STORAGE_KEY_WEEKS, JSON.stringify(customWeekTitles));
 
-  // 2. Save Daily Plan & Sort
   syncInputsToPlan(); 
-  
-  plan.forEach((item, index) => {
-    item.wasChecked = checked[item.d] || false; 
-    item.oldIndex = index;
-  });
-
+  plan.forEach((item, index) => { item.wasChecked = checked[item.d] || false; item.oldIndex = index; });
   plan.sort((a, b) => {
-    let dateA = parseDateForSort(a.date);
-    let dateB = parseDateForSort(b.date);
-    if (dateA !== dateB) return dateA - dateB;
-    return a.oldIndex - b.oldIndex;
+    let dA = parseDateForSort(a.date), dB = parseDateForSort(b.date);
+    return dA !== dB ? dA - dB : a.oldIndex - b.oldIndex;
   });
 
   let newChecked = {}; 
   plan.forEach((item, index) => {
     item.d = index + 1; 
     if (item.wasChecked) newChecked[item.d] = true;
-    delete item.wasChecked;
-    delete item.oldIndex;
+    delete item.wasChecked; delete item.oldIndex;
   });
   checked = newChecked; 
 
   localStorage.setItem(STORAGE_KEY_PLAN, JSON.stringify(plan));
   localStorage.setItem(STORAGE_KEY_PROG, JSON.stringify(checked));
   
-  populateSubjectDropdown(); // Update dropdown with new subjects
+  populateSubjectDropdown(); 
   closeEditMode();
   buildWkBtns(); 
   render();
+  checkAndUnlockBadges(); // Evaluate badges on save
   showToast("Plan Saved & Sorted! 🎉");
 }
 
 function resetToDefault() {
-  if(confirm("আপনি কি নিশ্চিত? এটি আপনার সব কাস্টম প্ল্যান ডিলিট করে মূল রুটিনে ফিরে যাবে।")) {
+  if(confirm("This will delete all your custom plans and restore defaults. Are you sure?")) {
     plan = JSON.parse(JSON.stringify(defaultPlan));
-    customWeekTitles = {}; // Reset week names
+    customWeekTitles = {}; 
     localStorage.removeItem(STORAGE_KEY_PLAN);
     localStorage.removeItem(STORAGE_KEY_WEEKS);
-    
     populateSubjectDropdown();
     openEditMode(); 
     showToast("Restored Defaults!");
@@ -761,10 +780,7 @@ function pomoToggle() {
   if(!pRun) {
     pRun = true; document.getElementById('pomoBtn').textContent = 'Pause';
     document.getElementById('pomoBtn').classList.add('running');
-    pInt = setInterval(() => {
-      if(pTime > 0) { pTime--; pomoUpdate(); }
-      else { pomoStop(); alert('Time Up!'); }
-    }, 1000);
+    pInt = setInterval(() => { if(pTime > 0) { pTime--; pomoUpdate(); } else { pomoStop(); alert('Time Up!'); } }, 1000);
   } else pomoStop();
 }
 function pomoStop() {
@@ -775,6 +791,7 @@ function pomoStop() {
 function pomoReset() { pomoStop(); pTime = 25 * 60; pomoUpdate(); }
 
 // Init
+initStreakDisplay();
 populateSubjectDropdown();
 buildWkBtns();
 render();
