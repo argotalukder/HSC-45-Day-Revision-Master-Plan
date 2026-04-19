@@ -100,11 +100,11 @@ select { padding: 8px 12px; border-radius: 8px; background: var(--bg-main); colo
 .btn-close { background: none; border: none; color: var(--text-muted); font-size: 24px; cursor: pointer; transition: 0.2s; }
 .btn-close:hover { color: var(--danger); }
 .modal-body { padding: 10px 0; overflow-y: auto; flex: 1; }
-.short-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+.short-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); transition: 0.2s; border-left: 4px solid transparent; }
 .short-item:hover { background: var(--bg-hover); }
 .short-left { display: flex; align-items: center; gap: 12px; }
-.short-dnum { background: var(--primary); color: #fff; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; width: 55px; text-align: center; }
-.short-subj { color: #fff; font-size: 14px; font-weight: bold; }
+.short-dnum { background: rgba(255,255,255,0.1); color: #fff; font-size: 11px; font-weight: bold; padding: 4px 8px; border-radius: 6px; width: 55px; text-align: center; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); }
+.short-subj-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px; white-space: nowrap; }
 .short-date { color: var(--text-muted); font-size: 12px; }
 
 /* ── Toast ── */
@@ -365,15 +365,14 @@ function getActiveWeeks() {
   let wks = [...baseWeeks];
   let maxDay = plan.length;
   
-  // যদি প্ল্যানে ৫৫ দিনের বেশি দিন যুক্ত করা হয়, প্রতি ৭ দিন পরপর নতুন Week তৈরি হবে
   if (maxDay > 55) {
     let startDay = 56;
-    let weekNum = 9; // যেহেতু Rev 2 হচ্ছে ৮ নম্বর সপ্তাহ
+    let weekNum = 9; 
     
     while (startDay <= maxDay) {
       let endDay = Math.min(startDay + 6, maxDay);
       wks.push({
-        id: weekNum + 100, // ইউনিক আইডি
+        id: weekNum + 100,
         label: `Week ${weekNum}`,
         title: `Extra Routine ${weekNum - 8}`,
         color: `#4c1d95`,
@@ -501,20 +500,27 @@ function showToast(msg) {
 }
 
 // ════════════════════════════════════════════
-//  SHORT ROADMAP OVERVIEW (NEW)
+//  SHORT ROADMAP OVERVIEW (SUBJECT COLORS ADDED)
 // ════════════════════════════════════════════
 function openShortMap() {
   const modal = document.getElementById('shortMapModal');
   const listCont = document.getElementById('shortMapList');
-  listCont.innerHTML = ''; // clear previous
+  listCont.innerHTML = ''; 
   
   plan.forEach(item => {
+    // Get corresponding subject color (fallback to default grey if not found)
+    const tc = sc[item.s] || {bg:"#334155", col:"#f8fafc", brd:"#94a3b8"};
+    
     const el = document.createElement('div');
     el.className = 'short-item';
+    el.style.borderLeftColor = tc.brd; // Color left border
+    
     el.innerHTML = `
       <div class="short-left">
         <span class="short-dnum">Day ${item.d}</span>
-        <span class="short-subj">${item.s}</span>
+        <span class="short-subj-badge" style="background:${tc.bg}; color:${tc.col}; border: 1px solid ${tc.brd}">
+          ${item.s}
+        </span>
       </div>
       <span class="short-date">${item.date || 'No Date'}</span>
     `;
